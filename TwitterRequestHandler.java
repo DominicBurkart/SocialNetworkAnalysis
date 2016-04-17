@@ -50,4 +50,8 @@ public class TwitterRequestHandler {
 		}
 		throw new BadUserException("User was not correctly substantiated: "+String.valueOf(id));
 	}
+	
+	static void getPosts(User u){
+		
+	}
 }

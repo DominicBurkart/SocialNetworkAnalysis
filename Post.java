@@ -60,6 +60,9 @@ public abstract class Post implements Comparable<Post> {
 		this.original = true;
 	}
 	
+	/** Returns 0 if the posts have the same id, otherwise returns the difference between this post's notes versus the other's.
+	 * @return
+	 */
 	public int CompareTo(Post other){
 		if (other.id.equals(this.id)) return 0;
 		return this.notes - other.notes;
