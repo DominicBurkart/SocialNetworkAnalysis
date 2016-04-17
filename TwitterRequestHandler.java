@@ -8,7 +8,8 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
 public class TwitterRequestHandler {
-	static TwitterFactory factory = new TwitterFactory();
+	private static TwitterAuth authorization = new TwitterAuth();
+	static TwitterFactory factory = authorization.getFactory();
     
 	static ArrayList<User> getFollowers(TwitterUser u) throws BadIDException{
 		Twitter twitter = factory.getInstance();
@@ -40,18 +41,18 @@ public class TwitterRequestHandler {
 	}
 	
 	static TwitterUser getUser(long id, int depth) throws BadUserException{
-		String username = ""; //TODO get username
 		try {
-			TwitterUser t = new TwitterUser(username, Long.toString(id), depth);
+			TwitterUser t = new TwitterUser(Long.toString(id), depth);
 			//TODO collect relevant data on user
 			return t;
 		} catch (RedundantEntryException e) {
-			System.err.println("Redundant instatiation attempted for user "+username+" with id "+id);
+			System.err.println("Redundant instatiation attempted for user with id "+id);
 		}
 		throw new BadUserException("User was not correctly substantiated: "+String.valueOf(id));
 	}
 	
 	static void getPosts(User u){
+		long id = Long.valueOf(u.id);
 		
 	}
 }
