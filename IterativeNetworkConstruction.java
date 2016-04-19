@@ -35,8 +35,9 @@ public abstract class IterativeNetworkConstruction{
 		System.out.println("Initiating iterative collection.");
 		while (!jobs.isEmpty()){
 			User u = jobs.removeFirst();
-			if (u.firstDepth < this.depth){
-				subsequentPass(u);
+			LinkedList<User> nextPass = subsequentPass(u);
+			if (u.firstDepth < this.depth - 1){
+				jobs.addAll(nextPass);
 			}
 		}
 		System.out.println("Iterative collection complete! Saving output files.");
