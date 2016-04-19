@@ -56,7 +56,7 @@ public class Sample {
 	}
 	
 	public void followsToCSV(){
-		PrintWriter w = fileHandler("_follows.csv");
+		PrintWriter w = fileHandler(name+"_follows.csv");
 		Follow fol;
 		for(int i = 0; i < allInteractions.size(); i++){
 			fol = allFollows.get(i);
@@ -74,7 +74,7 @@ public class Sample {
 	}
 	
 	public void postsToCSV(){
-		PrintWriter w = fileHandler("_posts.csv");
+		PrintWriter w = fileHandler(name+"_posts.csv");
 		User u;
 		Enumeration<String> ids = users.keys();
 		while (ids.hasMoreElements()){

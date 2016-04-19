@@ -2,13 +2,12 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 public abstract class User {
 	static Sample sample;
 	
-	Hashtable<String, ArrayList<Interaction>> tensors = new Hashtable<String, ArrayList<Interaction>>();
+	ArrayList<Interaction> tensors = new ArrayList<Interaction>();
 	
 	ArrayList<Post> posts = new ArrayList<Post>();
 	String description;
@@ -17,6 +16,9 @@ public abstract class User {
 	
 	String id = null;
 	String username = null;
+	
+	public abstract ArrayList<User> getFollowers();
+	public abstract ArrayList<Post> getPosts();
 	
 	public User(String id, int depth) throws RedundantEntryException{
 		if (sample.users.containsKey(id)) throw new RedundantEntryException("User with id "+id+" already exists.");
@@ -28,9 +30,6 @@ public abstract class User {
 		this(id, depth);
 		this.username = username;
 	}
-	
-	public abstract ArrayList<User> getFollowers();
-	public abstract ArrayList<Post> getPosts();
 	
 	public void setDesc(String desc){
 		this.description = desc;
@@ -47,5 +46,12 @@ public abstract class User {
 			if (posts.contains(pI.next())) throw new RedundantEntryException("At least one input post already exists in given user.");
 		}
 		posts.addAll(p);
+	}
+	
+	public void findAllPostInteractions(){
+		for (Post p : this.posts){
+			p.getAssociatedInteractions();
+			this.tensors.addAll(p.associatedInteractions);
+		}
 	}
 }

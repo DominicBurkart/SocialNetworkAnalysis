@@ -1,6 +1,6 @@
 package SocialNetworkAnalysis;
 
-public abstract class Repost extends Interaction {
+public class Repost extends Interaction {
 	String type = "repost";
 	Post post;
 	
@@ -8,5 +8,8 @@ public abstract class Repost extends Interaction {
 		this.post = post;
 		this.source = source;
 		this.target = target;
+	}
+	
+	public Repost(){
 	}
 }

@@ -1,8 +1,11 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import twitter4j.IDs;
+import twitter4j.Paging;
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -51,8 +54,38 @@ public class TwitterRequestHandler {
 		throw new BadUserException("User was not correctly substantiated: "+String.valueOf(id));
 	}
 	
-	static void getPosts(User u){
-		long id = Long.valueOf(u.id);
-		
+	static void getPosts(User u) throws TwitterException, RedundantEntryException{
+		Twitter twitter = factory.getInstance();
+		Paging paging = new Paging(1, 100);
+		List<Status> statuses = twitter.getUserTimeline(u.username,paging);
+		for (Status s : statuses){
+			Post p = new TwitterStatus();
+			p.id = Long.toString(s.getId());
+			p.notes = s.getFavoriteCount();
+			p.message = s.getText();
+			p.time = s.getCreatedAt();
+			p.author = u;
+			p.original = s.isRetweet();
+			p.location.latitude = s.getGeoLocation().getLatitude();
+			p.location.longitude = s.getGeoLocation().getLongitude();
+			p.location.name = s.getPlace().getFullName();
+			p.location.locationType = s.getPlace().getPlaceType();
+			u.addPost(p);
+		}
 	}
+	
+	static void getLikes(Post p){
+		//TODO
+	}
+	
+	static void getRetweeted(Post p){
+		Twitter twitter = factory.getInstance();
+		
+		twitter.getRetweeterIds(Long.valueOf(p.id), );
+	}
+	
+//	static void getComments(Post p){         necessary?
+//		
+//	}
+	
 }
