@@ -6,6 +6,7 @@ public abstract class Comment extends Interaction {
 	Post post;
 	String comment;
 	ArrayList<String> tags;
+	String type = "comment";
 	
 	public Comment(Post post){
 		this.post = post;

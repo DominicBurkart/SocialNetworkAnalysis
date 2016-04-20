@@ -7,7 +7,38 @@ import java.util.Iterator;
 public abstract class User {
 	static Sample sample;
 	
-	ArrayList<Interaction> tensors = new ArrayList<Interaction>();
+	Tensors tensors;
+	
+	public class Tensors{;
+		ArrayList<Like> likes = new ArrayList<Like>();
+		ArrayList<Repost> reposts = new ArrayList<Repost>();
+		ArrayList<Comment> comments = new ArrayList<Comment>();
+		ArrayList<Follow> follows = new ArrayList<Follow>();
+		
+		ArrayList<Interaction> getTensors(){
+			ArrayList<Interaction> tensors = new ArrayList<Interaction>();
+			tensors.addAll(follows);
+			tensors.addAll(reposts);
+			tensors.addAll(comments);
+			tensors.addAll(likes);
+			return tensors;
+		}
+
+		public void addAll(ArrayList<Interaction> interactions) {
+			for (Interaction i : interactions){
+				this.add(i);
+			}
+		}
+		
+		public void add(Interaction i){
+			switch (i.type){
+			case "follow": follows.add((Follow) i); break;
+			case "like": likes.add((Like) i); break;
+			case "repost": reposts.add((Repost) i); break;
+			case "comment": comments.add((Comment) i); break;
+			}
+		}
+	}
 	
 	ArrayList<Post> posts = new ArrayList<Post>();
 	String description;
