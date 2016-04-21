@@ -30,13 +30,6 @@ public abstract class Post implements Comparable<Post> {
 		if (other.id.equals(this.id)) return 0;
 		return this.notes - other.notes;
 	}
-	
-	public class Location{
-		double latitude;
-		double longitude;
-		String name;
-		String locationType;
-	}
 
 	public void getAssociatedInteractions() {
 		if (!this.original){

@@ -17,6 +17,12 @@ public class Sample {
 	ArrayList<Post> allPosts = new ArrayList<Post>();
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>(); //includes allFollows
 	String outDir;
+	
+	public Sample(){
+		User.sample = this;
+		Interaction.sample = this;
+		Post.sample = this;
+	}
 
 	
 	public void toCSV(String outDir){

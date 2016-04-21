@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class TwitterUser extends User { 
 	
+	Location location;
+
 	public TwitterUser(String username, String id, int depth) throws RedundantEntryException{
 		super(username, id, depth);
 	}
@@ -18,7 +20,7 @@ public class TwitterUser extends User {
 			return TwitterRequestHandler.getFollowers(this);
 		} catch (BadIDException e) {
 			System.err.println(e.getMessage());
-			return null;
+			return null; //TODO double check that this is fine
 		}
 	}
 

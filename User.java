@@ -52,7 +52,7 @@ public abstract class User {
 	public abstract ArrayList<Post> getPosts();
 	
 	public User(String id, int depth) throws RedundantEntryException{
-		if (sample.users.containsKey(id)) throw new RedundantEntryException("User with id "+id+" already exists.");
+		if (sample.users.containsKey(id)) throw new RedundantEntryException("User with id "+id+" already exists.", sample.users.get(id));
 		sample.users.put(id, this);
 		firstDepth = depth;
 	}

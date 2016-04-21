@@ -14,9 +14,6 @@ public abstract class IterativeNetworkConstruction{
 	public IterativeNetworkConstruction(Sample s, int depth){
 		this.depth = depth;
 		sample = s;
-		User.sample = sample;
-		Interaction.sample = sample;
-		Post.sample = sample;
 	}
 	
 	public IterativeNetworkConstruction(Sample s, int depth, String outdir){

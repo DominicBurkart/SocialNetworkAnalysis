@@ -5,18 +5,22 @@ import java.util.List;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
+import twitter4j.RateLimitStatusEvent;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.util.function.Consumer;
 
 public class TwitterRequestHandler{
 	private static TwitterAuth authorization = new TwitterAuth();
 	static TwitterFactory factory = authorization.getFactory();
-	static Twitter twitter = factory.getInstance();
-	
-	static void rateLimited(){
+	static Twitter twitter = getTwitterInstance();
+
+	private static Twitter getTwitterInstance(){
+		Twitter t = factory.getInstance();
 		
+		return t;
 	}
     
 	static ArrayList<User> getFollowers(User u) throws BadIDException{
@@ -25,24 +29,14 @@ public class TwitterRequestHandler{
 		try {
 			long cursor = -1;
 			while (cursor != 0){
-				try{
-					IDs IDvals = twitter.getFollowersIDs(Long.valueOf(u.id), cursor);
-					pages.add(IDvals.getIDs());
-					cursor = IDvals.getNextCursor();
-				}
-				catch (TwitterException e){
-					rateLimited();
-				}
+				IDs IDvals = twitter.getFollowersIDs(Long.valueOf(u.id), cursor);
+				pages.add(IDvals.getIDs());
+				cursor = IDvals.getNextCursor();
 			}
 			for (long[] p: pages){
 				for(long l : p){
-					try{
-						TwitterUser t = getUser(l, u.firstDepth + 1);
-						out.add(t);
-					}
-					catch (TwitterException e){
-						rateLimited();
-					}
+					TwitterUser t = getUser(l, u.firstDepth + 1);
+					out.add(t);
 				}
 			}
 		} catch (NumberFormatException e) {
@@ -50,21 +44,21 @@ public class TwitterRequestHandler{
 		} catch (TwitterException e) {
 			System.err.println("problem with finding twitter user: "+u.id);
 		} catch (BadUserException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Unusual error with twitter user: "+u.id);
 		}
 		return out;
 	}
-	
-	static TwitterUser getUser(long id, int depth) throws BadUserException{
+
+	static TwitterUser getUser(long id, int depth) throws BadUserException, TwitterException{
 		try {
 			TwitterUser t = new TwitterUser(Long.toString(id), depth);
-			//TODO actually input user info
+			twitter4j.User tUser = twitter.showUser(id);
+			t.description = tUser.getDescription();
+			t.username = tUser.getDescription();
 			return t;
 		} catch (RedundantEntryException e) {
-			System.err.println("Redundant instatiation attempted for user with id "+id);
+			return (TwitterUser) e.user;
 		}
-		throw new BadUserException("User was not correctly substantiated: "+String.valueOf(id));
 	}
 	
 	static void getPosts(User u) throws TwitterException, RedundantEntryException{
@@ -86,30 +80,24 @@ public class TwitterRequestHandler{
 		}
 	}
 	
-	static void getLikes(Post p){
-		//TODO
-	}
-	
 	static void getReposted(Post p) throws NumberFormatException, TwitterException, BadUserException{
 		long cursor = -1;
 		ArrayList<Long> ids = new ArrayList<Long>();
 		while (cursor != 0){
 			IDs pages = twitter.getRetweeterIds(Long.valueOf(p.id), -1);
 			for(long id : pages.getIDs()){
+				
 				ids.add(id);
+				
 				try{
 					getUser(id, p.author.firstDepth +1);
 				}
 				catch (RedundantEntryException e){}; //not important here
+				
 				User reposter = Post.sample.users.get(Long.toString(id));
 				Repost r = new Repost(p, reposter, p.author); //action originates in reposter and goes to poster
 				reposter.tensors.add(r);
 			}
 		}
 	}
-	
-//	static void getComments(Post p){         necessary?
-//		
-//	}
-	
 }
