@@ -2,9 +2,11 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
+import twitter4j.RateLimitStatus;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -12,15 +14,28 @@ import twitter4j.TwitterFactory;
 
 public class TwitterRequestHandler{
 	private static TwitterAuth authorization = new TwitterAuth();
-	static TwitterFactory factory = authorization.getFactory();
-	static Twitter twitter = factory.getInstance();
+	private static TwitterFactory factory = authorization.getFactory();
+	private static Twitter twitter = factory.getInstance();
 	
-	static Twitter getTwitter(String url){
+	static Twitter getTwitter(){
 		try {
-			twitter.getRateLimitStatus(url);
+			Map<String ,RateLimitStatus> rateLimit = twitter.getRateLimitStatus();
+			for (String timeStatus : rateLimit.keySet()) {
+				RateLimitStatus timeLeft = rateLimit.get(timeStatus);
+				if (timeLeft != null && timeLeft.getRemaining() == 0) {
+					System.err.println("Ratelimited");
+					try {
+						Thread.sleep(900000);
+					} catch (InterruptedException e) {
+						System.err.println("Thread problem (thrown in TwitterRequestHandler.getTwitter().");
+					}
+					System.out.println("Continue after sleep!!!");
+        	    }
+			}
 		} catch (TwitterException e) {
 			System.err.println("Error checking rateLimitStatus.");
 		}
+		return twitter;
 	}
     
 	static ArrayList<User> getFollowers(User u) throws BadIDException{
@@ -29,7 +44,7 @@ public class TwitterRequestHandler{
 		try {
 			long cursor = -1;
 			while (cursor != 0){
-				IDs IDvals = twitter.getFollowersIDs(Long.valueOf(u.id), cursor);
+				IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), cursor);
 				pages.add(IDvals.getIDs());
 				cursor = IDvals.getNextCursor();
 			}
@@ -52,7 +67,7 @@ public class TwitterRequestHandler{
 	static TwitterUser getUser(long id, int depth) throws BadUserException, TwitterException{
 		try {
 			TwitterUser t = new TwitterUser(Long.toString(id), depth);
-			twitter4j.User tUser = twitter.showUser(id);
+			twitter4j.User tUser = getTwitter().showUser(id);
 			t.description = tUser.getDescription();
 			t.username = tUser.getDescription();
 			return t;
@@ -63,7 +78,7 @@ public class TwitterRequestHandler{
 	
 	static void getPosts(User u) throws TwitterException, RedundantEntryException{
 		Paging paging = new Paging(1, 100);
-		List<Status> statuses = twitter.getUserTimeline(u.username,paging);
+		List<Status> statuses = getTwitter().getUserTimeline(u.username,paging);
 		for (Status s : statuses){
 			Post p = new TwitterStatus();
 			p.id = Long.toString(s.getId());
