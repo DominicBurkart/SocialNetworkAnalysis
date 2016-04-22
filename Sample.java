@@ -56,7 +56,9 @@ public class Sample {
 			u = users.get(keys.nextElement());
 			w.print(u.id);
 			w.print(",");
-			w.println(u.description);
+			w.print("\""+u.username+"\"");
+			w.print(",");
+			w.println("\""+u.description+"\"");
 		}
 		w.close();
 	}
@@ -64,7 +66,7 @@ public class Sample {
 	public void followsToCSV(){
 		PrintWriter w = fileHandler(name+"_follows.csv");
 		Follow fol;
-		for(int i = 0; i < allInteractions.size(); i++){
+		for(int i = 0; i < allFollows.size(); i++){
 			fol = allFollows.get(i);
 			w.print(fol.source.id);
 			w.print(",");
@@ -125,13 +127,14 @@ public class Sample {
 				w.println(p.tags.toString()); //should this formatting be updated?
 			}
 		}
+		w.close();
 	}
 	
 	private PrintWriter fileHandler(String fname){
 		try{
 			Path p = Paths.get(outDir);
 			p = p.toAbsolutePath();
-			File f = new File(p+fname);
+			File f = new File(p+"/"+fname);
 			PrintWriter out = new PrintWriter(f);
 			return out;
 		}

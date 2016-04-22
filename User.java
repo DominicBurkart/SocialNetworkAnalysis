@@ -55,6 +55,7 @@ public abstract class User {
 		if (sample.users.containsKey(id)) throw new RedundantEntryException("User with id "+id+" already exists.", sample.users.get(id));
 		sample.users.put(id, this);
 		firstDepth = depth;
+		this.id = id;
 	}
 	
 	public User(String username, String id, int depth) throws RedundantEntryException{

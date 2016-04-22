@@ -19,7 +19,7 @@ public class TwitterUser extends User {
 		try {
 			return TwitterRequestHandler.getFollowers(this);
 		} catch (BadIDException e) {
-			System.err.println(e.getMessage());
+			System.err.println("TwitterUser.getFollowers() recieved a bad ID: "+this.id);
 			return null; //TODO double check that this is fine
 		}
 	}

@@ -5,22 +5,22 @@ import java.util.List;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
-import twitter4j.RateLimitStatusEvent;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.util.function.Consumer;
 
 public class TwitterRequestHandler{
 	private static TwitterAuth authorization = new TwitterAuth();
 	static TwitterFactory factory = authorization.getFactory();
-	static Twitter twitter = getTwitterInstance();
-
-	private static Twitter getTwitterInstance(){
-		Twitter t = factory.getInstance();
-		
-		return t;
+	static Twitter twitter = factory.getInstance();
+	
+	static Twitter getTwitter(String url){
+		try {
+			twitter.getRateLimitStatus(url);
+		} catch (TwitterException e) {
+			System.err.println("Error checking rateLimitStatus.");
+		}
 	}
     
 	static ArrayList<User> getFollowers(User u) throws BadIDException{
