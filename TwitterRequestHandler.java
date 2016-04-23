@@ -10,32 +10,59 @@ import twitter4j.RateLimitStatus;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
 
 public class TwitterRequestHandler{
 	private static TwitterAuth authorization = new TwitterAuth();
-	private static TwitterFactory factory = authorization.getFactory();
-	private static Twitter twitter = factory.getInstance();
+	private static Twitter twitter = authorization.getInstance();
 	
 	static Twitter getTwitter(){
+		checkTwitter();
+		return twitter;
+	}
+	
+	static Twitter checkTwitter(){
 		try {
 			Map<String ,RateLimitStatus> rateLimit = twitter.getRateLimitStatus();
 			for (String timeStatus : rateLimit.keySet()) {
 				RateLimitStatus timeLeft = rateLimit.get(timeStatus);
 				if (timeLeft != null && timeLeft.getRemaining() == 0) {
-					System.err.println("Ratelimited");
-					try {
-						Thread.sleep(900000);
-					} catch (InterruptedException e) {
-						System.err.println("Thread problem (thrown in TwitterRequestHandler.getTwitter().");
-					}
-					System.out.println("Continue after sleep!!!");
+					twitter = authorization.getInstance();
+					checkTwitter(twitter, 0);
+					return twitter;
         	    }
 			}
 		} catch (TwitterException e) {
 			System.err.println("Error checking rateLimitStatus.");
 		}
 		return twitter;
+	}
+	
+	//Recursively iterates through authorization tokens
+	private static Twitter checkTwitter(Twitter t, int i){
+		if (i >= authorization.size()){
+			System.err.println("Rate limit reached.");
+			try {
+				Thread.sleep(15 * 60 * 1000);
+				i--;
+			} catch (InterruptedException e) {
+				System.err.println("Sleep error occured in checkTwitter");
+			}
+		}
+		try {
+			//TODO figure out something more sensical than this!!!!!
+			Map<String ,RateLimitStatus> rateLimit = t.getRateLimitStatus();
+			for (String timeStatus : rateLimit.keySet()) {
+				RateLimitStatus timeLeft = rateLimit.get(timeStatus);
+				if (timeLeft != null && timeLeft.getRemaining() == 0) {
+					t = authorization.getInstance();
+					checkTwitter(t, i+1);
+					return t;
+        	    }
+			}
+		} catch (TwitterException e) {
+			System.err.println("Error checking rateLimitStatus.");
+		}
+		return t;
 	}
     
 	static ArrayList<User> getFollowers(User u) throws BadIDException{

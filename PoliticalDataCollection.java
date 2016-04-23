@@ -1,5 +1,7 @@
 package SocialNetworkAnalysis;
 
+import java.util.HashSet;
+
 import twitter4j.TwitterException;
 
 public class PoliticalDataCollection {
@@ -17,10 +19,15 @@ public class PoliticalDataCollection {
 			System.out.println("Candidates collected.");
 			User[] bigs = {bernie, hillary, trump, cruz};
 			System.out.println();
+			HashSet<User> firstFollows = new HashSet<User>();
 			
 			for (int i = 0; i< bigs.length; i++){
 				System.out.println("Getting followers for "+cNames[i]);
-				bigs[i].getFollowers();
+				firstFollows.addAll(bigs[i].getFollowers());
+			}
+			for (User small : firstFollows){
+				System.out.println("Getting followers for "+small.username);
+				small.getFollowers();
 			}
 			System.out.println("Saving output");
 			s.outDir = "/Users/dominicburkart/Desktop/testOut";
