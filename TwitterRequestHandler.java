@@ -120,7 +120,7 @@ public class TwitterRequestHandler{
 			TwitterUser t = new TwitterUser(Long.toString(id), depth);
 			twitter4j.User tUser = getTwitter().showUser(id);
 			t.description = tUser.getDescription();
-			t.username = tUser.getDescription();
+			t.username = tUser.getScreenName();
 			return t;
 		} catch (RedundantEntryException e) {
 			return (TwitterUser) e.user;

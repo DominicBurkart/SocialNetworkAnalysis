@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Scanner;
 
 public class Sample {
 	String name = "";
@@ -131,20 +130,43 @@ public class Sample {
 	}
 	
 	private PrintWriter fileHandler(String fname){
-		try{
-			Path p = Paths.get(outDir);
-			p = p.toAbsolutePath();
-			File f = new File(p+"/"+fname);
-			PrintWriter out = new PrintWriter(f);
-			return out;
-		}
-		catch (FileNotFoundException e){
-			Scanner in = new Scanner(System.in);
-			System.err.println("Invalid directory given: "+outDir);
-			System.out.println("Input new directory: ");
-			outDir = in.nextLine();
-			in.close();
-			return fileHandler(fname);
+		checkTestOut();
+			File f;
+			if (outDir != ""){
+				Path p = Paths.get(outDir);
+				p = p.toAbsolutePath();
+				f = new File(p+"/"+fname);
+			}
+			else{
+				f = new File(fname);
+			}
+			PrintWriter out;
+			try {
+				out = new PrintWriter(f);
+				return out;
+			} catch (FileNotFoundException e) {
+				System.err.println("Sample.CheckTestOut() failed.");
+				return null;
+			}
+		
+	}
+	
+	private void checkTestOut(){
+		if (outDir != ""){
+			File f;
+			try{
+				Path p = Paths.get(outDir);
+				p = p.toAbsolutePath();
+				f = new File(p+"/"+"temp");
+				PrintWriter out = new PrintWriter(f);
+				out.close();
+				f.delete();
+			}
+			catch (FileNotFoundException e){
+				System.err.println("Invalid directory given: "+outDir+"\n Saving files to project folder.");
+				outDir = "";
+			}
 		}
 	}
+	
 }
