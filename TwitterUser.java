@@ -26,7 +26,17 @@ public class TwitterUser extends User {
 
 	@Override
 	public ArrayList<Post> getPosts() {
-		// TODO Auto-generated method stub
-		return null;
+		System.err.println("Unimplemented method TwitterUser.getPosts() was called before it was written.");
+		return posts; //TODO
+	}
+
+	@Override
+	public ArrayList<User> getSomeFollowers() {
+		try {
+			return TwitterRequestHandler.getSomeFollowers(this);
+		} catch (BadIDException e) {
+			System.err.println("TwitterUser.getSomeFollowers() recieved a bad ID: "+this.id);
+			return null; //TODO double check that this is fine
+		}
 	}
 }

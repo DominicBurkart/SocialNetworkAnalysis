@@ -40,7 +40,9 @@ public class TwitterRequestHandler{
 	//Recursively iterates through authorization tokens
 	private static Twitter checkTwitter(Twitter t, int i){
 		if (i >= authorization.size()){
-			System.err.println("Rate limit reached.");
+			System.err.println("Rate limit reached. Saving current collection and sleeping.");
+			//TODO generalize this:
+			PoliticalDataCollection.s.toCSV("");
 			try {
 				Thread.sleep(15 * 60 * 1000);
 				i--;
@@ -75,6 +77,28 @@ public class TwitterRequestHandler{
 				pages.add(IDvals.getIDs());
 				cursor = IDvals.getNextCursor();
 			}
+			for (long[] p: pages){
+				for(long l : p){
+					TwitterUser t = getUser(l, u.firstDepth + 1);
+					out.add(t);
+				}
+			}
+		} catch (NumberFormatException e) {
+			throw new BadIDException("Bad id given to getFollowers: "+u.id);
+		} catch (TwitterException e) {
+			System.err.println("problem with finding twitter user: "+u.id);
+		} catch (BadUserException e) {
+			System.err.println("Unusual error with twitter user: "+u.id);
+		}
+		return out;
+	}
+	
+	static ArrayList<User> getSomeFollowers(User u) throws BadIDException{
+		ArrayList<User> out = new ArrayList<User>();
+		ArrayList<long[]> pages = new ArrayList<long[]>();
+		try {
+			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), 0);
+			pages.add(IDvals.getIDs());
 			for (long[] p: pages){
 				for(long l : p){
 					TwitterUser t = getUser(l, u.firstDepth + 1);

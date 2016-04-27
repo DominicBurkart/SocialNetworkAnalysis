@@ -49,6 +49,7 @@ public abstract class User {
 	String username = null;
 	
 	public abstract ArrayList<User> getFollowers();
+	public abstract ArrayList<User> getSomeFollowers();
 	public abstract ArrayList<Post> getPosts();
 	
 	public User(String id, int depth) throws RedundantEntryException{
@@ -85,5 +86,9 @@ public abstract class User {
 			p.getAssociatedInteractions();
 			this.tensors.addAll(p.associatedInteractions);
 		}
+	}
+	
+	public String toString(){
+		return (username + "  id:" + id + "  description: "+ description +"  depth: " + firstDepth);
 	}
 }

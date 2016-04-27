@@ -30,7 +30,7 @@ public class Sample {
 		interactionsToCSV();
 		usersToCSV();
 		followsToCSV();
-		postsToCSV();
+		//postsToCSV();
 	}
 	
 	public void interactionsToCSV(){
