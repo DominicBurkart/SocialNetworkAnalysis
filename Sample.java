@@ -87,7 +87,7 @@ public class Sample {
 		while (ids.hasMoreElements()){
 			String id = ids.nextElement();
 			u = users.get(id);
-			ArrayList<Post> posts = u.getPosts();
+			ArrayList<Post> posts = u.posts;
 			for (int i = 0; i < posts.size(); i++){
 				Post p = posts.get(i);
 				w.print(p.id);
@@ -131,24 +131,23 @@ public class Sample {
 	
 	private PrintWriter fileHandler(String fname){
 		checkTestOut();
-			File f;
-			if (outDir != null || outDir != ""){
-				Path p = Paths.get(outDir);
-				p = p.toAbsolutePath();
-				f = new File(p+"/"+fname);
-			}
-			else{
-				f = new File(fname);
-			}
-			PrintWriter out;
-			try {
-				out = new PrintWriter(f);
-				return out;
-			} catch (FileNotFoundException e) {
-				System.err.println("Sample.CheckTestOut() failed.");
-				return null;
-			}
-		
+		File f;
+		if (outDir != null || outDir != ""){
+			Path p = Paths.get(outDir);
+			p = p.toAbsolutePath();
+			f = new File(p+"/"+fname);
+		}
+		else{
+			f = new File(fname);
+		}
+		PrintWriter out;
+		try {
+			out = new PrintWriter(f);
+			return out;
+		} catch (FileNotFoundException e) {
+			System.err.println("Sample.CheckTestOut() failed.");
+			return null;
+		}
 	}
 	
 	private void checkTestOut(){

@@ -17,7 +17,7 @@ public class TwitterRequestHandler{
 	}
 	
     
-	static ArrayList<User> getFollowers(User u) throws BadIDException{
+	static ArrayList<User> getFollowers(User u) throws BadIDException, TwitterException{
 		ArrayList<User> out = new ArrayList<User>();
 		ArrayList<long[]> pages = new ArrayList<long[]>();
 		try {
@@ -35,8 +35,6 @@ public class TwitterRequestHandler{
 			}
 		} catch (NumberFormatException e) {
 			throw new BadIDException("Bad id given to getFollowers: "+u.id);
-		} catch (TwitterException e) {
-			System.err.println("problem with finding twitter user: "+u.id);
 		} catch (BadUserException e) {
 			System.err.println("Unusual error with twitter user: "+u.id);
 		}

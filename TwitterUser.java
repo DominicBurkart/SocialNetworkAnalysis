@@ -17,12 +17,14 @@ public class TwitterUser extends User {
 	}
 
 	@Override
-	public ArrayList<User> getFollowers() {
+	public ArrayList<User> getFollowers() throws APIException{
 		try {
 			return TwitterRequestHandler.getFollowers(this);
 		} catch (BadIDException e) {
 			System.err.println("TwitterUser.getFollowers() recieved a bad ID: "+this.id);
 			return null; //TODO double check that this is fine
+		} catch (TwitterException e) {
+			throw new APIException(e);
 		}
 	}
 

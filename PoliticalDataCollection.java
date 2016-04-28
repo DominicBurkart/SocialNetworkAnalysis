@@ -44,9 +44,13 @@ public class PoliticalDataCollection {
 			System.out.println("Program complete.");
 		}
 		catch (RedundantEntryException e) {}
-		catch (TwitterException e){
-			System.err.println("exception: twitter error #"+e.getErrorCode()+": "+e.getCause());
-			System.out.println("Soft quitting.");
+		catch (APIException e) {
+			if (!e.type.equals("TwitterException")){
+				System.err.println("APIException incorrectly typed.");
+			}
+			TwitterException t = (TwitterException) e.thrower; //since this is just twitter
+			System.err.println("exception: twitter error #"+t.getErrorCode()+": "+t.getCause());
+			System.out.println("Saving and quitting.");
 			s.usersToCSV();
 		}
 	}
