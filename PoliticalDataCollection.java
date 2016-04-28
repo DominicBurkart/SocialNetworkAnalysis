@@ -24,11 +24,10 @@ public class PoliticalDataCollection {
 			System.out.println(cruz);
 			System.out.println("Candidates collected.");
 			User[] bigs = {bernie, hillary, trump, cruz};
-			System.out.println();
 			HashSet<User> firstFollows = new HashSet<User>();
 			
 			for (User big : bigs){
-				System.out.println("Getting followers for "+big.username);
+				System.out.println("\nGetting followers for "+big.username);
 				ArrayList<User> fols = big.getSomeFollowers();
 				firstFollows.addAll(fols);
 				System.out.println(big.username+" followers:");
@@ -38,12 +37,17 @@ public class PoliticalDataCollection {
 			}
 			for (User small : firstFollows){
 				System.out.println("Getting followers for "+small.username);
-				small.getFollowers();
+				small.getSomeFollowers();
 			}
 			System.out.println("Saving output");
-			s.outDir = "/Users/dominicburkart/Desktop/testOut";
 			s.usersToCSV();
 			System.out.println("Program complete.");
-		} catch (RedundantEntryException e) {}
+		}
+		catch (RedundantEntryException e) {}
+		catch (TwitterException e){
+			System.err.println("exception: twitter error #"+e.getErrorCode()+": "+e.getCause());
+			System.out.println("Soft quitting.");
+			s.usersToCSV();
+		}
 	}
 }

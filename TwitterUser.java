@@ -2,6 +2,8 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 
+import twitter4j.TwitterException;
+
 public class TwitterUser extends User { 
 	
 	Location location;
@@ -25,18 +27,28 @@ public class TwitterUser extends User {
 	}
 
 	@Override
-	public ArrayList<Post> getPosts() {
-		System.err.println("Unimplemented method TwitterUser.getPosts() was called before it was written.");
-		return posts; //TODO
+	public ArrayList<Post> getPosts() throws APIException {
+		try{
+			TwitterRequestHandler.getPosts(this);
+		}
+		catch (TwitterException e){
+			throw new APIException(e);
+		}
+		return posts;
 	}
 
 	@Override
-	public ArrayList<User> getSomeFollowers() {
+	public ArrayList<User> getSomeFollowers() throws APIException {
 		try {
 			return TwitterRequestHandler.getSomeFollowers(this);
 		} catch (BadIDException e) {
 			System.err.println("TwitterUser.getSomeFollowers() recieved a bad ID: "+this.id);
-			return null; //TODO double check that this is fine
+			System.err.println("Saving and quitting.");
+			sample.usersToCSV();
+			System.exit(1);
+			return null; //for the compiler 
+		} catch (TwitterException e) {
+			throw new APIException(e);
 		}
 	}
 }

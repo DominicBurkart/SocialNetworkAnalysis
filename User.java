@@ -48,9 +48,9 @@ public abstract class User {
 	String id = null;
 	String username = null;
 	
-	public abstract ArrayList<User> getFollowers();
-	public abstract ArrayList<User> getSomeFollowers();
-	public abstract ArrayList<Post> getPosts();
+	public abstract ArrayList<User> getFollowers() throws APIException;
+	public abstract ArrayList<User> getSomeFollowers() throws APIException;
+	public abstract ArrayList<Post> getPosts() throws APIException;
 	
 	public User(String id, int depth) throws RedundantEntryException{
 		if (sample.users.containsKey(id)) throw new RedundantEntryException("User with id "+id+" already exists.", sample.users.get(id));
@@ -76,7 +76,10 @@ public abstract class User {
 	public void addPosts(Collection<Post> p) throws RedundantEntryException{
 		Iterator<Post> pI = p.iterator();
 		while (pI.hasNext()){
-			if (posts.contains(pI.next())) throw new RedundantEntryException("At least one input post already exists in given user.");
+			try{
+				this.addPost(pI.next());
+			}
+			catch (RedundantEntryException e){}
 		}
 		posts.addAll(p);
 	}

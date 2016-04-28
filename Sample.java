@@ -132,7 +132,7 @@ public class Sample {
 	private PrintWriter fileHandler(String fname){
 		checkTestOut();
 			File f;
-			if (outDir != ""){
+			if (outDir != null || outDir != ""){
 				Path p = Paths.get(outDir);
 				p = p.toAbsolutePath();
 				f = new File(p+"/"+fname);
