@@ -151,7 +151,11 @@ public class Sample {
 	}
 	
 	private void checkTestOut(){
-		if (outDir != ""){
+		if (outDir == null){
+			outDir = "";
+			System.out.println("Saving files in the project folder.");
+		}
+		else if (outDir != ""){
 			File f;
 			try{
 				Path p = Paths.get(outDir);
