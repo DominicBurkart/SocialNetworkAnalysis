@@ -9,7 +9,7 @@ public class APIException extends Exception {
 	TwitterException twitterException = new TwitterException("test");
 	
 	public APIException(Exception e){
-		e = thrower;
+		thrower = e;
 		if (e.getClass().equals(twitterException.getClass())){
 			type = "TwitterException";
 		}
