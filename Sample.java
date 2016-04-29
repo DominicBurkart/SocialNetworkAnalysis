@@ -55,7 +55,7 @@ public class Sample {
 			u = users.get(keys.nextElement());
 			w.print(u.id);
 			w.print(",");
-			w.print("\""+u.username+"\"");
+			w.print(u.username);
 			w.print(",");
 			w.println("\""+u.description+"\"");
 		}

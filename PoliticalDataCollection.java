@@ -49,8 +49,7 @@ public class PoliticalDataCollection {
 				System.err.println("APIException incorrectly typed.");
 			}
 			TwitterException t = (TwitterException) e.thrower; //since this is just twitter
-			System.err.println("exception: twitter error #"+t.getErrorCode()+": "+t.getCause());
-			System.out.println("Saving and quitting.");
+			System.err.println("exception: twitter error #"+t.getErrorCode()+": "+t.getErrorMessage() +"\n Saving and quitting.");
 			s.usersToCSV();
 		}
 	}
