@@ -1,6 +1,6 @@
 package SocialNetworkAnalysis;
 
-public class Location{
+public class Location {
 	double latitude;
 	double longitude;
 	String name;

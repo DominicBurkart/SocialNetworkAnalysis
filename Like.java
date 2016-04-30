@@ -1,9 +1,9 @@
 package SocialNetworkAnalysis;
 
-public abstract class Like extends Interaction{
+public abstract class Like extends Interaction {
 	Post post;
-	
-	public Like(Post post, User source, User target){
+
+	public Like(Post post, User source, User target) {
 		this.type = "like";
 		this.source = source;
 		this.target = target;

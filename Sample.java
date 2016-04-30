@@ -14,28 +14,28 @@ public class Sample {
 	Hashtable<String, User> users = new Hashtable<String, User>();
 	ArrayList<Follow> allFollows = new ArrayList<Follow>();
 	ArrayList<Post> allPosts = new ArrayList<Post>();
-	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>(); //includes allFollows
+	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>(); // includes
+																			// allFollows
 	String outDir;
-	
-	public Sample(){
+
+	public Sample() {
 		User.sample = this;
 		Interaction.sample = this;
 		Post.sample = this;
 	}
 
-	
-	public void toCSV(String outDir){
+	public void toCSV(String outDir) {
 		this.outDir = outDir;
 		interactionsToCSV();
 		usersToCSV();
 		followsToCSV();
-		//postsToCSV();
+		// postsToCSV();
 	}
-	
-	public void interactionsToCSV(){
-		PrintWriter w = fileHandler(name+"_interactions.csv");
+
+	public void interactionsToCSV() {
+		PrintWriter w = fileHandler(name + "_interactions.csv");
 		Interaction inter;
-		for(int i = 0; i < allInteractions.size(); i++){
+		for (int i = 0; i < allInteractions.size(); i++) {
 			inter = allInteractions.get(i);
 			w.print(inter.source.id);
 			w.print(",");
@@ -45,27 +45,26 @@ public class Sample {
 		}
 		w.close();
 	}
-	
-	
-	public void usersToCSV(){
-		PrintWriter w = fileHandler(name+"_users.csv");
+
+	public void usersToCSV() {
+		PrintWriter w = fileHandler(name + "_users.csv");
 		User u;
-		Enumeration<String> keys =  users.keys();
-		while(keys.hasMoreElements()){
+		Enumeration<String> keys = users.keys();
+		while (keys.hasMoreElements()) {
 			u = users.get(keys.nextElement());
 			w.print(u.id);
 			w.print(",");
 			w.print(u.username);
 			w.print(",");
-			w.println("\""+u.description+"\"");
+			w.println("\"" + u.description + "\"");
 		}
 		w.close();
 	}
-	
-	public void followsToCSV(){
-		PrintWriter w = fileHandler(name+"_follows.csv");
+
+	public void followsToCSV() {
+		PrintWriter w = fileHandler(name + "_follows.csv");
 		Follow fol;
-		for(int i = 0; i < allFollows.size(); i++){
+		for (int i = 0; i < allFollows.size(); i++) {
 			fol = allFollows.get(i);
 			w.print(fol.source.id);
 			w.print(",");
@@ -79,16 +78,16 @@ public class Sample {
 		}
 		w.close();
 	}
-	
-	public void postsToCSV(){
-		PrintWriter w = fileHandler(name+"_posts.csv");
+
+	public void postsToCSV() {
+		PrintWriter w = fileHandler(name + "_posts.csv");
 		User u;
 		Enumeration<String> ids = users.keys();
-		while (ids.hasMoreElements()){
+		while (ids.hasMoreElements()) {
 			String id = ids.nextElement();
 			u = users.get(id);
 			ArrayList<Post> posts = u.posts;
-			for (int i = 0; i < posts.size(); i++){
+			for (int i = 0; i < posts.size(); i++) {
 				Post p = posts.get(i);
 				w.print(p.id);
 				w.print(",");
@@ -96,7 +95,7 @@ public class Sample {
 				w.print(",");
 				w.print(p.time.toString());
 				w.print(",");
-				if (p.original){
+				if (p.original) {
 					w.print("original");
 					w.print(",");
 					w.print(",");
@@ -104,8 +103,7 @@ public class Sample {
 					w.print(",");
 					w.print(",");
 					w.print(",");
-				}
-				else{
+				} else {
 					w.print("repost");
 					w.print(",");
 					w.print(p.repostedFrom.id);
@@ -121,23 +119,23 @@ public class Sample {
 				}
 				w.print(p.notes);
 				w.print(",");
-				w.print("\""+p.message+"\"");
+				w.print("\"" + p.message + "\"");
 				w.print(",");
-				w.println(p.tags.toString()); //should this formatting be updated?
+				w.println(p.tags.toString()); // should this formatting be
+												// updated?
 			}
 		}
 		w.close();
 	}
-	
-	private PrintWriter fileHandler(String fname){
+
+	private PrintWriter fileHandler(String fname) {
 		checkTestOut();
 		File f;
-		if (outDir != null || outDir != ""){
+		if (outDir != null || outDir != "") {
 			Path p = Paths.get(outDir);
 			p = p.toAbsolutePath();
-			f = new File(p+"/"+fname);
-		}
-		else{
+			f = new File(p + "/" + fname);
+		} else {
 			f = new File(fname);
 		}
 		PrintWriter out;
@@ -149,27 +147,25 @@ public class Sample {
 			return null;
 		}
 	}
-	
-	private void checkTestOut(){
-		if (outDir == null){
+
+	private void checkTestOut() {
+		if (outDir == null) {
 			outDir = "";
 			System.out.println("Saving files in the project folder.");
-		}
-		else if (outDir != ""){
+		} else if (outDir != "") {
 			File f;
-			try{
+			try {
 				Path p = Paths.get(outDir);
 				p = p.toAbsolutePath();
-				f = new File(p+"/"+"temp");
+				f = new File(p + "/" + "temp");
 				PrintWriter out = new PrintWriter(f);
 				out.close();
 				f.delete();
-			}
-			catch (FileNotFoundException e){
-				System.err.println("Invalid directory given: "+outDir+"\n Saving files to project folder.");
+			} catch (FileNotFoundException e) {
+				System.err.println("Invalid directory given: " + outDir + "\n Saving files to project folder.");
 				outDir = "";
 			}
 		}
 	}
-	
+
 }

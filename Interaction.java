@@ -5,8 +5,8 @@ public abstract class Interaction {
 	User target;
 	String type;
 	static Sample sample;
-	
-	public Interaction(){
+
+	public Interaction() {
 		sample.allInteractions.add(this);
 	}
 }
