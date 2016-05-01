@@ -89,8 +89,7 @@ public class TwitterRequestHandler {
 			p.location.locationType = s.getPlace().getPlaceType();
 			try {
 				u.addPost(p);
-			} catch (RedundantEntryException e) {
-			}
+			} catch (RedundantEntryException e) {}
 		}
 	}
 

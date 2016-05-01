@@ -104,6 +104,7 @@ public abstract class User {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return (username + "  id:" + id + "  description: " + description + "  depth: " + firstDepth);
 	}
