@@ -1,4 +1,5 @@
 package SocialNetworkAnalysis;
+
 import twitter4j.TwitterException;
 
 @SuppressWarnings("serial")

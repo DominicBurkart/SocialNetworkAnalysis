@@ -47,7 +47,10 @@ public class PoliticalDataCollection {
 			if (!e.type.equals("TwitterException")) {
 				System.err.println("APIException incorrectly typed.");
 			}
-			TwitterException t = (TwitterException) e.thrower; // since this is just twitter data we can do this cast.
+			TwitterException t = (TwitterException) e.thrower; // since this is
+																// just twitter
+																// data we can
+																// do this cast.
 			System.err.println("exception: twitter error #" + t.getErrorCode() + ": " + t.getErrorMessage()
 					+ "\n Saving and quitting.");
 			s.usersToCSV();

@@ -2,6 +2,8 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 
+import twitter4j.TwitterException;
+
 public class TwitterUser extends User {
 
 	Location location;
