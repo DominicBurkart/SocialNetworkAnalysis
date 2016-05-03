@@ -2,15 +2,25 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Scanner;
 
 import twitter4j.TwitterException;
 
+/** For Electoral Network Analysis Project
+ * 
+ * @author dominicburkart
+ */
 public class PoliticalDataCollection {
 	static Sample s;
 
 	public static void main(String[] args) throws BadIDException, BadUserException, TwitterException {
 		s = new Sample();
 		s.name = "PoliticalDataCollection";
+		Scanner in = new Scanner(System.in);
+		System.out.println("Number of followers to collect from each user: ");
+		int num = in.nextInt();
+		System.out.println(num + " followers will be collected from each user.");
+		in.close();
 
 		try {
 			System.out.println("Collecting candidates.\n");
@@ -28,16 +38,22 @@ public class PoliticalDataCollection {
 
 			for (User big : bigs) {
 				System.out.println("\nGetting followers for " + big.username);
-				ArrayList<User> fols = big.getSomeFollowers();
+				ArrayList<User> fols = big.getxFollowers(num);
 				firstFollows.addAll(fols);
-				System.out.println(big.username + " followers:");
+				System.out.println("\n"+big.username + " followers:");
 				for (User fol : fols) {
+					fol.tensors.add(new Follow(fol, big));
 					System.out.println(fol);
 				}
 			}
-			for (User smol : firstFollows) {
+			for (User smol : firstFollows) { //people who follow main candidates
 				System.out.println("Getting followers for " + smol.username);
-				smol.getSomeFollowers();
+				ArrayList<User> smollests = smol.getxFollowers(num);
+				System.out.println("\n"+smol.username + " followers:");
+				for (User smollest : smollests){ //people who follow people who follow main candidates
+					smollest.tensors.follows.add(new Follow(smollest, smol));
+					System.out.println(smollest);
+				}
 			}
 			System.out.println("Saving output");
 			s.usersToCSV();
@@ -47,10 +63,7 @@ public class PoliticalDataCollection {
 			if (!e.type.equals("TwitterException")) {
 				System.err.println("APIException incorrectly typed.");
 			}
-			TwitterException t = (TwitterException) e.thrower; // since this is
-																// just twitter
-																// data we can
-																// do this cast.
+			TwitterException t = (TwitterException) e.thrower;
 			System.err.println("exception: twitter error #" + t.getErrorCode() + ": " + t.getErrorMessage()
 					+ "\n Saving and quitting.");
 			s.usersToCSV();

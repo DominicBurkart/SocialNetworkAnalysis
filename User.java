@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+/** Allows for the manipulation of User objects collected from any supported site.
+ * 
+ * @author dominicburkart
+ */
 public abstract class User {
 	static Sample sample;
 
-	Tensors tensors;
+	Tensors tensors = new Tensors();
 
 	public class Tensors {
-		;
 		ArrayList<Like> likes = new ArrayList<Like>();
 		ArrayList<Repost> reposts = new ArrayList<Repost>();
 		ArrayList<Comment> comments = new ArrayList<Comment>();
@@ -60,6 +63,8 @@ public abstract class User {
 	public abstract ArrayList<User> getFollowers() throws APIException;
 
 	public abstract ArrayList<User> getSomeFollowers() throws APIException;
+	
+	public abstract ArrayList<User> getxFollowers(int x) throws APIException;
 
 	public abstract ArrayList<Post> getPosts() throws APIException;
 

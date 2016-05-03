@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+/** A given sample in which each session of collected data is stored and manipulated.
+ * 
+ * @author dominicburkart
+ */
 public class Sample {
 	String name = "";
 	Hashtable<String, User> users = new Hashtable<String, User>();

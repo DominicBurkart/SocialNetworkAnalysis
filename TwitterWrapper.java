@@ -55,16 +55,33 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.util.function.Consumer;
 
+/** Attempts to keep track of requests to specific resources.
+ * 
+ * @author dominicburkart
+ */
 @SuppressWarnings("serial")
 public class TwitterWrapper implements Twitter {
 	int getUserTimeline = 0;
 	int showUser = 0;
 	int getRetweeterIDs = 0;
+	int getFollowersIDs = 0;
 	Twitter t;
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 
 	public TwitterWrapper(Twitter t) {
 		this.t = t;
+	}
+	
+	public int[] makeCopy(){
+		int[] vals = {getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs};
+		return vals;
+	}
+	
+	public void loadCopy(int[] vals){
+		getUserTimeline = vals[0];
+		showUser = vals[1];
+		getRetweeterIDs = vals[2];
+		getFollowersIDs = vals[3];
 	}
 
 	public void addRatelimitChild(Ratelimit_Reached_Listener b) {
@@ -266,7 +283,7 @@ public class TwitterWrapper implements Twitter {
 			limit.reached();
 			getUserTimeline = 0;
 		}
-		getUserTimeline += 1;
+		getUserTimeline++;
 		return t.getUserTimeline();
 	}
 
@@ -276,7 +293,7 @@ public class TwitterWrapper implements Twitter {
 			limit.reached();
 			getUserTimeline = 0;
 		}
-		getUserTimeline += 1;
+		getUserTimeline++;
 		return t.getUserTimeline();
 	}
 
@@ -286,7 +303,7 @@ public class TwitterWrapper implements Twitter {
 			limit.reached();
 			getUserTimeline = 0;
 		}
-		getUserTimeline += 1;
+		getUserTimeline++;
 		return t.getUserTimeline();
 	}
 
@@ -296,7 +313,7 @@ public class TwitterWrapper implements Twitter {
 			limit.reached();
 			getUserTimeline = 0;
 		}
-		getUserTimeline += 1;
+		getUserTimeline++;
 		return t.getUserTimeline();
 	}
 
@@ -306,7 +323,7 @@ public class TwitterWrapper implements Twitter {
 			limit.reached();
 			getUserTimeline = 0;
 		}
-		getUserTimeline += 1;
+		getUserTimeline++;
 		return t.getUserTimeline();
 	}
 
@@ -316,7 +333,7 @@ public class TwitterWrapper implements Twitter {
 			limit.reached();
 			getUserTimeline = 0;
 		}
-		getUserTimeline += 1;
+		getUserTimeline++;
 		return t.getUserTimeline();
 	}
 
@@ -524,37 +541,52 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getFollowersIDs(long arg0) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (getFollowersIDs == 15) {
+			limit.reached();
+			getFollowersIDs = 0;
+		}
+		getFollowersIDs++;
+		return t.getFollowersIDs(arg0);
 	}
 
 	@Override
 	public IDs getFollowersIDs(long arg0, long arg1) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (getFollowersIDs == 15) {
+			limit.reached();
+			getFollowersIDs = 0;
+		}
+		getFollowersIDs++;
+		return t.getFollowersIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFollowersIDs(String arg0, long arg1) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (getFollowersIDs == 15) {
+			limit.reached();
+			getFollowersIDs = 0;
+		}
+		getFollowersIDs++;
+		return t.getFollowersIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFollowersIDs(long arg0, long arg1, int arg2) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (getFollowersIDs == 15) {
+			limit.reached();
+			getFollowersIDs = 0;
+		}
+		getFollowersIDs++;
+		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
 
 	@Override
 	public IDs getFollowersIDs(String arg0, long arg1, int arg2) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (getFollowersIDs == 15) {
+			limit.reached();
+			getFollowersIDs = 0;
+		}
+		getFollowersIDs++;
+		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
 
 	@Override

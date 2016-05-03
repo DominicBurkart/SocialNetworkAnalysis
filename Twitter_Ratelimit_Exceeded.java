@@ -12,18 +12,26 @@ public class Twitter_Ratelimit_Exceeded implements RateLimitStatusListener {
 	@Override
 	public void onRateLimitStatus(RateLimitStatusEvent arg0) {
 		if (arg0.getRateLimitStatus().getRemaining() <= 0) {
-			int sleeptime = arg0.getRateLimitStatus().getResetTimeInSeconds();
-			System.out.println("Ratelimit surpassed. Sleeping for " + sleeptime / 60 + " minutes.");
+			int sleeptime = 15 * 60; 
+			System.out.println("\nRatelimit surpassed. Sleeping for " + sleeptime / 60 + " minutes.");
 			while (sleeptime > 0) {
 				try {
-					if (sleeptime % 60 == 0)
-						System.out.println(sleeptime / 60 + " minutes remaining.");
-					Thread.sleep(1000 * sleeptime--);
+					if (sleeptime % 60 == 0){ //just so we can minimize unnecessary computations
+						System.out.println(sleeptime / 60 + " minutes of sleep remaining.");
+						Thread.sleep(1000 * 60);
+						sleeptime -= 60;
+					}
+					else{ //in case we fall out of our regular sleeping pattern or start at a weird time
+						Thread.sleep(1000);
+						sleeptime--;
+					}
 				} catch (InterruptedException e) {
-					System.err.println("Error while attempting to sleep.");
+					System.err.println("Error while attempting to sleep in Twitter_Ratelimit_Exceeded.");
 					System.exit(0);
 				}
 			}
+			System.out.println("Awake! Resuming queries.\n");
+			TwitterAuth.backNext();
 		}
 	}
 }
