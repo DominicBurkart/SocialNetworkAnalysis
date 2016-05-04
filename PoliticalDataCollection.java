@@ -17,9 +17,11 @@ public class PoliticalDataCollection {
 		s = new Sample();
 		s.name = "PoliticalDataCollection";
 		Scanner in = new Scanner(System.in);
-		System.out.println("Number of followers to collect from each user: ");
-		int num = in.nextInt();
-		System.out.println(num + " followers will be collected from each user.");
+		System.out.println("Number of followers to collect from each candidate: ");
+		int firstnum = in.nextInt();
+		System.out.println("Number of followers to collect from each non-candidate user: ");
+		int secondnum = in.nextInt();
+		System.out.println(firstnum + " followers will be collected from each user.");
 		in.close();
 
 		try {
@@ -38,7 +40,7 @@ public class PoliticalDataCollection {
 
 			for (User big : bigs) {
 				System.out.println("\nGetting followers for " + big.username);
-				ArrayList<User> fols = big.getxFollowers(num);
+				ArrayList<User> fols = big.getxFollowers(firstnum);
 				firstFollows.addAll(fols);
 				System.out.println("\n"+big.username + " followers:");
 				for (User fol : fols) {
@@ -48,7 +50,7 @@ public class PoliticalDataCollection {
 			}
 			for (User smol : firstFollows) { //people who follow main candidates
 				System.out.println("Getting followers for " + smol.username);
-				ArrayList<User> smollests = smol.getxFollowers(num);
+				ArrayList<User> smollests = smol.getxFollowers(secondnum);
 				System.out.println("\n"+smol.username + " followers:");
 				for (User smollest : smollests){ //people who follow people who follow main candidates
 					smollest.tensors.follows.add(new Follow(smollest, smol));

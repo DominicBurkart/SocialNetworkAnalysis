@@ -131,14 +131,7 @@ public class TwitterRequestHandler {
 			twitter4j.User tUser = getTwitter().showUser(id);
 			t.description = tUser.getDescription();
 			t.username = tUser.getScreenName();
-			System.out.println("TwitterWrapper values (printed from TwitterRequest): ");
-			for (int[] s : TwitterWrapper.sources){
-				for (int v : s){
-					System.out.print(v+" ");
-				}
-				System.out.println();
-			}
-			
+			System.out.println("getUser output:");
 			return t;
 		} catch (RedundantEntryException e) {
 			return (TwitterUser) e.user;

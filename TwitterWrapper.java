@@ -64,7 +64,7 @@ import twitter4j.util.function.Consumer;
 @SuppressWarnings("serial")
 public class TwitterWrapper implements Twitter {
 	static LinkedList<int[]> sources = new LinkedList<int[]>();
-	static Date[] timelimited = {new Date()};
+	static Date[] timelimited = TwitterAuth.lastLimited;
 	int source;
 	Twitter t;
 	int[] limits;
@@ -79,19 +79,6 @@ public class TwitterWrapper implements Twitter {
 		this.t = t;
 		while (source >= sources.size()){
 			sources.add(new int[3]);
-		}
-		if (source >= timelimited.length){
-			Date[] temp = new Date[source];
-			for (int i = 0; i < source; i++){
-				if (timelimited.length < i){
-					temp[i] = timelimited[i];
-				}
-				else{
-					Date d = new Date();
-					temp[i] = d;
-				}
-			}
-			timelimited = temp;
 		}
 		limits = sources.get(source);
 	}
