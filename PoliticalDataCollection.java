@@ -15,7 +15,7 @@ public class PoliticalDataCollection {
 	static Sample s;
 
 	public static void main(String[] args) throws BadIDException, BadUserException, TwitterException {
-		s = new Sample();
+		s = new TwitterSample();
 		s.name = "PoliticalDataCollection";
 		Scanner in = new Scanner(System.in);
 		System.out.println("Number of followers to collect from each candidate: ");

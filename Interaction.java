@@ -28,7 +28,8 @@ public class Interaction extends Attributional {
 		Attribute[] ats = getAttributes();
 		String s = "";
 		for (Attribute at: ats){
-			s = s + '\t' + at.v;
+			if (s.equals("")) s = at.v.toString();
+			else s = s + '\t' + at.v;
 		}
 		return s;
 	}

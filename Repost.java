@@ -10,6 +10,15 @@ public class Repost extends Interaction {
 		this.target = target;
 	}
 
-	public Repost() {
+	public Repost() {}
+
+	public Repost(String stringified) {
+		super(stringified); //takes care of source and target
+		String[] split = stringified.split("\t");
+		post = sample.allPosts.get(split[split.length-1]);
+	}
+	
+	public String toString(){
+		return (super.toString() + '\t' + post.id);
 	}
 }

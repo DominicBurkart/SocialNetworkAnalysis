@@ -9,7 +9,7 @@ import java.util.Iterator;
  * 
  * @author dominicburkart
  */
-public abstract class User extends Attributional{
+public abstract class User{
 	static Sample sample;
 	
 	Tensors tensors = new Tensors();

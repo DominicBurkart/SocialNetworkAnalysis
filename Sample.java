@@ -6,16 +6,14 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Scanner;
 
 /**
  * A given sample in which each session of collected data is stored and manipulated.
  * 
  * @author dominicburkart
  */
-public class Sample {
+public abstract class Sample {
 	String name = "";
 	Hashtable<String, User> users = new Hashtable<String, User>();
 	ArrayList<Follow> allFollows = new ArrayList<Follow>();
@@ -39,7 +37,7 @@ public class Sample {
 	
 	public void toCSV(String outDir) {
 		this.outDir = outDir;
-		interactionsToCSV();
+		interactionsToCSV(); //saving order is arbitrary
 		usersToCSV();
 		followsToCSV();
 		postsToCSV();
@@ -54,33 +52,11 @@ public class Sample {
 		w.close();
 	}
 
-	public void usersToCSV() {
-		PrintWriter w = fileHandler(name + "_users.csv");
-		w.println("~users~");
-		Enumeration<String> keys = users.keys();
-		while (keys.hasMoreElements()) {
-			w.println(users.get(keys.nextElement()));
-		}
-		w.close();
-	}
+	abstract void usersToCSV();
 
-	public void followsToCSV() {
-		PrintWriter w = fileHandler(name + "_follows.csv");
-		w.println("~follows~");
-		for (Follow follow : allFollows){
-			w.println(follow);
-		}
-		w.close();
-	}
+	abstract void followsToCSV();
 
-	public void postsToCSV() {
-		PrintWriter w = fileHandler(name + "_posts.csv");
-		w.println("~posts~");
-		for (Post post : allPosts){
-			w.println(post);
-		}
-		w.close();
-	}
+	abstract void postsToCSV();
 	
 	public void loadFromCSV(){
 		String dir = System.getProperty("user.dir");
@@ -88,68 +64,50 @@ public class Sample {
 		loadFromCSV(dir);
 	}
 	
-	public void loadFromCSV(String dir){
-		File p = new File(Paths.get(dir).toString()); //in case the input path isn't absolute
-		File[] directory = p.listFiles();
-		if (directory.length == 0){
-			System.err.println("Empty path passed to loadFromCSV: "+ dir);
-			System.err.println("Qutting.");
-			System.exit(0);
-		}
-		for (File file : directory){
-			if (file.getName().endsWith(".csv")){
-				System.out.println("found file: "+file.getName());
-				try {
-					Scanner s = new Scanner(file);
-					if (s.hasNextLine()){
-						switch (s.nextLine()){
-						case "~follows~": importFols(s); break;
-						case "~posts~": importPosts(s); break;
-						case "~users~": importUsers(s); break;
-						case "~interactions~": importInteractions(s); break; //must be called after importFols(s);
-						default: System.out.println("File "+file.getName()+" was not incuded.");
-						}
-						System.out.println("Finished with file "+file.getName());
-					}
-					else{
-						System.out.println("File "+file.getName()+" has no content and was not included.");
-					}
-					s.close();
-				} catch (FileNotFoundException e) {
-					System.err.println("File deleted or renamed during operation– "+file.getName());
-					System.err.println("File " + file.getName() + " can not be read. Quitting program.");
-					System.exit(0);
-				}
+	protected class Fwrap implements Comparable<Fwrap>{
+		String n;
+		File f;
+		int ordering;
+		
+		public Fwrap(File f){
+			if (f.getName().endsWith(".csv")){
+				this.f = f;
+				this.n = f.getName();
+				defOrd();
+			}
+			else{
+				System.out.println("Discluding file "+f.getName());
 			}
 		}
-	}
-	
-	private void importFols(Scanner s){
 		
-	}
-	
-	private void importPosts(Scanner s){
-		
-	}
-	
-	private void importUsers(Scanner s){
-		
-	}
-	
-	private void importInteractions(Scanner s){
-		while (s.hasNextLine()){
-			String cur = s.nextLine();
-			String[] split = cur.split("\t");
-			switch (split[3]){
-			case "follow": new Follow(cur); break;
-			case "like": new Like(cur); break;
-			case "repost": new Repost(cur); break;
-			case "comment": new Comment(cur); break;
+		private void defOrd(){
+			if (n.endsWith("_users.csv")){
+				ordering = 1;
+			}
+			else if (n.endsWith("_posts.csv")){ //dependent on loading users
+				ordering = 2;
+			}
+			else if (n.endsWith("_follows.csv")){ // dep on users
+				ordering = 3;
+			}
+			else if (n.endsWith("_interactions.csv")){ //dep on posts, follows
+				ordering = 4;
+			}
+			else{
+				ordering = 5; //all other files will ordered as 5.
+				System.out.println("Discluding file "+n);
 			}
 		}
-	}
 
-	private PrintWriter fileHandler(String fname) {
+		@Override
+		public int compareTo(Fwrap o) {
+			return this.ordering - o.ordering;
+		}
+	}
+	
+	abstract void loadFromCSV(String dir);
+
+	protected PrintWriter fileHandler(String fname) {
 		checkTestOut();
 		File f;
 		if (outDir != null || outDir != "") {
@@ -169,7 +127,7 @@ public class Sample {
 		}
 	}
 
-	private void checkTestOut() {
+	protected void checkTestOut() {
 		if (outDir == null) {
 			outDir = "";
 			System.out.println("Saving files in the project folder.");

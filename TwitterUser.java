@@ -72,26 +72,24 @@ public class TwitterUser extends User {
 			throw new APIException(e);
 		}
 	}
-
-	@Override
-	Attribute[] getAttributes() {
-		String[] s = {"id", "username", "location", "depth"};
-		Object[] o = {id, username, location, firstDepth};
-		return Attribute.batchMaker(s, o);
-	}
 	
 	public String toString(){
-		String s = "";
-		for (Attribute a: getAttributes()){
-			if (a.v != null){
-				if (s == null) s = a.v.toString();
-				else s = s + '\t' + a.v.toString();
-			}
-			else{
-				if (s == null) s = "\t";
-				else s = s + '\t';
-			}
+		if (location != null){
+			return super.toString() + "\t"+ location.toString();
 		}
-		return s;
+		else{
+			return super.toString() + "\t"+ "null";
+		}
+	}
+	
+	/**
+	 * JUST FOR REMEMBERING A USER WE SAVED
+	 * TO CSV USING THE toString() METHOD.
+	 * @return 
+	 */
+	public TwitterUser(String stringified){
+		super(stringified);
+		String[] parts = stringified.split("\t");
+		location = new Location(parts[parts.length - 1]);
 	}
 }

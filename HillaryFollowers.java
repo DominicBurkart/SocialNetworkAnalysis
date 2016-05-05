@@ -11,7 +11,7 @@ public class HillaryFollowers {
 	static Sample s;
 
 	public static void main(String[] args) throws BadIDException, BadUserException, TwitterException {
-		s = new Sample();
+		s = new TwitterSample();
 		s.name = "HillaryFollowers";
 
 		try {
