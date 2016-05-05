@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import twitter4j.TwitterException;
 
-/** Gives us the abstract framework of a User plus specialized functions for twitter stuff!
+/**
+ * Gives us the abstract framework of a User plus specialized functions for twitter stuff!
  * 
  * @author dominicburkart
  */
@@ -70,5 +71,27 @@ public class TwitterUser extends User {
 		} catch (TwitterException e) {
 			throw new APIException(e);
 		}
+	}
+
+	@Override
+	Attribute[] getAttributes() {
+		String[] s = {"id", "username", "location", "depth"};
+		Object[] o = {id, username, location, firstDepth};
+		return Attribute.batchMaker(s, o);
+	}
+	
+	public String toString(){
+		String s = "";
+		for (Attribute a: getAttributes()){
+			if (a.v != null){
+				if (s == null) s = a.v.toString();
+				else s = s + '\t' + a.v.toString();
+			}
+			else{
+				if (s == null) s = "\t";
+				else s = s + '\t';
+			}
+		}
+		return s;
 	}
 }

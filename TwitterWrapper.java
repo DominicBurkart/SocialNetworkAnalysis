@@ -57,7 +57,8 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.Configuration;
 import twitter4j.util.function.Consumer;
 
-/** Attempts to keep track of requests to specific resources.
+/**
+ * Keeps track of requests to Twitter API resource families.
  * 
  * @author dominicburkart
  */

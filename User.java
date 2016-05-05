@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-/** Allows for the manipulation of User objects collected from any supported site.
+/**
+ * Allows for the manipulation of User objects collected from any supported site.
  * 
  * @author dominicburkart
  */
@@ -111,7 +112,7 @@ public abstract class User extends Attributional{
 
 	@Override
 	public String toString() {
-		return (username + "\t" + id + "\t" + description + "\t" + firstDepth);
+		return (username.toString() + "\t" + id.toString() + "\t" + description.toString() + "\t" + firstDepth);
 	}
 	
 	public User(){}
@@ -123,11 +124,10 @@ public abstract class User extends Attributional{
 		String s = stringified;
 		int tab1 = s.indexOf('\t');
 		username = s.substring(0, tab1);
-		int tab2 = s.indexOf('\t', tab1);
+		int tab2 = s.indexOf('\t', tab1+1);
 		id = s.substring(tab1+1, tab2);
-		tab1 = s.indexOf('\t', tab2);
+		tab1 = s.indexOf('\t', tab2+1);
 		description = s.substring(tab2+1, tab1);
-		tab2 = s.indexOf('\t', tab1);
-		firstDepth = Integer.parseInt(s.substring(tab1+2, tab2));
+		firstDepth = Integer.parseInt(s.substring(tab1+1));
 	}
 }

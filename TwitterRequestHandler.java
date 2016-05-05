@@ -10,7 +10,8 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-/** Is called to mediate requests between the program built on this package and the TwitterAuth object beneath it.
+/**
+ * Is called to mediate requests between the program built on this package and the TwitterAuth object beneath it.
  * 
  * @author dominicburkart
  */

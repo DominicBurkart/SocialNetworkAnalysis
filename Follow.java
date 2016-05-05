@@ -1,7 +1,8 @@
 package SocialNetworkAnalysis;
 
 
-/** An object that denotes that
+/**
+ * An object that denotes that
  * the source user is following 
  * the target user. Extends 
  * "Interaction," the abstract 
@@ -18,4 +19,14 @@ public class Follow extends Interaction {
 		type = "follow";
 		sample.allFollows.add(this);
 	}
+	
+	/**
+	 * ONLY FOR USE WITH OUTPUT FROM
+	 * INTERACTION'S toString().
+	 */
+	public Follow(String stringified){
+		super(stringified);
+		sample.allFollows.add(this);
+	}
+	
 }

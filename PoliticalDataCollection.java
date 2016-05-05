@@ -6,7 +6,8 @@ import java.util.Scanner;
 
 import twitter4j.TwitterException;
 
-/** For Electoral Network Analysis Project
+/**
+ * For Electoral Network Analysis Project
  * 
  * @author dominicburkart
  */

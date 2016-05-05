@@ -10,7 +10,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Scanner;
 
-/** A given sample in which each session of collected data is stored and manipulated.
+/**
+ * A given sample in which each session of collected data is stored and manipulated.
  * 
  * @author dominicburkart
  */
@@ -18,7 +19,7 @@ public class Sample {
 	String name = "";
 	Hashtable<String, User> users = new Hashtable<String, User>();
 	ArrayList<Follow> allFollows = new ArrayList<Follow>();
-	ArrayList<Post> allPosts = new ArrayList<Post>();
+	Hashtable<String, Post> allPosts = new Hashtable<String, Post>();
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>(); // includes
 																			// allFollows
 	String outDir;
@@ -29,25 +30,26 @@ public class Sample {
 		Post.sample = this;
 	}
 
+	public void toCSV(){
+		interactionsToCSV();
+		usersToCSV();
+		followsToCSV();
+		postsToCSV();
+	}
+	
 	public void toCSV(String outDir) {
 		this.outDir = outDir;
 		interactionsToCSV();
 		usersToCSV();
 		followsToCSV();
-		// postsToCSV();
+		postsToCSV();
 	}
 
 	public void interactionsToCSV() {
 		PrintWriter w = fileHandler(name + "_interactions.csv");
 		w.println("~interactions~");
-		Interaction inter;
 		for (int i = 0; i < allInteractions.size(); i++) {
-			inter = allInteractions.get(i);
-			w.print(inter.source.id);
-			w.print(",");
-			w.print(inter.target.id);
-			w.print(",");
-			w.println(inter.type);
+			w.println(allInteractions.get(i));
 		}
 		w.close();
 	}
@@ -55,17 +57,9 @@ public class Sample {
 	public void usersToCSV() {
 		PrintWriter w = fileHandler(name + "_users.csv");
 		w.println("~users~");
-		User u;
 		Enumeration<String> keys = users.keys();
 		while (keys.hasMoreElements()) {
-			u = users.get(keys.nextElement());
-			w.print(u.id);
-			w.print(",");
-			w.print(u.username);
-			w.print(",");
-			w.println("\"" + u.description + "\"");
-			w.print(",");
-			w.println(u.firstDepth);
+			w.println(users.get(keys.nextElement()));
 		}
 		w.close();
 	}
@@ -73,18 +67,8 @@ public class Sample {
 	public void followsToCSV() {
 		PrintWriter w = fileHandler(name + "_follows.csv");
 		w.println("~follows~");
-		Follow fol;
-		for (int i = 0; i < allFollows.size(); i++) {
-			fol = allFollows.get(i);
-			w.print(fol.source.id);
-			w.print(",");
-			w.print(fol.target.id);
-			w.print(",");
-			w.print(fol.source.username);
-			w.print(",");
-			w.print(fol.target.username);
-			w.print(",");
-			w.println(fol.type);
+		for (Follow follow : allFollows){
+			w.println(follow);
 		}
 		w.close();
 	}
@@ -92,49 +76,8 @@ public class Sample {
 	public void postsToCSV() {
 		PrintWriter w = fileHandler(name + "_posts.csv");
 		w.println("~posts~");
-		User u;
-		Enumeration<String> ids = users.keys();
-		while (ids.hasMoreElements()) {
-			String id = ids.nextElement();
-			u = users.get(id);
-			ArrayList<Post> posts = u.posts;
-			for (int i = 0; i < posts.size(); i++) {
-				Post p = posts.get(i);
-				w.print(p.id);
-				w.print(",");
-				w.print(p.author.id);
-				w.print(",");
-				w.print(p.time.toString());
-				w.print(",");
-				if (p.original) {
-					w.print("original");
-					w.print(",");
-					w.print(",");
-					w.print(",");
-					w.print(",");
-					w.print(",");
-					w.print(",");
-				} else {
-					w.print("repost");
-					w.print(",");
-					w.print(p.repostedFrom.id);
-					w.print(",");
-					w.print(p.repostedFrom.username);
-					w.print(",");
-					w.print(p.originalAuthor.id);
-					w.print(",");
-					w.print(p.originalAuthor.username);
-					w.print(",");
-					w.print(p.comment);
-					w.print(",");
-				}
-				w.print(p.notes);
-				w.print(",");
-				w.print("\"" + p.message + "\"");
-				w.print(",");
-				w.println(p.tags.toString()); // should this formatting be
-												// updated?
-			}
+		for (Post post : allPosts){
+			w.println(post);
 		}
 		w.close();
 	}
@@ -194,7 +137,16 @@ public class Sample {
 	}
 	
 	private void importInteractions(Scanner s){
-		
+		while (s.hasNextLine()){
+			String cur = s.nextLine();
+			String[] split = cur.split("\t");
+			switch (split[3]){
+			case "follow": new Follow(cur); break;
+			case "like": new Like(cur); break;
+			case "repost": new Repost(cur); break;
+			case "comment": new Comment(cur); break;
+			}
+		}
 	}
 
 	private PrintWriter fileHandler(String fname) {
@@ -236,5 +188,4 @@ public class Sample {
 			}
 		}
 	}
-
 }
