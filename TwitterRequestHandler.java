@@ -63,7 +63,9 @@ public class TwitterRequestHandler {
 		return out;
 	}
 	
-	/** Returns at most x followers for each call. Less could be called if the user doesn't follow
+	/**
+	 * 
+	 * Returns at most x followers for each call. Less could be called if the user doesn't follow
 	 * a lot of people.
 	 * 
 	 * @param u

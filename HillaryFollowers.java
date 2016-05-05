@@ -19,7 +19,7 @@ public class HillaryFollowers {
 			System.out.println(hillary);
 			hillary.getxFollowers(50000);
 			System.out.println("Saving output");
-			s.usersToCSV();
+			s.toCSV();
 			System.out.println("Program complete.");
 		} catch (RedundantEntryException e) {
 		} catch (APIException e) {
