@@ -1,5 +1,6 @@
 package SocialNetworkAnalysis;
 
+
 /** An object that denotes that
  * the source user is following 
  * the target user. Extends 

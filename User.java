@@ -8,9 +8,9 @@ import java.util.Iterator;
  * 
  * @author dominicburkart
  */
-public abstract class User {
+public abstract class User extends Attributional{
 	static Sample sample;
-
+	
 	Tensors tensors = new Tensors();
 
 	public class Tensors {
@@ -111,6 +111,23 @@ public abstract class User {
 
 	@Override
 	public String toString() {
-		return (username + "  id:" + id + "  description: " + description + "  depth: " + firstDepth);
+		return (username + "\t" + id + "\t" + description + "\t" + firstDepth);
+	}
+	
+	public User(){}
+	
+	/**	EXCLUSIVELY FOR MAKING A USER OBJECT FROM A 
+	 *  STRING MADE BY THE toString() METHOD.
+	 */
+	public User(String stringified){
+		String s = stringified;
+		int tab1 = s.indexOf('\t');
+		username = s.substring(0, tab1);
+		int tab2 = s.indexOf('\t', tab1);
+		id = s.substring(tab1+1, tab2);
+		tab1 = s.indexOf('\t', tab2);
+		description = s.substring(tab2+1, tab1);
+		tab2 = s.indexOf('\t', tab1);
+		firstDepth = Integer.parseInt(s.substring(tab1+2, tab2));
 	}
 }

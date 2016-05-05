@@ -2,6 +2,7 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 
+//TODO: more fully implement this.
 public abstract class Comment extends Interaction {
 	Post post;
 	String comment;

@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Scanner;
 
 /** A given sample in which each session of collected data is stored and manipulated.
  * 
@@ -38,6 +39,7 @@ public class Sample {
 
 	public void interactionsToCSV() {
 		PrintWriter w = fileHandler(name + "_interactions.csv");
+		w.println("~interactions~");
 		Interaction inter;
 		for (int i = 0; i < allInteractions.size(); i++) {
 			inter = allInteractions.get(i);
@@ -52,6 +54,7 @@ public class Sample {
 
 	public void usersToCSV() {
 		PrintWriter w = fileHandler(name + "_users.csv");
+		w.println("~users~");
 		User u;
 		Enumeration<String> keys = users.keys();
 		while (keys.hasMoreElements()) {
@@ -61,12 +64,15 @@ public class Sample {
 			w.print(u.username);
 			w.print(",");
 			w.println("\"" + u.description + "\"");
+			w.print(",");
+			w.println(u.firstDepth);
 		}
 		w.close();
 	}
 
 	public void followsToCSV() {
 		PrintWriter w = fileHandler(name + "_follows.csv");
+		w.println("~follows~");
 		Follow fol;
 		for (int i = 0; i < allFollows.size(); i++) {
 			fol = allFollows.get(i);
@@ -85,6 +91,7 @@ public class Sample {
 
 	public void postsToCSV() {
 		PrintWriter w = fileHandler(name + "_posts.csv");
+		w.println("~posts~");
 		User u;
 		Enumeration<String> ids = users.keys();
 		while (ids.hasMoreElements()) {
@@ -130,6 +137,64 @@ public class Sample {
 			}
 		}
 		w.close();
+	}
+	
+	public void loadFromCSV(){
+		String dir = System.getProperty("user.dir");
+		System.out.println("load from csv()'s dir: "+dir);
+		loadFromCSV(dir);
+	}
+	
+	public void loadFromCSV(String dir){
+		File p = new File(Paths.get(dir).toString()); //in case the input path isn't absolute
+		File[] directory = p.listFiles();
+		if (directory.length == 0){
+			System.err.println("Empty path passed to loadFromCSV: "+ dir);
+			System.err.println("Qutting.");
+			System.exit(0);
+		}
+		for (File file : directory){
+			if (file.getName().endsWith(".csv")){
+				System.out.println("found file: "+file.getName());
+				try {
+					Scanner s = new Scanner(file);
+					if (s.hasNextLine()){
+						switch (s.nextLine()){
+						case "~follows~": importFols(s); break;
+						case "~posts~": importPosts(s); break;
+						case "~users~": importUsers(s); break;
+						case "~interactions~": importInteractions(s); break; //must be called after importFols(s);
+						default: System.out.println("File "+file.getName()+" was not incuded.");
+						}
+						System.out.println("Finished with file "+file.getName());
+					}
+					else{
+						System.out.println("File "+file.getName()+" has no content and was not included.");
+					}
+					s.close();
+				} catch (FileNotFoundException e) {
+					System.err.println("File deleted or renamed during operation– "+file.getName());
+					System.err.println("File " + file.getName() + " can not be read. Quitting program.");
+					System.exit(0);
+				}
+			}
+		}
+	}
+	
+	private void importFols(Scanner s){
+		
+	}
+	
+	private void importPosts(Scanner s){
+		
+	}
+	
+	private void importUsers(Scanner s){
+		
+	}
+	
+	private void importInteractions(Scanner s){
+		
 	}
 
 	private PrintWriter fileHandler(String fname) {
