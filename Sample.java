@@ -70,7 +70,7 @@ public abstract class Sample {
 		int ordering;
 		
 		public Fwrap(File f){
-			if (f.getName().endsWith(".csv")){
+			if (f.getName().endsWith(".tsv")){
 				this.f = f;
 				this.n = f.getName();
 				defOrd();
@@ -81,16 +81,16 @@ public abstract class Sample {
 		}
 		
 		private void defOrd(){
-			if (n.endsWith("_users.csv")){
+			if (n.endsWith("_users.tsv")){
 				ordering = 1;
 			}
-			else if (n.endsWith("_posts.csv")){ //dependent on loading users
+			else if (n.endsWith("_posts.tsv")){ //dependent on loading users
 				ordering = 2;
 			}
-			else if (n.endsWith("_follows.csv")){ // dep on users
+			else if (n.endsWith("_follows.tsv")){ // dep on users
 				ordering = 3;
 			}
-			else if (n.endsWith("_interactions.csv")){ //dep on posts, follows
+			else if (n.endsWith("_interactions.tsv")){ //dep on posts, follows
 				ordering = 4;
 			}
 			else{

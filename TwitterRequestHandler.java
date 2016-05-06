@@ -81,16 +81,15 @@ public class TwitterRequestHandler {
 			long[] ids = IDvals.getIDs();
 			if (ids.length < num){ //either the user doesn't follow many people or we didn't get enough from twitter
 				if (IDvals.getNextCursor() != 0 ){ //if we can get more from twitter, do
-					LinkedList<IDs> pages = new LinkedList<IDs>();
-					long next = -1;
-					while (next != 0 && ids.length < num){
-						pages.add(IDvals);
-						IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), next);
+					LinkedList<long[]> pages = new LinkedList<long[]>();
+					pages.add(ids);
+					while (IDvals.getNextCursor() != 0 && ids.length < num){
+						IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), IDvals.getNextCursor());
 						ids = IDvals.getIDs();
-						next = IDvals.getNextCursor();
+						pages.add(ids);
 					}
-					for (IDs page : pages){ // go through and add more users until we're done
-						for(long id : page.getIDs()){
+					for (long[] page : pages){ // go through and add more users until we're done
+						for(long id : page){
 							if (out.size() < num){
 								TwitterUser t = getUser(id, u.firstDepth + 1);
 								out.add(t);
