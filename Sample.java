@@ -44,7 +44,7 @@ public abstract class Sample {
 	}
 
 	public void interactionsToTSV() {
-		PrintWriter w = fileHandler(name + "_interactions.csv");
+		PrintWriter w = fileHandler(name + "_interactions.tsv");
 		w.println("~interactions~");
 		for (int i = 0; i < allInteractions.size(); i++) {
 			w.println(allInteractions.get(i));

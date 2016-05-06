@@ -34,8 +34,15 @@ public class TwitterRequestHandler {
 			}
 			for (long[] p : pages) {
 				for (long l : p) {
-					TwitterUser t = getUser(l, u.firstDepth + 1);
-					out.add(t);
+					try{
+						TwitterUser t = getUser(l, u.firstDepth + 1);
+						out.add(t);
+					} catch(TwitterException e){
+						if (e.getErrorCode() == 50){
+							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
+						}
+						else throw e;
+					}
 				}
 			}
 		} catch (NumberFormatException e) {
@@ -51,8 +58,15 @@ public class TwitterRequestHandler {
 		try {
 			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
 			for (long l : IDvals.getIDs()) {
-				TwitterUser t = getUser(l, u.firstDepth + 1);
-				out.add(t);
+				try{
+					TwitterUser t = getUser(l, u.firstDepth + 1);
+					out.add(t);
+				} catch(TwitterException e){
+					if (e.getErrorCode() == 50){
+						System.err.println("User could not be found:"+l+"\ncontinuing collection.");
+					}
+					else throw e;
+				}
 			}
 		} catch (BadUserException e) {
 			System.err.println("Unusual error with twitter user: " + u.id);
@@ -61,6 +75,14 @@ public class TwitterRequestHandler {
 			//otherwise this is just a protected user.
 		}
 		return out;
+	}
+	
+	private static int Collected(LinkedList<long[]> l){
+		int total = 0;
+		for (long[] p : l){
+			total += p.length;
+		}
+		return total;
 	}
 	
 	/**
@@ -83,7 +105,7 @@ public class TwitterRequestHandler {
 				if (IDvals.getNextCursor() != 0 ){ //if we can get more from twitter, do
 					LinkedList<long[]> pages = new LinkedList<long[]>();
 					pages.add(ids);
-					while (IDvals.getNextCursor() != 0 && ids.length < num){
+					while (IDvals.getNextCursor() != 0 && Collected(pages) < num){
 						IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), IDvals.getNextCursor());
 						ids = IDvals.getIDs();
 						pages.add(ids);
@@ -91,8 +113,15 @@ public class TwitterRequestHandler {
 					for (long[] page : pages){ // go through and add more users until we're done
 						for(long id : page){
 							if (out.size() < num){
-								TwitterUser t = getUser(id, u.firstDepth + 1);
-								out.add(t);
+								try{
+									TwitterUser t = getUser(id, u.firstDepth + 1);
+									out.add(t);
+								} catch(TwitterException e){
+									if (e.getErrorCode() == 50){
+										System.err.println("User could not be found:"+id+"\ncontinuing collection.");
+									}
+									else throw e;
+								}
 							}
 							else{ //we're done!
 								return out;
@@ -101,17 +130,31 @@ public class TwitterRequestHandler {
 					}
 				}
 				else{ // the user doesn't follow many people. just return who they do follow.
-					for(long id : ids){
-						TwitterUser t = getUser(id, u.firstDepth + 1);
-						out.add(t);
+					for(long id : ids){			
+						try{
+							TwitterUser t = getUser(id, u.firstDepth + 1);
+							out.add(t);
+						} catch(TwitterException e){
+							if (e.getErrorCode() == 50){
+								System.err.println("User could not be found:"+id+"\ncontinuing collection.");
+							}
+							else throw e;
+						}
 					}
 				}
 			}
-			else{
+			else{ //we collected enough followers with one getFollowers call! great!
 				for (int i = 0; i < num; i++) {
 					long l = ids[i];
-					TwitterUser t = getUser(l, u.firstDepth + 1);
-					out.add(t);
+					try{
+						TwitterUser t = getUser(l, u.firstDepth + 1);
+						out.add(t);
+					} catch(TwitterException e){
+						if (e.getErrorCode() == 50){
+							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
+						}
+						else throw e;
+					}
 				}
 			}
 		} catch (BadUserException e) {
@@ -174,6 +217,10 @@ public class TwitterRequestHandler {
 				try {
 					getUser(id, p.author.firstDepth + 1);
 				} catch (RedundantEntryException e) {} // not important here
+				catch (TwitterException e){
+					if (e.getErrorCode() == 50) continue;
+					else throw e;
+				}
 
 				User reposter = Post.sample.users.get(Long.toString(id));
 				Repost r = new Repost(p, reposter, p.author);

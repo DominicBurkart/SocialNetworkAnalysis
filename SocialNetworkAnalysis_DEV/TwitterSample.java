@@ -1,12 +1,18 @@
 package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
+import java.util.Date;
+
+import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import SocialNetworkAnalysis.User;
 
 public class TwitterSample extends Sample {
 
 	@Override
 	boolean completed() {
-		// TODO Auto-generated method stub
+		if (this.getFollowingQ.size() == 0 &&
+			this.getPostsQ.size() == 0 &&
+			this.getUserQ.size() == 0)
+			return true;
 		return false;
 	}
 
@@ -74,6 +80,24 @@ public class TwitterSample extends Sample {
 	void getPosts(User u) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	class Fol_listener implements Ratelimit_Reached_Listener{
+		Date last;
+
+		@Override
+		public void reached() {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	class Post_listener{
+		
+	}
+	
+	class User_sleeping{
+		
 	}
 
 }

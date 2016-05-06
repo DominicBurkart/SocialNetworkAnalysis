@@ -54,12 +54,12 @@ public abstract class User{
 	}
 
 	ArrayList<Post> posts = new ArrayList<Post>();
-	String description;
+	String description = "";
 
 	int firstDepth = 0;
 
-	String id = null;
-	String username = null;
+	String id = "";
+	String username = "";
 
 	public abstract ArrayList<User> getFollowers() throws APIException;
 
