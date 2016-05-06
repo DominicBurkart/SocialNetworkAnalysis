@@ -11,8 +11,8 @@ import java.util.Scanner;
 
 public class TwitterSample extends Sample {
 	
-	public void usersToCSV() {
-		PrintWriter w = fileHandler(name + "_users.csv");
+	public void usersToTSV() {
+		PrintWriter w = fileHandler(name + "_users.tsv");
 		w.println("~users~");
 		Enumeration<String> keys = users.keys();
 		while (keys.hasMoreElements()) {
@@ -21,8 +21,8 @@ public class TwitterSample extends Sample {
 		w.close();
 	}
 	
-	public void followsToCSV() {
-		PrintWriter w = fileHandler(name + "_follows.csv");
+	public void followsToTSV() {
+		PrintWriter w = fileHandler(name + "_follows.tsv");
 		w.println("~follows~");
 		for (Follow follow : allFollows){
 			w.println(follow);
@@ -30,8 +30,8 @@ public class TwitterSample extends Sample {
 		w.close();
 	}
 	
-	public void postsToCSV() {
-		PrintWriter w = fileHandler(name + "_posts.csv");
+	public void postsToTSV() {
+		PrintWriter w = fileHandler(name + "_posts.tsv");
 		w.println("~posts~");
 		for (String k : allPosts.keySet()){
 			w.println(allPosts.get(k));
@@ -39,7 +39,7 @@ public class TwitterSample extends Sample {
 		w.close();
 	}
 	
-	public void loadFromCSV(String dir){
+	public void loadFromTSV(String dir){
 		File p = new File(Paths.get(dir).toString()); //in case the input path isn't absolute
 		File[] directory = p.listFiles();
 		if (directory.length == 0){

@@ -19,7 +19,7 @@ public class Twitter_Ratelimit_Exceeded implements RateLimitStatusListener {
 		if (arg0.getRateLimitStatus().getRemaining() <= 0) {
 			int sleeptime = 15 * 60; 
 			System.out.println("\nRatelimit surpassed. Sleeping for " + sleeptime / 60 + " minutes.");
-			User.sample.toCSV();
+			User.sample.toTSV();
 			while (sleeptime > 0) {
 				try {
 					if (sleeptime % 60 == 0){ //just so we can minimize unnecessary computations

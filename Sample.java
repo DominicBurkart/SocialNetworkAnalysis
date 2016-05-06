@@ -28,22 +28,22 @@ public abstract class Sample {
 		Post.sample = this;
 	}
 
-	public void toCSV(){
-		interactionsToCSV();
-		usersToCSV();
-		followsToCSV();
-		postsToCSV();
+	public void toTSV(){
+		interactionsToTSV();
+		usersToTSV();
+		followsToTSV();
+		postsToTSV();
 	}
 	
-	public void toCSV(String outDir) {
+	public void toTSV(String outDir) {
 		this.outDir = outDir;
-		interactionsToCSV(); //saving order is arbitrary
-		usersToCSV();
-		followsToCSV();
-		postsToCSV();
+		interactionsToTSV(); //saving order is arbitrary
+		usersToTSV();
+		followsToTSV();
+		postsToTSV();
 	}
 
-	public void interactionsToCSV() {
+	public void interactionsToTSV() {
 		PrintWriter w = fileHandler(name + "_interactions.csv");
 		w.println("~interactions~");
 		for (int i = 0; i < allInteractions.size(); i++) {
@@ -52,16 +52,16 @@ public abstract class Sample {
 		w.close();
 	}
 
-	abstract void usersToCSV();
+	abstract void usersToTSV();
 
-	abstract void followsToCSV();
+	abstract void followsToTSV();
 
-	abstract void postsToCSV();
+	abstract void postsToTSV();
 	
-	public void loadFromCSV(){
+	public void loadFromTSV(){
 		String dir = System.getProperty("user.dir");
 		System.out.println("load from csv()'s dir: "+dir);
-		loadFromCSV(dir);
+		loadFromTSV(dir);
 	}
 	
 	protected class Fwrap implements Comparable<Fwrap>{
@@ -105,7 +105,7 @@ public abstract class Sample {
 		}
 	}
 	
-	abstract void loadFromCSV(String dir);
+	abstract void loadFromTSV(String dir);
 
 	protected PrintWriter fileHandler(String fname) {
 		checkTestOut();

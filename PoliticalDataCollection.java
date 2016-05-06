@@ -59,7 +59,7 @@ public class PoliticalDataCollection {
 				}
 			}
 			System.out.println("Saving output");
-			s.usersToCSV();
+			s.usersToTSV();
 			System.out.println("Program complete.");
 		} catch (RedundantEntryException e) {
 		} catch (APIException e) {
@@ -69,7 +69,7 @@ public class PoliticalDataCollection {
 			TwitterException t = (TwitterException) e.thrower;
 			System.err.println("exception: twitter error #" + t.getErrorCode() + ": " + t.getErrorMessage()
 					+ "\n Saving and quitting.");
-			s.usersToCSV();
+			s.usersToTSV();
 		}
 	}
 }

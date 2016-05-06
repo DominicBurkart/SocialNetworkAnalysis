@@ -50,7 +50,7 @@ public class TwitterUser extends User {
 		} catch (BadIDException e) {
 			System.err.println("TwitterUser.getSomeFollowers() recieved a bad ID: " + this.id);
 			System.err.println("Saving and quitting.");
-			sample.usersToCSV();
+			sample.usersToTSV();
 			System.exit(1);
 			return null; // for the compiler
 		} catch (TwitterException e) {
@@ -65,7 +65,7 @@ public class TwitterUser extends User {
 		} catch (BadIDException e) {
 			System.err.println("TwitterUser.getxFollowers() recieved a bad ID: " + this.id);
 			System.err.println("Saving and quitting.");
-			sample.usersToCSV();
+			sample.usersToTSV();
 			System.exit(1);
 			return null; // for the compiler
 		} catch (TwitterException e) {

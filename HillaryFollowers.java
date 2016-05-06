@@ -17,9 +17,9 @@ public class HillaryFollowers {
 		try {
 			User hillary = TwitterRequestHandler.getUser(1339835893, 0);
 			System.out.println(hillary);
-			hillary.getxFollowers(50000);
+			hillary.getxFollowers(100);
 			System.out.println("Saving output");
-			s.toCSV();
+			s.toTSV();
 			System.out.println("Program complete.");
 		} catch (RedundantEntryException e) {
 		} catch (APIException e) {
@@ -29,7 +29,7 @@ public class HillaryFollowers {
 			TwitterException t = (TwitterException) e.thrower;
 			System.err.println("exception: twitter error #" + t.getErrorCode() + ": " + t.getErrorMessage()
 					+ "\n Saving and quitting.");
-			s.usersToCSV();
+			s.usersToTSV();
 		}
 	}
 }

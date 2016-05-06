@@ -38,7 +38,7 @@ public abstract class IterativeNetworkConstruction {
 			}
 		}
 		System.out.println("Iterative collection complete! Saving output files.");
-		sample.toCSV(outdir);
+		sample.toTSV(outdir);
 		System.out.println("Output files saved. Sampling complete.");
 	}
 
