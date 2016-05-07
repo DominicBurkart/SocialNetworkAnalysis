@@ -41,6 +41,10 @@ public class TwitterRequestHandler {
 						if (e.getErrorCode() == 50){
 							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
 						}
+						else if (e.getErrorCode() == 63) {
+							System.err.println("User "+l+" has been suspended and ignored.");
+							continue;
+						}
 						else throw e;
 					}
 				}
@@ -64,6 +68,10 @@ public class TwitterRequestHandler {
 				} catch(TwitterException e){
 					if (e.getErrorCode() == 50){
 						System.err.println("User could not be found:"+l+"\ncontinuing collection.");
+					}
+					else if (e.getErrorCode() == 63) {
+						System.err.println("User "+l+" has been suspended and ignored.");
+						continue;
 					}
 					else throw e;
 				}
@@ -120,6 +128,10 @@ public class TwitterRequestHandler {
 									if (e.getErrorCode() == 50){
 										System.err.println("User could not be found:"+id+"\ncontinuing collection.");
 									}
+									else if (e.getErrorCode() == 63) {
+										System.err.println("User "+id+" has been suspended and ignored.");
+										continue;
+									}
 									else throw e;
 								}
 							}
@@ -137,6 +149,10 @@ public class TwitterRequestHandler {
 						} catch(TwitterException e){
 							if (e.getErrorCode() == 50){
 								System.err.println("User could not be found:"+id+"\ncontinuing collection.");
+							}
+							else if (e.getErrorCode() == 63) {
+								System.err.println("User "+id+" has been suspended and ignored.");
+								continue;
 							}
 							else throw e;
 						}
@@ -219,6 +235,10 @@ public class TwitterRequestHandler {
 				} catch (RedundantEntryException e) {} // not important here
 				catch (TwitterException e){
 					if (e.getErrorCode() == 50) continue;
+					else if (e.getErrorCode() == 63) {
+						System.err.println("User "+id+" has been suspended and ignored.");
+						continue;
+					}
 					else throw e;
 				}
 
