@@ -1,4 +1,4 @@
-package SocialNetworkAnalysis;
+package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
 /**
  * Just reacts to ratelimit being reached somehow.

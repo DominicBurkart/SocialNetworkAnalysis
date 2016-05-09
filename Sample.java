@@ -15,7 +15,7 @@ import java.util.Hashtable;
  */
 public abstract class Sample {
 	String name = "";
-	Hashtable<String, User> users = new Hashtable<String, User>();
+	private Hashtable<String, User> users = new Hashtable<String, User>();
 	ArrayList<Follow> allFollows = new ArrayList<Follow>();
 	Hashtable<String, Post> allPosts = new Hashtable<String, Post>();
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>(); // includes
@@ -145,5 +145,13 @@ public abstract class Sample {
 				outDir = "";
 			}
 		}
+	}
+
+	public Hashtable<String, User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Hashtable<String, User> users) {
+		this.users = users;
 	}
 }

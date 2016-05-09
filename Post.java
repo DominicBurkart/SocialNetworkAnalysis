@@ -10,26 +10,26 @@ import java.util.Date;
 public abstract class Post extends Attributional implements Comparable<Post> {
 	static Sample sample;
 
-	String id;
+	private String id;
 	ArrayList<Interaction> associatedInteractions;
-	Date time;
-	String message;
-	User author;
-	boolean original; // reposts have original as false.
+	private Date time;
+	private String message;
+	private User author;
+	private boolean original; // reposts have original as false.
 	User originalAuthor;
 	User repostedFrom;
-	int notes;
+	private int notes;
 	String comment;
 	ArrayList<String> tags;
-	Location location;
+	private Location location;
 	String site; //eg "twitter" or "tumblr"
 	
 	public Post(){}
 	
 	public Post(String id, User author, String message) {
-		this.id = id;
-		this.author = author;
-		this.message = message;
+		this.setId(id);
+		this.setAuthor(author);
+		this.setMessage(message);
 		sample.allPosts.put(id, this);
 	}
 
@@ -39,22 +39,22 @@ public abstract class Post extends Attributional implements Comparable<Post> {
 	 */
 	@Override
 	public int compareTo(Post other) {
-		if (other.id.equals(this.id))
+		if (other.getId().equals(this.getId()))
 			return 0;
-		return this.notes - other.notes;
+		return this.getNotes() - other.getNotes();
 	}
 
 	public void getAssociatedInteractions() {
-		if (!this.original) {
+		if (!this.isOriginal()) {
 			User target = this.originalAuthor;
-			User source = this.author;
+			User source = this.getAuthor();
 			new Repost(this, source, target);
 		}
 	}
 	
 	public Attribute[] getAttributes(){
 		String[] s = {"id", "time", "message", "author", "original", "originalAuthor", "repostedFrom", "notes", "comment", "tags", "location", "site"};
-		Object[] o = { id ,  time ,  message ,  author ,  original ,  originalAuthor ,  repostedFrom ,  notes ,  comment ,  tags ,  location ,  site};
+		Object[] o = { getId() ,  getTime() ,  getMessage() ,  getAuthor() ,  isOriginal() ,  originalAuthor ,  repostedFrom ,  getNotes() ,  comment ,  tags ,  getLocation() ,  site};
 		return Attribute.batchMaker(s, o);
 	}
 	
@@ -78,22 +78,82 @@ public abstract class Post extends Attributional implements Comparable<Post> {
 	@SuppressWarnings("deprecation")
 	public Post(String s){
 		String [] sa = s.split("\t");
-		id = sa[0];
-		time = new Date();
-		time.setTime(Date.parse(sa[1]));
-		message = sa[2];
-		author = sample.users.get(sa[3]);
-		original = Boolean.parseBoolean(sa[4]);
-		originalAuthor = sample.users.get(sa[5]);
-		repostedFrom = sample.users.get(sa[6]);
-		notes = Integer.parseInt(sa[7]);
+		setId(sa[0]);
+		setTime(new Date());
+		getTime().setTime(Date.parse(sa[1]));
+		setMessage(sa[2]);
+		setAuthor(sample.getUsers().get(sa[3]));
+		setOriginal(Boolean.parseBoolean(sa[4]));
+		originalAuthor = sample.getUsers().get(sa[5]);
+		repostedFrom = sample.getUsers().get(sa[6]);
+		setNotes(Integer.parseInt(sa[7]));
 		comment = sa[7];
 		//tags = sa[8];// TODO fix this tbh!
-		location = new Location(sa[9]);
+		setLocation(new Location(sa[9]));
 		site = sa[10];
 	}
 	
 	public Post(String s, String delimiter){
 		this(s.replace(delimiter, "\t"));
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public int getNotes() {
+		return notes;
+	}
+
+	public void setNotes(int notes) {
+		this.notes = notes;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Date getTime() {
+		return time;
+	}
+
+	public void setTime(Date time) {
+		this.time = time;
+	}
+
+	public User getAuthor() {
+		return author;
+	}
+
+	public void setAuthor(User author) {
+		this.author = author;
+	}
+
+	public boolean isOriginal() {
+		return original;
+	}
+
+	public void setOriginal(boolean original) {
+		this.original = original;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	public static Sample getSample() {
+		return sample;
 	}
 }

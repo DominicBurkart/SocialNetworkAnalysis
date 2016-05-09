@@ -12,7 +12,7 @@ import java.util.Iterator;
 public abstract class User{
 	static Sample sample;
 	
-	Tensors tensors = new Tensors();
+	private Tensors tensors = new Tensors();
 
 	public class Tensors {
 		ArrayList<Like> likes = new ArrayList<Like>();
@@ -54,12 +54,12 @@ public abstract class User{
 	}
 
 	ArrayList<Post> posts = new ArrayList<Post>();
-	String description = "";
+	public String description = "";
 
-	int firstDepth = 0;
+	public int firstDepth = 0;
 
-	String id = "";
-	String username = "";
+	public String id = "";
+	public String username = "";
 
 	public abstract ArrayList<User> getFollowers() throws APIException;
 
@@ -70,9 +70,9 @@ public abstract class User{
 	public abstract ArrayList<Post> getPosts() throws APIException;
 
 	public User(String id, int depth) throws RedundantEntryException {
-		if (sample.users.containsKey(id))
-			throw new RedundantEntryException("User with id " + id + " already exists.", sample.users.get(id));
-		sample.users.put(id, this);
+		if (sample.getUsers().containsKey(id))
+			throw new RedundantEntryException("User with id " + id + " already exists.", sample.getUsers().get(id));
+		sample.getUsers().put(id, this);
 		firstDepth = depth;
 		this.id = id;
 	}
@@ -106,7 +106,7 @@ public abstract class User{
 	public void findAllPostInteractions() {
 		for (Post p : this.posts) {
 			p.getAssociatedInteractions();
-			this.tensors.addAll(p.associatedInteractions);
+			this.getTensors().addAll(p.associatedInteractions);
 		}
 	}
 
@@ -129,5 +129,13 @@ public abstract class User{
 		tab1 = s.indexOf('\t', tab2+1);
 		description = s.substring(tab2+1, tab1);
 		firstDepth = Integer.parseInt(s.substring(tab1+1));
+	}
+
+	public Tensors getTensors() {
+		return tensors;
+	}
+
+	public void setTensors(Tensors tensors) {
+		this.tensors = tensors;
 	}
 }

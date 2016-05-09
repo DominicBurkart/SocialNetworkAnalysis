@@ -42,10 +42,10 @@ public class Interaction extends Attributional {
 		String s = stringify;
 		int tab1 = s.indexOf('\t');
 		String s1 = s.substring(0, tab1);
-		source = sample.users.get(s1);
+		source = sample.getUsers().get(s1);
 		int tab2 = s.indexOf('\t');
 		s1 = s.substring(tab1 +1, tab2);
-		target = sample.users.get(s1);
+		target = sample.getUsers().get(s1);
 		type= s.substring(tab2+1);
 	}
 }

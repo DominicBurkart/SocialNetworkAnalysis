@@ -205,16 +205,16 @@ public class TwitterRequestHandler {
 		List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 		for (Status s : statuses) {
 			Post p = new TwitterStatus();
-			p.id = Long.toString(s.getId());
-			p.notes = s.getFavoriteCount();
-			p.message = s.getText();
-			p.time = s.getCreatedAt();
-			p.author = u;
-			p.original = s.isRetweet();
-			p.location.latitude = s.getGeoLocation().getLatitude();
-			p.location.longitude = s.getGeoLocation().getLongitude();
-			p.location.name = s.getPlace().getFullName();
-			p.location.locationType = s.getPlace().getPlaceType();
+			p.setId(Long.toString(s.getId()));
+			p.setNotes(s.getFavoriteCount());
+			p.setMessage(s.getText());
+			p.setTime(s.getCreatedAt());
+			p.setAuthor(u);
+			p.setOriginal(s.isRetweet());
+			p.getLocation().setLatitude(s.getGeoLocation().getLatitude());
+			p.getLocation().setLongitude(s.getGeoLocation().getLongitude());
+			p.getLocation().setName(s.getPlace().getFullName());
+			p.getLocation().setLocationType(s.getPlace().getPlaceType());
 			try {
 				u.addPost(p);
 			} catch (RedundantEntryException e) {}
@@ -225,13 +225,13 @@ public class TwitterRequestHandler {
 		long cursor = -1;
 		ArrayList<Long> ids = new ArrayList<Long>();
 		while (cursor != 0) {
-			IDs pages = getTwitter().getRetweeterIds(Long.valueOf(p.id), -1);
+			IDs pages = getTwitter().getRetweeterIds(Long.valueOf(p.getId()), -1);
 			for (long id : pages.getIDs()) {
 
 				ids.add(id);
 
 				try {
-					getUser(id, p.author.firstDepth + 1);
+					getUser(id, p.getAuthor().firstDepth + 1);
 				} catch (RedundantEntryException e) {} // not important here
 				catch (TwitterException e){
 					if (e.getErrorCode() == 50) continue;
@@ -242,10 +242,10 @@ public class TwitterRequestHandler {
 					else throw e;
 				}
 
-				User reposter = Post.sample.users.get(Long.toString(id));
-				Repost r = new Repost(p, reposter, p.author);
+				User reposter = Post.sample.getUsers().get(Long.toString(id));
+				Repost r = new Repost(p, reposter, p.getAuthor());
 				//^ Action orginates in reposter and goes to poster
-				reposter.tensors.add(r);
+				reposter.getTensors().add(r);
 			}
 		}
 	}

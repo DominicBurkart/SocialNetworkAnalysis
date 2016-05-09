@@ -17,7 +17,7 @@ public class HillaryFollowers {
 		try {
 			User hillary = TwitterRequestHandler.getUser(1339835893, 0);
 			System.out.println(hillary);
-			hillary.getxFollowers(50000);
+			hillary.getxFollowers(80000);
 			System.out.println("Saving output");
 			s.toTSV();
 			System.out.println("Program complete.");

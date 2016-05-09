@@ -2,11 +2,23 @@ package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
 import java.util.Date;
 
+import SocialNetworkAnalysis.BadUserException;
 import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import SocialNetworkAnalysis.User;
+import twitter4j.TwitterException;
 
 public class TwitterSample extends Sample {
 	TwitterRequestHandler t = new TwitterRequestHandler();
+	long[] open = TwitterAuth.open;
+	boolean fsleep;
+	boolean usleep;
+	boolean ssleep;
+	boolean[] sleep = {ssleep, usleep, fsleep};
+	
+	public static void main(String[] args){
+		TwitterSample s = new TwitterSample();
+		s.run();
+	}
 
 	@Override
 	boolean completed() {
@@ -16,23 +28,34 @@ public class TwitterSample extends Sample {
 			return true;
 		return false;
 	}
+	
+	private boolean sleeping(int i){
+		if (!sleep[i]) return false;
+		else{
+			long now = java.lang.System.currentTimeMillis();
+			if (now > open[i]){
+				sleep[i] = false;
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+	}
 
 	@Override
 	boolean followingSleeping() {
-		// TODO Auto-generated method stub
-		return false;
+		return sleeping(2);
 	}
 
 	@Override
 	boolean postSleeping() {
-		// TODO Auto-generated method stub
-		return false;
+		return sleeping(0);
 	}
 
 	@Override
 	boolean userSleeping() {
-		// TODO Auto-generated method stub
-		return false;
+		return sleeping(1);
 	}
 
 	@Override
@@ -48,15 +71,15 @@ public class TwitterSample extends Sample {
 	}
 
 	@Override
-	boolean followingConditions(String[] ids) {
+	boolean followingConditions(String id) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	void followAction(String[] ids) {
+	void followAction(String id) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
@@ -67,38 +90,44 @@ public class TwitterSample extends Sample {
 
 	@Override
 	String[] getFol(User u) {
-		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	@Override
-	User getUser(String id) {
-		// TODO Auto-generated method stub
+	User getUser(String id, int depth) {
+		User u;
+		try {
+			u = TwitterRequestHandler.getUser(Long.parseLong(id), depth);
+			return u;
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			System.exit(0);
+		} catch (BadUserException e) {
+			e.printStackTrace();
+			System.exit(0);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
 		return null;
 	}
 
 	@Override
 	void getPosts(User u) {
 		// TODO Auto-generated method stub
-
 	}
 	
-	class Fol_listener implements Ratelimit_Reached_Listener{
-		Date last;
-
+	
+	class Listener implements Ratelimit_Reached_Listener{
 		@Override
-		public void reached() {
-			// TODO Auto-generated method stub
-			
+		public void reached(int i) {
+			switch (i){
+			case 0: ssleep = true; break;
+			case 1: usleep = true; break;
+			case 2: fsleep = true; break;
+			default: System.err.println("Weird value passed to reached() method in TwitterSample.Listener");
+			}
 		}
-	}
-	
-	class Post_listener implements Ratelimit_Reached_Listener{
-		
-	}
-	
-	class User_listener implements Ratelimit_Reached_Listener{
-		
 	}
 
 }

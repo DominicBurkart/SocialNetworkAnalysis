@@ -2,7 +2,7 @@ package SocialNetworkAnalysis;
 
 @SuppressWarnings("serial")
 public class RedundantEntryException extends BadUserException {
-	User user;
+	public User user;
 
 	public RedundantEntryException(String m) {
 		super(m);

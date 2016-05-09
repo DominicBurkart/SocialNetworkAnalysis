@@ -19,6 +19,6 @@ public class Repost extends Interaction {
 	}
 	
 	public String toString(){
-		return (super.toString() + '\t' + post.id);
+		return (super.toString() + '\t' + post.getId());
 	}
 }

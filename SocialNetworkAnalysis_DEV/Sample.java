@@ -51,7 +51,7 @@ public abstract class Sample {
 	
 	Queue<User> getFollowingQ;
 	Queue<User> getPostsQ;
-	Queue<String> getUserQ;
+	Queue<ToUser> getUserQ;
 	
 	/**
 	 * Returns true if we should
@@ -66,8 +66,8 @@ public abstract class Sample {
 	 * do the defined followAction to 
 	 * the list of IDs.
 	 */
-	abstract boolean followingConditions(String[] ids);
-	abstract void followAction(String[] ids);
+	abstract boolean followingConditions(String id);
+	abstract void followAction(String id);
 	
 	/**
 	 * Seed of data collection (eg, when
@@ -86,7 +86,7 @@ public abstract class Sample {
 	/**
 	 * Get a user from an ID!
 	 */
-	abstract User getUser(String id);
+	abstract User getUser(String id, int depth);
 	
 	/**
 	 * Get posts from a user!
@@ -101,7 +101,9 @@ public abstract class Sample {
 		while (!completed()){
 			if (!getFollowingQ.isEmpty() && !followingSleeping()){
 				String[] babies = getFol(getFollowingQ.poll());
-				if (followingConditions(babies)) followAction(babies);
+				for (String baby : babies){
+					if (followingConditions(baby)) followAction(baby);
+				}
 			}
 			if (!getUserQ.isEmpty() && !userSleeping()){
 				User u = getUser(getUserQ.poll());
@@ -110,6 +112,16 @@ public abstract class Sample {
 			if (!getPostsQ.isEmpty() && !postSleeping()){
 				getPosts(getPostsQ.poll());
 			}
+		}
+	}
+	
+	private class ToUser{
+		String id;
+		int depth;
+		
+		public ToUser(String id, int depth){
+			this.id = id;
+			this.depth = depth;
 		}
 	}
 }

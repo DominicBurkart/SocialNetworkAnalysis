@@ -1,4 +1,4 @@
-package SocialNetworkAnalysis;
+package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
 /**
  * Calls TwiterAuth's .LimitReached() when triggered via .reached()

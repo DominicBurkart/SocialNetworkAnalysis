@@ -45,7 +45,7 @@ public class PoliticalDataCollection {
 				firstFollows.addAll(fols);
 				System.out.println("\n"+big.username + " followers:");
 				for (User fol : fols) {
-					fol.tensors.add(new Follow(fol, big));
+					fol.getTensors().add(new Follow(fol, big));
 					System.out.println(fol);
 				}
 			}
@@ -54,7 +54,7 @@ public class PoliticalDataCollection {
 				ArrayList<User> smollests = smol.getxFollowers(secondnum);
 				System.out.println("\n"+smol.username + " followers:");
 				for (User smollest : smollests){ //people who follow people who follow main candidates
-					smollest.tensors.follows.add(new Follow(smollest, smol));
+					smollest.getTensors().follows.add(new Follow(smollest, smol));
 					System.out.println(smollest);
 				}
 			}

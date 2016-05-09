@@ -14,9 +14,9 @@ public class TwitterSample extends Sample {
 	public void usersToTSV() {
 		PrintWriter w = fileHandler(name + "_users.tsv");
 		w.println("~users~");
-		Enumeration<String> keys = users.keys();
+		Enumeration<String> keys = getUsers().keys();
 		while (keys.hasMoreElements()) {
-			w.println(users.get(keys.nextElement()));
+			w.println(getUsers().get(keys.nextElement()));
 		}
 		w.close();
 	}

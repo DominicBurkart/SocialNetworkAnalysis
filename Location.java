@@ -6,10 +6,10 @@ package SocialNetworkAnalysis;
  * @author dominicburkart
  */
 public class Location {
-	double latitude;
-	double longitude;
-	String name;
-	String locationType;
+	private double latitude;
+	private double longitude;
+	private String name;
+	private String locationType;
 	
 	public Location(){}
 	
@@ -21,22 +21,54 @@ public class Location {
 		String s = Stringified;
 		if (s != "null"){
 			int tab1 = s.indexOf("|||");
-			name = s.substring(0, tab1);
+			setName(s.substring(0, tab1));
 			int tab2 = s.indexOf("|||", tab1);
-			locationType = s.substring(tab1+1, tab2);
+			setLocationType(s.substring(tab1+1, tab2));
 			tab1 = s.indexOf("|||", tab2);
-			latitude = Double.parseDouble(s.substring(tab2 +1, tab1));
+			setLatitude(Double.parseDouble(s.substring(tab2 +1, tab1)));
 			tab2 = s.indexOf("|||", tab1);
-			longitude = Double.parseDouble(s.substring(tab1 +1, tab2));
+			setLongitude(Double.parseDouble(s.substring(tab1 +1, tab2)));
 		}
 	}
 	
 	public String toString(){
-		if (name != null && locationType != null){
-			return (name + "|||" +locationType+ "|||" + latitude + "|||"+longitude);
+		if (getName() != null && getLocationType() != null){
+			return (getName() + "|||" +getLocationType()+ "|||" + getLatitude() + "|||"+getLongitude());
 		}
 		else{
 			return "null";
 		}
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getLocationType() {
+		return locationType;
+	}
+
+	public void setLocationType(String locationType) {
+		this.locationType = locationType;
 	}
 }
