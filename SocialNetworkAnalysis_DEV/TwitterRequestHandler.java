@@ -1,4 +1,4 @@
-package SocialNetworkAnalysis;
+package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -6,6 +6,7 @@ import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import SocialNetworkAnalysis.User;
 
 public class TwitterSample extends Sample {
+	TwitterRequestHandler t = new TwitterRequestHandler();
 
 	@Override
 	boolean completed() {
@@ -92,11 +93,11 @@ public class TwitterSample extends Sample {
 		}
 	}
 	
-	class Post_listener{
+	class Post_listener implements Ratelimit_Reached_Listener{
 		
 	}
 	
-	class User_sleeping{
+	class User_listener implements Ratelimit_Reached_Listener{
 		
 	}
 
