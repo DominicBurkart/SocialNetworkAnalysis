@@ -61,10 +61,7 @@ public abstract class Post extends Attributional implements Comparable<Post> {
 	public String toString(){
 		String s = ""; //TODO implement this with StringBuffer across the toString functions after completing current goals
 		for (Object o : getAttributes()){
-			String val = o.toString();
-			if (o.toString().indexOf('\t') != -1){
-				throw new IllegalArgumentException("bad value to toString : "+o);
-			}
+			String val = Utilities.cleanstring(o.toString());
 			if (s == null) s = val;
 			else s = s + '\t' + val;
 		}

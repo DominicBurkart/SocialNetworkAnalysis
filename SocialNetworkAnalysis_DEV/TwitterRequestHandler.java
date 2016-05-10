@@ -1,6 +1,7 @@
 package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -196,7 +197,36 @@ public class TwitterRequestHandler {
 		return out;
 	}
 	
-	
+	/**
+	 * @return up to 
+	 * @throws TwitterException 
+	 */
+	static String[] getSomeFollowerIds(User u) throws TwitterException{
+		IDs IDvals;
+		try {
+			IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
+			long[] ids = IDvals.getIDs();
+			String[] out = new String[ids.length];
+			int i = 0;
+			for (long id : ids){
+				out[i++] = Long.toString(id);
+			}
+			return out;
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TwitterException e){
+			if (e.getErrorCode() != -1) throw e;
+			System.err.println("Unusual error with twitter user: " + u.id);
+			if (u.username != null){
+				System.err.println("username of weird error account: "+ u.username);
+			}
+			else{
+				System.err.println("username of weird error account was null.");
+			}
+		}
+		return null;
+	}
 
 	static TwitterUser getUser(long id, int depth) throws BadUserException, TwitterException {
 		try {
@@ -211,6 +241,7 @@ public class TwitterRequestHandler {
 	}
 
 	static void getPosts(User u) throws TwitterException {
+		//TODO fill this out or use twitter4j's user implementation bc there's a lot more to work with!
 		Paging paging = new Paging(1, 100);
 		List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 		for (Status s : statuses) {

@@ -1,24 +1,17 @@
 package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
-import java.util.Date;
-
 import SocialNetworkAnalysis.BadUserException;
 import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import SocialNetworkAnalysis.User;
 import twitter4j.TwitterException;
 
-public class TwitterSample extends Sample {
+public abstract class TwitterSample extends Sample {
 	TwitterRequestHandler t = new TwitterRequestHandler();
 	long[] open = TwitterAuth.open;
 	boolean fsleep;
 	boolean usleep;
 	boolean ssleep;
 	boolean[] sleep = {ssleep, usleep, fsleep};
-	
-	public static void main(String[] args){
-		TwitterSample s = new TwitterSample();
-		s.run();
-	}
 
 	@Override
 	boolean completed() {
@@ -29,12 +22,15 @@ public class TwitterSample extends Sample {
 		return false;
 	}
 	
+	static String[] fams = {"Status", "User", "Following"};
 	private boolean sleeping(int i){
+
 		if (!sleep[i]) return false;
 		else{
 			long now = java.lang.System.currentTimeMillis();
 			if (now > open[i]){
 				sleep[i] = false;
+				System.out.println(fams[i]+" family is resuming queries.");
 				return false;
 			}
 			else{
@@ -59,38 +55,14 @@ public class TwitterSample extends Sample {
 	}
 
 	@Override
-	boolean userConditions(User u) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	void userAction(User u) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	boolean followingConditions(String id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	void followAction(String id) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	void start() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	String[] getFol(User u) {
-		
+		try {
+			return TwitterRequestHandler.getSomeFollowerIds(u);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+			return null;
+		}
 	}
 
 	@Override
@@ -111,10 +83,21 @@ public class TwitterSample extends Sample {
 		}
 		return null;
 	}
+	
+	@Override
+	User[] getUsers(String[] ids, int depth){
+		//TODO 
+		TwitterRequestHandler.
+	}
 
 	@Override
 	void getPosts(User u) {
-		// TODO Auto-generated method stub
+		try {
+			TwitterRequestHandler.getPosts(u);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.err.println("continuing data collection.");
+		}
 	}
 	
 	

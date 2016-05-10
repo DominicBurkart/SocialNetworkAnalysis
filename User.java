@@ -112,7 +112,7 @@ public abstract class User{
 
 	@Override
 	public String toString() {
-		return (username.toString() + "\t" + id.toString() + "\t" + description.toString() + "\t" + firstDepth);
+		return (username.toString() + "\t" + id.toString() + "\t" + Utilities.cleanstring(description.toString()) + "\t" + firstDepth);
 	}
 	
 	public User(){}

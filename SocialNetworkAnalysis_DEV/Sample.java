@@ -66,8 +66,8 @@ public abstract class Sample {
 	 * do the defined followAction to 
 	 * the list of IDs.
 	 */
-	abstract boolean followingConditions(String id);
-	abstract void followAction(String id);
+	abstract boolean followingConditions(String[] ids);
+	abstract void followAction(String[] ids);
 	
 	/**
 	 * Seed of data collection (eg, when
@@ -89,6 +89,14 @@ public abstract class Sample {
 	abstract User getUser(String id, int depth);
 	
 	/**
+	 * Get a collection of users from a list of IDs.
+	 * 
+	 * Assumes that all users have the same depth,
+	 * which you assign to them.
+	 */
+	abstract User[] getUsers(String[] ids, int depth);
+	
+	/**
 	 * Get posts from a user!
 	 */
 	abstract void getPosts(User u);
@@ -101,13 +109,17 @@ public abstract class Sample {
 		while (!completed()){
 			if (!getFollowingQ.isEmpty() && !followingSleeping()){
 				String[] babies = getFol(getFollowingQ.poll());
-				for (String baby : babies){
-					if (followingConditions(baby)) followAction(baby);
-				}
+				if (followingConditions(babies)) followAction(babies);
 			}
 			if (!getUserQ.isEmpty() && !userSleeping()){
-				User u = getUser(getUserQ.poll());
-				if (userConditions(u)) userAction(u);
+				ToUser account = getUserQ.poll();
+				if (account.single){
+					User u = getUser(account.id, account.depth);
+					if (userConditions(u)) userAction(u);
+				}
+				else{
+					User[] u = getUsers(account.ids, account.depth);
+				}
 			}
 			if (!getPostsQ.isEmpty() && !postSleeping()){
 				getPosts(getPostsQ.poll());
@@ -115,13 +127,22 @@ public abstract class Sample {
 		}
 	}
 	
-	private class ToUser{
+	protected class ToUser{
+		boolean single;
 		String id;
+		String[] ids;
 		int depth;
 		
 		public ToUser(String id, int depth){
 			this.id = id;
 			this.depth = depth;
+			single = true;
+		}
+		
+		public ToUser(String[] ids, int depth){
+			this.ids = ids;
+			this.depth = depth;
+			single = false;
 		}
 	}
 }
