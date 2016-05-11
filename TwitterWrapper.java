@@ -69,6 +69,7 @@ public class TwitterWrapper implements Twitter {
 	int source;
 	Twitter t;
 	int[] limits;
+	boolean verbose = false; //turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 	
 	//functions used: getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs
@@ -550,11 +551,13 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		System.out.print("limits in getFollowersIDs: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in getFollowersIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		limits[2]++;
 		return t.getFollowersIDs(arg0);
 	}
@@ -566,9 +569,12 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		System.out.print("limits in getFollowersIDs: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in getFollowersIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
 		System.out.println();
 		limits[2]++;
@@ -582,11 +588,13 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		System.out.print("limits in getFollowersIDs: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in getFollowersIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		limits[2]++;
 		return t.getFollowersIDs(arg0, arg1);
 	}
@@ -598,11 +606,13 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		System.out.print("limits in getFollowersIDs: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in getFollowersIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		limits[2]++;
 		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
@@ -614,11 +624,13 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		System.out.print("limits in getFollowersIDs: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in getFollowersIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		limits[2]++;
 		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
@@ -988,11 +1000,13 @@ public class TwitterWrapper implements Twitter {
 			limits[1] = 0;
 		}
 		limits[1]++;
-		System.out.print("limits in showUser: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in showUser: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		return t.showUser(arg0);
 	}
 
@@ -1004,11 +1018,13 @@ public class TwitterWrapper implements Twitter {
 			limits[1] = 0;
 		}
 		limits[1]++;
-		System.out.print("limits in showUser: ");
-		for (int limit : limits){
-			System.out.print(limit+" ");
+		if (verbose){
+			System.out.print("limits in showUser: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
 		}
-		System.out.println();
 		return t.showUser(arg0);
 	}
 
