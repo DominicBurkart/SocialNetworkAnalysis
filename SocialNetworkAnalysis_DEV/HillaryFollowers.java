@@ -1,5 +1,8 @@
 package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
+import java.util.Arrays;
+
+import SocialNetworkAnalysis.TwitterUser;
 import SocialNetworkAnalysis.User;
 
 public class HillaryFollowers extends TwitterSample {
@@ -31,7 +34,7 @@ public class HillaryFollowers extends TwitterSample {
 	 */
 	@Override
 	void userAction(User u) {
-		this.getFollowingQ.add(u);
+		this.getFollowingQ.add((TwitterUser) u);
 	}
 
 	/**
@@ -39,22 +42,44 @@ public class HillaryFollowers extends TwitterSample {
 	 * to these ids.
 	 */
 	@Override
-	boolean followingConditions(String[] ids) {
+	boolean followingConditions(ToUser ids) {
 		if (collected < goal) return true;
 		else return false;
 	}
-
-	/**
-	 * what to do with some ids that have been collected.
-	 */
+	
 	@Override
-	void followAction(String[] ids) {
-		
+	void followAction(ToUser ids) {
+		if (ids.ids.length < 100){
+			getUserQ.add(ids);
+		}
+		else{
+			int total = ids.ids.length;
+			int chunkNum = total / 100;
+			if (total % 100 > 0){
+				chunkNum++;
+			}
+			ToUser[] chunks = new ToUser[chunkNum];
+			int last = 0;
+			int i = 0;
+			while (last < total){
+				int next = last +100;
+				if (next > total) next = total;
+				String[] vals = Arrays.copyOfRange(ids.ids, last, next);
+				chunks[i] = new ToUser(vals, ids.depth);
+				last = next;
+				i++;
+			}
+			for (ToUser chunk : chunks){
+				getUserQ.add(chunk);
+			}
+		}
 	}
 
 	@Override
 	void start() {
-		//TODO get hillary clinton's twitter
+		System.out.println("Starting data collection!");
+		ToUser hillary = new ToUser("1339835893", 0);
+		getUserQ.add(hillary);
 	}
 
 }

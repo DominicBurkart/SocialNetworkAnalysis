@@ -1,8 +1,12 @@
 package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import SocialNetworkAnalysis.BadUserException;
 import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import SocialNetworkAnalysis.User;
+import SocialNetworkAnalysis.TwitterUser;
 import twitter4j.TwitterException;
 
 public abstract class TwitterSample extends Sample {
@@ -12,6 +16,12 @@ public abstract class TwitterSample extends Sample {
 	boolean usleep;
 	boolean ssleep;
 	boolean[] sleep = {ssleep, usleep, fsleep};
+	
+	public TwitterSample(){
+		this.getFollowingQ = new LinkedList<TwitterUser>();
+		this.getPostsQ = new LinkedList<TwitterUser>();
+		this.getUserQ = new LinkedList<ToUser>();
+	}
 
 	@Override
 	boolean completed() {
@@ -66,10 +76,9 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	@Override
-	User getUser(String id, int depth) {
-		User u;
+	User getUser(ToUser id) {
 		try {
-			u = TwitterRequestHandler.getUser(Long.parseLong(id), depth);
+			User u = TwitterRequestHandler.getUser(Long.parseLong(id.id), id.depth);
 			return u;
 		} catch (NumberFormatException e) {
 			e.printStackTrace();
@@ -85,9 +94,20 @@ public abstract class TwitterSample extends Sample {
 	}
 	
 	@Override
-	User[] getUsers(String[] ids, int depth){
-		//TODO 
-		TwitterRequestHandler.
+	User[] getUsers(ToUser ids){
+		long[] idsNum = new long[ids.ids.length];
+		int i = 0;
+		for (String id : ids.ids){
+			idsNum[i] = Long.parseLong(id);
+			i++;
+		}
+		//algorithm: if ids >= 100, just break the request into multiple new requests + push them to the user queue!
+		if (ids.ids.length > 100){
+			System.err.println("Bad list of IDs to getUsers. Max depth is 100 and this input had a depth of "+ids.ids.length);
+			System.err.println("Attempting to return the first 100 users.");
+			return TwitterRequestHandler.getUsers(Arrays.copyOf(idsNum, 100), ids.depth);
+		}
+		else return TwitterRequestHandler.getUsers(idsNum, ids.depth);
 	}
 
 	@Override

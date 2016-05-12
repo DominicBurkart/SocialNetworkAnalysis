@@ -1,7 +1,6 @@
 package SocialNetworkAnalysis.SocialNetworkAnalysis_DEV;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import SocialNetworkAnalysis.TwitterUser;
 import SocialNetworkAnalysis.User;
 import twitter4j.IDs;
 import twitter4j.Paging;
+import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -238,6 +238,31 @@ public class TwitterRequestHandler {
 		} catch (RedundantEntryException e) {
 			return (TwitterUser) e.user;
 		}
+	}
+	
+	static TwitterUser[] getUsers(long[] ids, int depth){
+		ResponseList<twitter4j.User> accounts;
+		try {
+			accounts = getTwitter().lookupUsers(ids);
+			TwitterUser[] out = new TwitterUser[accounts.size()];
+			int i = 0;
+			for (twitter4j.User t : accounts){
+				try {
+					TwitterUser u = new TwitterUser(Long.toString(t.getId()), depth);
+					u.description = t.getDescription();
+					u.username = t.getScreenName();
+					out[i] = u;
+				} catch (RedundantEntryException e) {
+					out[i] = (TwitterUser) e.user;
+				}
+				i++;
+			}
+			return out;
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return null;
 	}
 
 	static void getPosts(User u) throws TwitterException {

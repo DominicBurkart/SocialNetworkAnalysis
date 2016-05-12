@@ -11,7 +11,7 @@ public class Interaction extends Attributional {
 	User source;
 	User target;
 	String type;
-	static Sample sample;
+	public static Sample sample;
 
 	public Interaction() {
 		sample.allInteractions.add(this);

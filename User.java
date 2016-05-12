@@ -10,7 +10,7 @@ import java.util.Iterator;
  * @author dominicburkart
  */
 public abstract class User{
-	static Sample sample;
+	public static Sample sample;
 	
 	private Tensors tensors = new Tensors();
 

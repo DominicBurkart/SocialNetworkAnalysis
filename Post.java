@@ -8,7 +8,7 @@ import java.util.Date;
  * @author dominicburkart
  */
 public abstract class Post extends Attributional implements Comparable<Post> {
-	static Sample sample;
+	public static Sample sample;
 
 	private String id;
 	ArrayList<Interaction> associatedInteractions;
