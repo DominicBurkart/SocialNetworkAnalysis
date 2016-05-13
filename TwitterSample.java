@@ -5,18 +5,145 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.Scanner;
 
-public class TwitterSample extends Sample {
+import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
+import twitter4j.TwitterException;
+
+public abstract class TwitterSample extends Sample {
+	TwitterRequestHandler t = new TwitterRequestHandler();
+	long[] open = TwitterAuth.open;
+	boolean fsleep;
+	boolean usleep;
+	boolean ssleep;
+	boolean[] sleep = {ssleep, usleep, fsleep};
+	
+	public TwitterSample(){
+		this.getFollowingQ = new LinkedList<TwitterUser>();
+		this.getPostsQ = new LinkedList<TwitterUser>();
+		this.getUserQ = new LinkedList<ToUser>();
+	}
+
+	@Override
+	boolean completed() {
+		if (this.getFollowingQ.size() == 0 &&
+			this.getPostsQ.size() == 0 &&
+			this.getUserQ.size() == 0)
+			return true;
+		return false;
+	}
+	
+	static String[] fams = {"Status", "User", "Following"};
+	private boolean sleeping(int i){
+
+		if (!sleep[i]) return false;
+		else{
+			long now = java.lang.System.currentTimeMillis();
+			if (now > open[i]){
+				sleep[i] = false;
+				System.out.println(fams[i]+" family is resuming queries.");
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+	}
+
+	@Override
+	boolean followingSleeping() {
+		return sleeping(2);
+	}
+
+	@Override
+	boolean postSleeping() {
+		return sleeping(0);
+	}
+
+	@Override
+	boolean userSleeping() {
+		return sleeping(1);
+	}
+
+	@Override
+	String[] getFol(User u) {
+		try {
+			return TwitterRequestHandler.getSomeFollowerIds(u);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+			return null;
+		}
+	}
+
+	@Override
+	User getUser(ToUser id) {
+		try {
+			User u = TwitterRequestHandler.getUser(Long.parseLong(id.id), id.depth);
+			return u;
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			System.exit(0);
+		} catch (BadUserException e) {
+			e.printStackTrace();
+			System.exit(0);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return null;
+	}
+	
+	@Override
+	User[] getUsers(ToUser ids){
+		long[] idsNum = new long[ids.ids.length];
+		int i = 0;
+		for (String id : ids.ids){
+			idsNum[i] = Long.parseLong(id);
+			i++;
+		}
+		//algorithm: if ids >= 100, just break the request into multiple new requests + push them to the user queue!
+		if (ids.ids.length > 100){
+			System.err.println("Bad list of IDs to getUsers. Max depth is 100 and this input had a depth of "+ids.ids.length);
+			System.err.println("Attempting to return the first 100 users.");
+			return TwitterRequestHandler.getUsers(Arrays.copyOf(idsNum, 100), ids.depth);
+		}
+		else return TwitterRequestHandler.getUsers(idsNum, ids.depth);
+	}
+
+	@Override
+	void getPosts(User u) {
+		try {
+			TwitterRequestHandler.getPosts(u);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.err.println("continuing data collection.");
+		}
+	}
+	
+	
+	class Listener implements Ratelimit_Reached_Listener{
+		@Override
+		public void reached(int i) {
+			switch (i){
+			case 0: ssleep = true; break;
+			case 1: usleep = true; break;
+			case 2: fsleep = true; break;
+			default: System.err.println("Weird value passed to reached() method in TwitterSample.Listener");
+			}
+		}
+	}
 	
 	public void usersToTSV() {
 		PrintWriter w = fileHandler(name + "_users.tsv");
 		w.println("~users~");
-		Enumeration<String> keys = getUsers().keys();
+		Enumeration<String> keys = users.keys();
 		while (keys.hasMoreElements()) {
-			w.println(getUsers().get(keys.nextElement()));
+			w.println(users.get(keys.nextElement()));
 		}
 		w.close();
 	}
@@ -24,7 +151,7 @@ public class TwitterSample extends Sample {
 	public void followsToTSV() {
 		PrintWriter w = fileHandler(name + "_follows.tsv");
 		w.println("~follows~");
-		for (Follow follow : allFollows){
+		for (Follow follow : follows){
 			w.println(follow);
 		}
 		w.close();
@@ -33,8 +160,8 @@ public class TwitterSample extends Sample {
 	public void postsToTSV() {
 		PrintWriter w = fileHandler(name + "_posts.tsv");
 		w.println("~posts~");
-		for (String k : allPosts.keySet()){
-			w.println(allPosts.get(k));
+		for (String k : posts.keySet()){
+			w.println(posts.get(k));
 		}
 		w.close();
 	}
@@ -101,7 +228,7 @@ public class TwitterSample extends Sample {
 	}
 	
 	private void importInteractions(Scanner s){
-		if (this.allFollows != null && this.allFollows.size() > 0){
+		if (this.follows != null && this.follows.size() > 0){
 			while (s.hasNextLine()){
 				String cur = s.nextLine();
 				String[] split = cur.split("\t");
@@ -126,4 +253,5 @@ public class TwitterSample extends Sample {
 			}
 		}
 	}
+
 }

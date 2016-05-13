@@ -7,7 +7,7 @@ package SocialNetworkAnalysis;
  * 
  * @author dominicburkart
  */
-public class Attribute {
+public class Attribute extends SNA_Root {
 	String n; //name of value (eg "depth" or "location")
 	Object  v; //value being stored. Needs to have a toString() function!
 	

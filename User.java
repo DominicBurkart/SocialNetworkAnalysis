@@ -9,7 +9,7 @@ import java.util.Iterator;
  * 
  * @author dominicburkart
  */
-public abstract class User{
+public abstract class User extends SNA_Root{
 	public static Sample sample;
 	
 	private Tensors tensors = new Tensors();
@@ -70,9 +70,9 @@ public abstract class User{
 	public abstract ArrayList<Post> getPosts() throws APIException;
 
 	public User(String id, int depth) throws RedundantEntryException {
-		if (sample.getUsers().containsKey(id))
-			throw new RedundantEntryException("User with id " + id + " already exists.", sample.getUsers().get(id));
-		sample.getUsers().put(id, this);
+		if (sample.users.containsKey(id))
+			throw new RedundantEntryException("User with id " + id + " already exists.", sample.users.get(id));
+		sample.users.put(id, this);
 		firstDepth = depth;
 		this.id = id;
 	}

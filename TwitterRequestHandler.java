@@ -6,6 +6,7 @@ import java.util.List;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
+import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -15,7 +16,7 @@ import twitter4j.TwitterException;
  * 
  * @author dominicburkart
  */
-public class TwitterRequestHandler {
+public class TwitterRequestHandler extends SNA_Root {
 	private static TwitterAuth authorized = new TwitterAuth();
 
 	static Twitter getTwitter() {
@@ -132,9 +133,6 @@ public class TwitterRequestHandler {
 										System.err.println("User "+id+" has been suspended and ignored.");
 										continue;
 									}
-									else if (e.getErrorCode() == -1){
-										System.err.println("Weird error with "+id+"\n continuing.");
-									}
 									else throw e;
 								}
 							}
@@ -157,9 +155,6 @@ public class TwitterRequestHandler {
 								System.err.println("User "+id+" has been suspended and ignored.");
 								continue;
 							}
-							else if (e.getErrorCode() == -1){
-								System.err.println("Weird error with "+id+"\n continuing.");
-							}
 							else throw e;
 						}
 					}
@@ -174,9 +169,6 @@ public class TwitterRequestHandler {
 					} catch(TwitterException e){
 						if (e.getErrorCode() == 50){
 							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
-						}
-						else if (e.getErrorCode() == -1){
-							System.err.println("Weird error with "+l+"\n continuing.");
 						}
 						else throw e;
 					}
@@ -196,6 +188,37 @@ public class TwitterRequestHandler {
 		}
 		return out;
 	}
+	
+	/**
+	 * @return up to 
+	 * @throws TwitterException 
+	 */
+	static String[] getSomeFollowerIds(User u) throws TwitterException{
+		IDs IDvals;
+		try {
+			IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
+			long[] ids = IDvals.getIDs();
+			String[] out = new String[ids.length];
+			int i = 0;
+			for (long id : ids){
+				out[i++] = Long.toString(id);
+			}
+			return out;
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TwitterException e){
+			if (e.getErrorCode() != -1) throw e;
+			System.err.println("Unusual error with twitter user: " + u.id);
+			if (u.username != null){
+				System.err.println("username of weird error account: "+ u.username);
+			}
+			else{
+				System.err.println("username of weird error account was null.");
+			}
+		}
+		return null;
+	}
 
 	static TwitterUser getUser(long id, int depth) throws BadUserException, TwitterException {
 		try {
@@ -208,8 +231,34 @@ public class TwitterRequestHandler {
 			return (TwitterUser) e.user;
 		}
 	}
+	
+	static TwitterUser[] getUsers(long[] ids, int depth){
+		ResponseList<twitter4j.User> accounts;
+		try {
+			accounts = getTwitter().lookupUsers(ids);
+			TwitterUser[] out = new TwitterUser[accounts.size()];
+			int i = 0;
+			for (twitter4j.User t : accounts){
+				try {
+					TwitterUser u = new TwitterUser(Long.toString(t.getId()), depth);
+					u.description = t.getDescription();
+					u.username = t.getScreenName();
+					out[i] = u;
+				} catch (RedundantEntryException e) {
+					out[i] = (TwitterUser) e.user;
+				}
+				i++;
+			}
+			return out;
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		return null;
+	}
 
 	static void getPosts(User u) throws TwitterException {
+		//TODO fill this out or use twitter4j's user implementation bc there's a lot more to work with!
 		Paging paging = new Paging(1, 100);
 		List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 		for (Status s : statuses) {
@@ -251,7 +300,7 @@ public class TwitterRequestHandler {
 					else throw e;
 				}
 
-				User reposter = Post.sample.getUsers().get(Long.toString(id));
+				User reposter = Post.getSample().users.get(Long.toString(id));
 				Repost r = new Repost(p, reposter, p.getAuthor());
 				//^ Action orginates in reposter and goes to poster
 				reposter.getTensors().add(r);

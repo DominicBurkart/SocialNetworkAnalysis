@@ -7,7 +7,7 @@ import twitter4j.RateLimitStatusListener;
  * This class deals with if we actually go over ratelimit.
  * @author dominicburkart
  */
-public class Twitter_Ratelimit_Exceeded implements RateLimitStatusListener {
+public class Twitter_Ratelimit_Exceeded extends SNA_Root implements RateLimitStatusListener {
 
 	@Override
 	public void onRateLimitReached(RateLimitStatusEvent arg0) {

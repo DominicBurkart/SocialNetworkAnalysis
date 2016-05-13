@@ -1,3 +1,3 @@
-#Development Branch for SNA!
+#Development Branch for the Social Network Analysis package!
 
-This is where I implement better designs for current systems etc!
+Currently empty with the latest update of the main set of programs! nice!

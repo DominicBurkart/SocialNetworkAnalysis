@@ -17,7 +17,7 @@ public class Follow extends Interaction {
 		this.source = source;
 		this.target = target;
 		type = "follow";
-		sample.allFollows.add(this);
+		sample.follows.add(this);
 	}
 	
 	/**
@@ -26,7 +26,7 @@ public class Follow extends Interaction {
 	 */
 	public Follow(String stringified){
 		super(stringified);
-		sample.allFollows.add(this);
+		sample.follows.add(this);
 	}
 	
 }

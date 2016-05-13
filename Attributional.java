@@ -7,6 +7,6 @@ package SocialNetworkAnalysis;
  * 
  * @author dominicburkart
  */
-public abstract class Attributional {
+public abstract class Attributional extends SNA_Root {
 	abstract Attribute[] getAttributes();
 }

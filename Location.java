@@ -5,7 +5,7 @@ package SocialNetworkAnalysis;
  * 
  * @author dominicburkart
  */
-public class Location {
+public class Location extends SNA_Root {
 	private double latitude;
 	private double longitude;
 	private String name;

@@ -576,7 +576,6 @@ public class TwitterWrapper implements Twitter {
 			}
 			System.out.println();
 		}
-		System.out.println();
 		limits[2]++;
 		return t.getFollowersIDs(arg0, arg1);
 	}
@@ -961,7 +960,6 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(1);
 			limits[1] = 0;
 		}
-		System.out.println();
 		limits[1]++;
 		return t.lookupUsers(arg0);
 	}
@@ -973,7 +971,6 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(1);
 			limits[1] = 0;
 		}
-		System.out.println();
 		limits[1]++;
 		return t.lookupUsers(arg0);
 	}

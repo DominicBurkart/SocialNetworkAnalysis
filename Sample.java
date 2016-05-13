@@ -7,27 +7,176 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Queue;
 
-/**
- * A given sample in which each session of collected data is stored and manipulated.
- * 
- * @author dominicburkart
- */
-public abstract class Sample {
-	String name = "";
-	private Hashtable<String, User> users = new Hashtable<String, User>();
-	ArrayList<Follow> allFollows = new ArrayList<Follow>();
-	Hashtable<String, Post> allPosts = new Hashtable<String, Post>();
-	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>(); // includes
-																			// allFollows
+public abstract class Sample extends SNA_Root {
+	Hashtable<String, Post> posts = new Hashtable<String, Post>();
+	public Hashtable<String, User> users = new Hashtable<String, User>();
+	LinkedList<Follow> follows = new LinkedList<Follow>();
+	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>();
 	String outDir;
-
-	public Sample() {
+	String name = "collection";
+	
+	public Sample(){
 		User.sample = this;
 		Interaction.sample = this;
 		Post.sample = this;
 	}
+	
+	/**
+	 * Determines whether there is 
+	 * still more data to collect.
+	 * 
+	 * @return true when the collection
+	 * is sufficient
+	 */
+	abstract boolean completed();
+	
+	/**
+	 * Checks if we can query for 
+	 * followers.
+	 * 
+	 * @return true if the resource is
+	 * currently unaccessible.
+	 */
+	abstract boolean followingSleeping();
+	
+	/**
+	 * Checks if we can query for 
+	 * a user's posts.
+	 * 
+	 * @return true if the resource is
+	 * currently unaccessible.
+	 */
+	abstract boolean postSleeping();
+	
+	/**
+	 * Checks if we can query for 
+	 * a user profile.
+	 * 
+	 * @return true if the resource is
+	 * currently unaccessible.
+	 */
+	abstract boolean userSleeping();
+	
+	Queue<TwitterUser> getFollowingQ;
+	Queue<TwitterUser> getPostsQ; //TODO make this more portable
+	Queue<ToUser> getUserQ;
+	
+	/**
+	 * Returns true if we should
+	 * do the defined userAction to 
+	 * the user.
+	 */
+	abstract boolean userConditions(User u);
+	abstract void userAction(User u);
+	
+	/**
+	 * Returns true if we should
+	 * do the defined followAction to 
+	 * the list of IDs.
+	 */
+	abstract boolean followingConditions(ToUser ids);
+	abstract void followAction(ToUser ids);
 
+	
+	/**
+	 * Seed of data collection (eg, when
+	 * constructing a network of Hillary 
+	 * Clinton's twitter followers, start()
+	 * collects the twitter account of 
+	 * Hillary Clinton).
+	 */
+	abstract void start();
+	
+	/**
+	 * Get a string of IDs from a user!
+	 */
+	abstract String[] getFol(User u);
+	
+	/**
+	 * Get a user from an ID!
+	 */
+	abstract User getUser(ToUser id);
+	
+	/**
+	 * Get a collection of users from a list of IDs.
+	 * 
+	 * Assumes that all users have the same depth,
+	 * which you assign to them.
+	 */
+	abstract User[] getUsers(ToUser ids);
+	
+	/**
+	 * Get posts from a user!
+	 */
+	abstract void getPosts(User u);
+	
+	/**
+	 * Runs the data collection.
+	 */
+	public void run(){
+		start();
+		while (!completed()){
+			if (!getFollowingQ.isEmpty() && !followingSleeping()){
+				User parent = getFollowingQ.poll();
+				String[] ids = getFol(parent);
+				ToUser babies = new ToUser(ids, parent.firstDepth+1);
+				if (followingConditions(babies)) followAction(babies);
+			}
+			if (!getUserQ.isEmpty() && !userSleeping()){
+				ToUser account = getUserQ.poll();
+				if (account.single){
+					User u = getUser(account);
+					if (userConditions(u)) userAction(u);
+				}
+				else{
+					User[] us = getUsers(account);
+					for (User u : us){
+						if (userConditions(u)) userAction(u);
+					}
+				}
+			}
+			if (!getPostsQ.isEmpty() && !postSleeping()){
+				getPosts(getPostsQ.poll());
+			}
+			if (verbose == true){
+				System.out.print("Q lengths: ");
+				for (int length : QueueLengths()){
+					System.out.print(length+" ");
+				}
+				System.out.println();
+			}
+		}
+		System.out.println("Iterative collection completed.");
+		toTSV();
+	}
+	
+	protected int[] QueueLengths(){
+		int[] sizes = {getFollowingQ.size(), getUserQ.size(), getPostsQ.size()};
+		return sizes;
+	}
+	
+	protected class ToUser{
+		boolean single;
+		String id;
+		String[] ids;
+		int depth;
+		
+		public ToUser(String id, int depth){
+			this.id = id;
+			this.depth = depth;
+			single = true;
+		}
+		
+		public ToUser(String[] ids, int depth){
+			this.ids = ids;
+			this.depth = depth;
+			single = false;
+		}
+	}
+	
 	public void toTSV(){
 		interactionsToTSV();
 		usersToTSV();
@@ -145,13 +294,5 @@ public abstract class Sample {
 				outDir = "";
 			}
 		}
-	}
-
-	public Hashtable<String, User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Hashtable<String, User> users) {
-		this.users = users;
 	}
 }

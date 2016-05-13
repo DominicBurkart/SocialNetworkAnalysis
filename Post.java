@@ -30,7 +30,7 @@ public abstract class Post extends Attributional implements Comparable<Post> {
 		this.setId(id);
 		this.setAuthor(author);
 		this.setMessage(message);
-		sample.allPosts.put(id, this);
+		sample.posts.put(id, this);
 	}
 
 	/**
@@ -79,10 +79,10 @@ public abstract class Post extends Attributional implements Comparable<Post> {
 		setTime(new Date());
 		getTime().setTime(Date.parse(sa[1]));
 		setMessage(sa[2]);
-		setAuthor(sample.getUsers().get(sa[3]));
+		setAuthor(sample.users.get(sa[3]));
 		setOriginal(Boolean.parseBoolean(sa[4]));
-		originalAuthor = sample.getUsers().get(sa[5]);
-		repostedFrom = sample.getUsers().get(sa[6]);
+		originalAuthor = sample.users.get(sa[5]);
+		repostedFrom = sample.users.get(sa[6]);
 		setNotes(Integer.parseInt(sa[7]));
 		comment = sa[7];
 		//tags = sa[8];// TODO fix this tbh!
