@@ -7,7 +7,7 @@ package SocialNetworkAnalysis;
  * 
  * @author dominicburkart
  */
-public class Interaction extends Attributional {
+public class Interaction {
 	User source;
 	User target;
 	String type;
@@ -17,19 +17,12 @@ public class Interaction extends Attributional {
 		sample.allInteractions.add(this);
 	}
 	
-	public Attribute[] getAttributes(){
-		String[] names = {"source id", "target id", "type"};
-		Object[] values = {source.id, target.id, type};
-		Attribute[] atr = Attribute.batchMaker(names, values);
-		return atr;
-	}
-	
 	public String toString(){
-		Attribute[] ats = getAttributes();
+		String[] ats = {source.id, target.id, type};
 		String s = "";
-		for (Attribute at: ats){
-			if (s.equals("")) s = Utilities.cleanstring(at.v.toString());
-			else s = s + '\t' + at.v;
+		for (String at : ats){
+			if (s.equals("")) s = at;
+			else s = s + '\t' + at;
 		}
 		return s;
 	}

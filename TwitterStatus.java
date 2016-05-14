@@ -9,22 +9,20 @@ public class TwitterStatus extends Post {
 		return super.compareTo(o);
 	}
 	
-	public TwitterStatus(){
-		site = "twitter";
-	}
-	
 	public TwitterStatus(String id, User author, String message){
 		super(id, author, message);
 		site = "twitter";
 	}
 	
 	public TwitterStatus(Status s, User u){
+		super(Long.toString(s.getId()), u.id, s.getText());
 		set(s, u);
 	}
 	
 	public TwitterStatus(Status s){
+		super(Long.toString(s.getId()), Long.toString(s.getUser().getId()), s.getText());
 		User u = sample.users.get(Long.toString(s.getId()));
-		set(s, u); //yields null value for parent user when user hasn't been collected
+		set(s, u); //yields null value for parent user when user hasn't been collected (acceptable)
 	}
 	
 	public TwitterStatus(String stringify){
@@ -42,10 +40,16 @@ public class TwitterStatus extends Post {
 		this.setTime(s.getCreatedAt());
 		this.setAuthor(u);
 		this.setOriginal(s.isRetweet());
-		this.getLocation().setLatitude(s.getGeoLocation().getLatitude());
-		this.getLocation().setLongitude(s.getGeoLocation().getLongitude());
-		this.getLocation().setName(s.getPlace().getFullName());
-		this.getLocation().setLocationType(s.getPlace().getPlaceType());
+		//deal w/ location
+		if (s.getGeoLocation() != null){
+			Location l = new Location();
+			l.setLatitude(s.getGeoLocation().getLatitude());
+			l.setLongitude(s.getGeoLocation().getLongitude());
+			l.setName(s.getPlace().getFullName());
+			l.setLocationType(s.getPlace().getPlaceType());
+			this.setLocation(l);
+		}
+		if (verbose) System.out.println("Twitter status collected:\t"+this.toString());
 	}
 	
 }

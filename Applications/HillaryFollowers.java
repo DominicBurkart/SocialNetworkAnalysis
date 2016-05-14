@@ -32,8 +32,10 @@ public class HillaryFollowers extends TwitterSample {
 	 * followers if they pass userConditions.
 	 */
 	@Override
-	public void userAction(User u) {
-		this.getFollowingQ.add((TwitterUser) u);
+	public void userAction(User user) {
+		TwitterUser u = (TwitterUser) user;
+		this.getFollowingQ.add(u);
+		this.getPostsQ.add(u);
 	}
 
 	/**

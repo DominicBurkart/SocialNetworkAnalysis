@@ -35,6 +35,9 @@ public class Location extends SNA_Root {
 		if (getName() != null && getLocationType() != null){
 			return (getName() + "|||" +getLocationType()+ "|||" + getLatitude() + "|||"+getLongitude());
 		}
+		else if (latitude != 0 && longitude != 0){
+			return ("null" + "|||" + "null" + "|||" + getLatitude() + "|||"+ getLongitude());
+		}
 		else{
 			return "null";
 		}

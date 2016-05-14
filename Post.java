@@ -7,28 +7,35 @@ import java.util.Date;
  * Abstract class to refer to a post on a social network.
  * @author dominicburkart
  */
-public abstract class Post extends Attributional implements Comparable<Post> {
+public abstract class Post extends SNA_Root implements Comparable<Post> {
 	public static Sample sample;
 
-	private String id;
+	private String id = "unknown";
 	ArrayList<Interaction> associatedInteractions;
-	private Date time;
-	private String message;
+	private Date time = new Date();
+	private String message = "unknown";
 	private User author;
+	String  authorID = "unknown";
 	private boolean original; // reposts have original as false.
 	User originalAuthor;
 	User repostedFrom;
-	private int notes;
-	String comment;
+	private int notes = 0;
+	String comment = "null";
 	ArrayList<String> tags;
-	private Location location;
-	String site; //eg "twitter" or "tumblr"
-	
-	public Post(){}
+	private Location location = new Location();
+	String site = ""; //eg "twitter" or "tumblr"
 	
 	public Post(String id, User author, String message) {
 		this.setId(id);
 		this.setAuthor(author);
+		this.authorID = author.id;
+		this.setMessage(message);
+		sample.posts.put(id, this);
+	}
+	
+	public Post(String id, String authorID, String message){
+		this.setId(id);
+		this.authorID = authorID;
 		this.setMessage(message);
 		sample.posts.put(id, this);
 	}
@@ -52,20 +59,55 @@ public abstract class Post extends Attributional implements Comparable<Post> {
 		}
 	}
 	
-	public Attribute[] getAttributes(){
-		String[] s = {"id", "time", "message", "author", "original", "originalAuthor", "repostedFrom", "notes", "comment", "tags", "location", "site"};
-		Object[] o = { getId() ,  getTime() ,  getMessage() ,  getAuthor() ,  isOriginal() ,  originalAuthor ,  repostedFrom ,  getNotes() ,  comment ,  tags ,  getLocation() ,  site};
-		return Attribute.batchMaker(s, o);
+	public String[] getAttributes(){
+		String username = "null";
+		if (author != null){
+			username = author.username;
+		}
+		String oAuthor = "null";
+		if (originalAuthor != null){
+			oAuthor = originalAuthor.id;
+		}
+		String rFrom = "null";
+		if (repostedFrom != null){
+			rFrom = repostedFrom.id;
+		}
+		String[] ats = {
+				id,
+				username,
+				time.toString(),
+				message,
+				authorID,
+				Boolean.toString(isOriginal()),
+				oAuthor,
+				rFrom,
+				Integer.toString(getNotes()),
+				comment,
+				tagString(),
+				getLocation().toString(),
+				site
+		};
+		return ats;
+	}
+	
+	private String tagString(){
+		if (tags == null || tags.size() == 0) return "null";
+		StringBuffer s = new StringBuffer();
+		for (String tag : tags){
+			if (s.length() != 0) s.append("|||");
+			s.append(tag);
+		}
+		return s.toString();
 	}
 	
 	public String toString(){
-		String s = ""; //TODO implement this with StringBuffer across the toString functions after completing current goals
-		for (Object o : getAttributes()){
+		StringBuffer s = new StringBuffer();
+		for (String o : getAttributes()){
 			String val = Utilities.cleanstring(o.toString());
-			if (s == null) s = val;
-			else s = s + '\t' + val;
+			if (s.length() != 0) s.append('\t');
+			s.append(val);
 		}
-		return s;
+		return s.toString();
 	}
 	
 	/** EXCLUSIVELY FOR IMPORTING VALUES

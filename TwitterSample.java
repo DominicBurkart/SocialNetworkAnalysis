@@ -166,6 +166,7 @@ public abstract class TwitterSample extends Sample {
 		w.close();
 	}
 	
+	//TODO
 	public void loadFromTSV(String dir){
 		File p = new File(Paths.get(dir).toString()); //in case the input path isn't absolute
 		File[] directory = p.listFiles();
@@ -209,24 +210,28 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 	
+	//TODO
 	private void importFols(Scanner s){
 		while (s.hasNextLine()){
 			new Follow(s.nextLine());
 		}
 	}
 	
+	//TODO
 	private void importPosts(Scanner s){
 		while (s.hasNextLine()){
 			new TwitterStatus(s.nextLine());
 		}
 	}
 	
+	//TODO
 	private void importUsers(Scanner s){
 		while (s.hasNextLine()){
 			new TwitterUser(s.nextLine());
 		}
 	}
 	
+	//TODO
 	private void importInteractions(Scanner s){
 		if (this.follows != null && this.follows.size() > 0){
 			while (s.hasNextLine()){
