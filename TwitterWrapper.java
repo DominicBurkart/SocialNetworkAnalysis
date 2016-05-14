@@ -72,15 +72,15 @@ public class TwitterWrapper implements Twitter {
 	boolean verbose = false; //turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 	
-	//functions used: getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs
-	//families: statuses, users, statuses, followers
+	//functions used: getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs, search
+	//families: statuses, users, statuses, followers, search
 	// |families| = 3
 
 	public TwitterWrapper(Twitter t, int source) {
 		this.source = source;
 		this.t = t;
 		while (source >= getSources().size()){
-			getSources().add(new int[3]);
+			getSources().add(new int[4]);
 		}
 		limits = getSources().get(source);
 	}
@@ -356,7 +356,7 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getRetweeterIds(long arg0, long arg1) throws TwitterException {
-		if (limits[0] >= 60) {
+		if (limits[0] >= 59) {
 			getTimelimited()[0] = new Date();
 			limit.reached(0);
 			limits[0] = 0;
@@ -367,7 +367,7 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getRetweeterIds(long arg0, int arg1, long arg2) throws TwitterException {
-		if (limits[0] >= 60) {
+		if (limits[0] >= 59) {
 			getTimelimited()[0] = new Date();
 			limit.reached(0);
 			limits[0] = 0;
@@ -434,9 +434,13 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public QueryResult search(Query arg0) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (limits[3] >= 449) {
+			getTimelimited()[3] = new Date();
+			limit.reached(3);
+			limits[3] = 0;
+		}
+		limits[3]++;
+		return t.search(arg0);
 	}
 
 	@Override

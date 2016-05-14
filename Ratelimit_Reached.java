@@ -15,6 +15,9 @@ public class Ratelimit_Reached extends SNA_Root{
 		l = r;
 	}
 
+	/**
+	 * @param i: familly that is being ratelimited (0 = tweets, 1 = users, 2 = following, 3 = search)
+	 */
 	public void reached(int i) {
 		l.reached(i);
 	}

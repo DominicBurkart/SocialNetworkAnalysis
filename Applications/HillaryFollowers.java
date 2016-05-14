@@ -1,11 +1,12 @@
-package SocialNetworkAnalysis;
+package SocialNetworkAnalysis.Applications;
+import SocialNetworkAnalysis.*;
 
 import java.util.Arrays;
 
 public class HillaryFollowers extends TwitterSample {
 	static final int DEPTH = 1;
 	int collected = 0;
-	int goal = 50000;
+	int goal = 5000; //max collectable followers per user with this algorithm
 	
 	public static void main(String[] args){
 		HillaryFollowers h = new HillaryFollowers();
@@ -19,7 +20,7 @@ public class HillaryFollowers extends TwitterSample {
 	 * Returns true when conditions have been met.
 	 */
 	@Override
-	boolean userConditions(User u) {
+	public boolean userConditions(User u) {
 		if (u.firstDepth <= DEPTH-1) return true;
 		else return false;
 	}
@@ -31,7 +32,7 @@ public class HillaryFollowers extends TwitterSample {
 	 * followers if they pass userConditions.
 	 */
 	@Override
-	void userAction(User u) {
+	public void userAction(User u) {
 		this.getFollowingQ.add((TwitterUser) u);
 	}
 
@@ -40,17 +41,17 @@ public class HillaryFollowers extends TwitterSample {
 	 * to these ids.
 	 */
 	@Override
-	boolean followingConditions(ToUser ids) {
+	public boolean followingConditions(ToUser ids) {
 		if (collected < goal) return true;
 		else return false;
 	}
 	
 	@Override
-	void followAction(ToUser ids) {
+	public void followAction(ToUser ids) {
 		if (ids.ids.length < 100){
 			getUserQ.add(ids);
 		}
-		else{
+		else{ //splits one big ToUser object into many small enough to fit into Twitter's batch querying system.
 			int total = ids.ids.length;
 			int chunkNum = total / 100;
 			if (total % 100 > 0){
@@ -80,7 +81,7 @@ public class HillaryFollowers extends TwitterSample {
 	}
 
 	@Override
-	void start() {
+	public void start() {
 		System.out.println("Starting data collection!");
 		ToUser hillary = new ToUser("1339835893", 0);
 		getUserQ.add(hillary);

@@ -70,7 +70,7 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	@Override
-	String[] getFol(User u) {
+	public String[] getFol(User u) {
 		try {
 			return TwitterRequestHandler.getSomeFollowerIds(u);
 		} catch (TwitterException e) {
@@ -81,7 +81,7 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	@Override
-	User getUser(ToUser id) {
+	public User getUser(ToUser id) {
 		try {
 			User u = TwitterRequestHandler.getUser(Long.parseLong(id.id), id.depth);
 			return u;
@@ -99,7 +99,7 @@ public abstract class TwitterSample extends Sample {
 	}
 	
 	@Override
-	User[] getUsers(ToUser ids){
+	public User[] getUsers(ToUser ids){
 		long[] idsNum = new long[ids.ids.length];
 		int i = 0;
 		for (String id : ids.ids){
@@ -116,7 +116,7 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	@Override
-	void getPosts(User u) {
+	public void getPosts(User u) {
 		try {
 			TwitterRequestHandler.getPosts(u);
 		} catch (TwitterException e) {

@@ -1,5 +1,5 @@
 package SocialNetworkAnalysis;
 
 public class SNA_Root {
-	boolean verbose = false;
+	public boolean verbose = false;
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import twitter4j.IDs;
 import twitter4j.Paging;
+import twitter4j.Query;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -21,6 +22,17 @@ public class TwitterRequestHandler extends SNA_Root {
 
 	static Twitter getTwitter() {
 		return authorized.getTwitter();
+	}
+	
+	static TwitterStatus[] search (String terms) throws TwitterException{
+		Query q = new Query(terms);
+		List<Status> l = getTwitter().search(q).getTweets();
+		TwitterStatus[] out = new TwitterStatus[l.size()];
+		int i = 0;
+		for (Status s : l){
+			out[i] = new TwitterStatus(s);
+		}
+		return out;
 	}
 
 	static ArrayList<User> getFollowers(User u) throws BadIDException, TwitterException {
@@ -262,17 +274,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		Paging paging = new Paging(1, 100);
 		List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 		for (Status s : statuses) {
-			Post p = new TwitterStatus();
-			p.setId(Long.toString(s.getId()));
-			p.setNotes(s.getFavoriteCount());
-			p.setMessage(s.getText());
-			p.setTime(s.getCreatedAt());
-			p.setAuthor(u);
-			p.setOriginal(s.isRetweet());
-			p.getLocation().setLatitude(s.getGeoLocation().getLatitude());
-			p.getLocation().setLongitude(s.getGeoLocation().getLongitude());
-			p.getLocation().setName(s.getPlace().getFullName());
-			p.getLocation().setLocationType(s.getPlace().getPlaceType());
+			Post p = new TwitterStatus(s);
 			try {
 				u.addPost(p);
 			} catch (RedundantEntryException e) {}

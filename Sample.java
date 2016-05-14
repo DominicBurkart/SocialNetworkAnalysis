@@ -16,7 +16,7 @@ public abstract class Sample extends SNA_Root {
 	LinkedList<Follow> follows = new LinkedList<Follow>();
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>();
 	String outDir;
-	String name = "collection";
+	public String name = "collection";
 	
 	public Sample(){
 		User.sample = this;
@@ -60,25 +60,25 @@ public abstract class Sample extends SNA_Root {
 	 */
 	abstract boolean userSleeping();
 	
-	Queue<TwitterUser> getFollowingQ;
-	Queue<TwitterUser> getPostsQ; //TODO make this more portable
-	Queue<ToUser> getUserQ;
+	public Queue<TwitterUser> getFollowingQ;
+	public Queue<TwitterUser> getPostsQ; //TODO make this more portable
+	public Queue<ToUser> getUserQ;
 	
 	/**
 	 * Returns true if we should
 	 * do the defined userAction to 
 	 * the user.
 	 */
-	abstract boolean userConditions(User u);
-	abstract void userAction(User u);
+	public abstract boolean userConditions(User u);
+	public abstract void userAction(User u);
 	
 	/**
 	 * Returns true if we should
 	 * do the defined followAction to 
 	 * the list of IDs.
 	 */
-	abstract boolean followingConditions(ToUser ids);
-	abstract void followAction(ToUser ids);
+	public abstract boolean followingConditions(ToUser ids);
+	public abstract void followAction(ToUser ids);
 
 	
 	/**
@@ -88,17 +88,17 @@ public abstract class Sample extends SNA_Root {
 	 * collects the twitter account of 
 	 * Hillary Clinton).
 	 */
-	abstract void start();
+	public abstract void start();
 	
 	/**
 	 * Get a string of IDs from a user!
 	 */
-	abstract String[] getFol(User u);
+	public abstract String[] getFol(User u);
 	
 	/**
 	 * Get a user from an ID!
 	 */
-	abstract User getUser(ToUser id);
+	public abstract User getUser(ToUser id);
 	
 	/**
 	 * Get a collection of users from a list of IDs.
@@ -106,12 +106,12 @@ public abstract class Sample extends SNA_Root {
 	 * Assumes that all users have the same depth,
 	 * which you assign to them.
 	 */
-	abstract User[] getUsers(ToUser ids);
+	public abstract User[] getUsers(ToUser ids);
 	
 	/**
 	 * Get posts from a user!
 	 */
-	abstract void getPosts(User u);
+	public abstract void getPosts(User u);
 	
 	/**
 	 * Runs the data collection.
@@ -153,16 +153,16 @@ public abstract class Sample extends SNA_Root {
 		toTSV();
 	}
 	
-	protected int[] QueueLengths(){
+	public int[] QueueLengths(){
 		int[] sizes = {getFollowingQ.size(), getUserQ.size(), getPostsQ.size()};
 		return sizes;
 	}
 	
-	protected class ToUser{
+	public class ToUser{
 		boolean single;
 		String id;
-		String[] ids;
-		int depth;
+		public String[] ids;
+		public int depth;
 		
 		public ToUser(String id, int depth){
 			this.id = id;
@@ -213,7 +213,7 @@ public abstract class Sample extends SNA_Root {
 		loadFromTSV(dir);
 	}
 	
-	protected class Fwrap implements Comparable<Fwrap>{
+	public class Fwrap implements Comparable<Fwrap>{
 		String n;
 		File f;
 		int ordering;
@@ -256,7 +256,7 @@ public abstract class Sample extends SNA_Root {
 	
 	abstract void loadFromTSV(String dir);
 
-	protected PrintWriter fileHandler(String fname) {
+	public PrintWriter fileHandler(String fname) {
 		checkTestOut();
 		File f;
 		if (outDir != null || outDir != "") {
@@ -276,7 +276,7 @@ public abstract class Sample extends SNA_Root {
 		}
 	}
 
-	protected void checkTestOut() {
+	public void checkTestOut() {
 		if (outDir == null) {
 			outDir = "";
 			System.out.println("Saving files in the project folder.");
