@@ -39,6 +39,9 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 		this.setMessage(message);
 		sample.posts.put(id, this);
 	}
+	
+	//TODO public Post(String stringified){
+	
 
 	/**
 	 * @return 0 if the posts have the same id, otherwise returns the difference
@@ -83,21 +86,11 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 				rFrom,
 				Integer.toString(getNotes()),
 				comment,
-				tagString(),
+				Utilities.tagString(tags),
 				getLocation().toString(),
 				site
 		};
 		return ats;
-	}
-	
-	private String tagString(){
-		if (tags == null || tags.size() == 0) return "null";
-		StringBuffer s = new StringBuffer();
-		for (String tag : tags){
-			if (s.length() != 0) s.append("|||");
-			s.append(tag);
-		}
-		return s.toString();
 	}
 	
 	public String toString(){

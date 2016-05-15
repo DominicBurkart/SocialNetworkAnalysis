@@ -237,11 +237,11 @@ public abstract class TwitterSample extends Sample {
 			while (s.hasNextLine()){
 				String cur = s.nextLine();
 				String[] split = cur.split("\t");
-				switch (split[3]){
+				switch (split[2]){
 				case "follow": break; //don't reimport follow objects!
-				// case "like": new Like(cur); break; TODO add support for this feature!
+				case "like": new Like(cur); break; // TODO add support for this feature!
 				case "repost": new Repost(cur); break;
-				// case "comment": new Comment(cur); break; TODO add support for this feature!
+				case "comment": new Comment(cur); break; // TODO add support for this feature!
 				}
 			}
 		}
