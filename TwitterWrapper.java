@@ -72,8 +72,9 @@ public class TwitterWrapper implements Twitter {
 	boolean verbose = false; //turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 	
-	//functions used: getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs, search
+	//functions used: getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs, getFriends, search
 	//families: statuses, users, statuses, followers, search
+	// ^ TODO assumes that getFriends and getFollowersIDs share a ratelimit (should be checked).
 	// |families| = 3
 
 	public TwitterWrapper(Twitter t, int source) {
@@ -684,37 +685,92 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getFriendsIDs(long arg0) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (limits[2] >= 14) {
+			getTimelimited()[2] = new Date();
+			limit.reached(2);
+			limits[2] = 0;
+		}
+		if (verbose){
+			System.out.print("limits in getFriendsIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
+		}
+		limits[2]++;
+		return t.getFriendsIDs(arg0);
 	}
 
 	@Override
 	public IDs getFriendsIDs(long arg0, long arg1) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (limits[2] >= 14) {
+			getTimelimited()[2] = new Date();
+			limit.reached(2);
+			limits[2] = 0;
+		}
+		if (verbose){
+			System.out.print("limits in getFriendsIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
+		}
+		limits[2]++;
+		return t.getFriendsIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFriendsIDs(String arg0, long arg1) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (limits[2] >= 14) {
+			getTimelimited()[2] = new Date();
+			limit.reached(2);
+			limits[2] = 0;
+		}
+		if (verbose){
+			System.out.print("limits in getFriendsIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
+		}
+		limits[2]++;
+		return t.getFriendsIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFriendsIDs(long arg0, long arg1, int arg2) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (limits[2] >= 14) {
+			getTimelimited()[2] = new Date();
+			limit.reached(2);
+			limits[2] = 0;
+		}
+		if (verbose){
+			System.out.print("limits in getFriendsIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
+		}
+		limits[2]++;
+		return t.getFriendsIDs(arg0, arg1, arg2);
 	}
 
 	@Override
 	public IDs getFriendsIDs(String arg0, long arg1, int arg2) throws TwitterException {
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		if (limits[2] >= 14) {
+			getTimelimited()[2] = new Date();
+			limit.reached(2);
+			limits[2] = 0;
+		}
+		if (verbose){
+			System.out.print("limits in getFriendsIDs: ");
+			for (int limit : limits){
+				System.out.print(limit+" ");
+			}
+			System.out.println();
+		}
+		limits[2]++;
+		return t.getFriendsIDs(arg0, arg1, arg2);
 	}
 
 	@Override

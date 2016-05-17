@@ -1,9 +1,12 @@
 package SocialNetworkAnalysis.Applications;
-import SocialNetworkAnalysis.*;
 
 import java.util.Arrays;
 
-public class HillaryFollowers extends TwitterSample {
+import SocialNetworkAnalysis.TwitterSample;
+import SocialNetworkAnalysis.TwitterUser;
+import SocialNetworkAnalysis.User;
+
+public class HillaryFollowersFriends extends TwitterSample {
 	static final int DEPTH = 1;
 	int collected = 0;
 	int goal = 5000; //max collectable followers per user with this algorithm
@@ -12,6 +15,14 @@ public class HillaryFollowers extends TwitterSample {
 		HillaryFollowers h = new HillaryFollowers();
 		h.name = "hillaryFollowers";
 		h.run();
+	}
+	
+	/**
+	 * Tells the iterative collector to get Friends instead of Followers!
+	 */
+	@Override
+	public ToUser getFol(ToFollow u) {
+		return super.getFriends(u);
 	}
 
 	/**
@@ -94,5 +105,4 @@ public class HillaryFollowers extends TwitterSample {
 	public void finish(){
 		toTSV();
 	}
-
 }

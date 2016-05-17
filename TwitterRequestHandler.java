@@ -1,9 +1,10 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
+import SocialNetworkAnalysis.Sample.ToFollow;
+import SocialNetworkAnalysis.Sample.ToUser;
 import twitter4j.IDs;
 import twitter4j.Paging;
 import twitter4j.Query;
@@ -34,204 +35,260 @@ public class TwitterRequestHandler extends SNA_Root {
 		}
 		return out;
 	}
-
-	static ArrayList<User> getFollowers(User u) throws BadIDException, TwitterException {
-		ArrayList<User> out = new ArrayList<User>();
-		ArrayList<long[]> pages = new ArrayList<long[]>();
+	
+	static ToUser getFriends(ToFollow toFriend) throws BadIDException, TwitterException {
+		ToUser out = null;
 		try {
-			long cursor = -1;
-			while (cursor != 0) {
-				IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), cursor);
-				pages.add(IDvals.getIDs());
-				cursor = IDvals.getNextCursor();
+			//get the user ids!
+			IDs IDvals = getTwitter().getFriendsIDs(Long.valueOf(toFriend.id), toFriend.cursor);
+			long[] ids = IDvals.getIDs();
+			String[] sIds = new String[ids.length];
+			out = User.sample.new ToUser(sIds, toFriend.depth+1);
+			
+			//we only collected the first batch of followers for this user.
+			//If there are more, add the remaining back to the getFollowingQueue.
+			toFriend.cursor = IDvals.getNextCursor();
+			if (toFriend.cursor != 0){
+				User.sample.getFollowingQ.add(toFriend);
 			}
-			for (long[] p : pages) {
-				for (long l : p) {
-					try{
-						TwitterUser t = getUser(l, u.firstDepth + 1);
-						out.add(t);
-					} catch(TwitterException e){
-						if (e.getErrorCode() == 50){
-							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
-						}
-						else if (e.getErrorCode() == 63) {
-							System.err.println("User "+l+" has been suspended and ignored.");
-							continue;
-						}
-						else throw e;
-					}
-				}
-			}
+			
 		} catch (NumberFormatException e) {
-			throw new BadIDException("Bad id given to getFollowers: " + u.id);
-		} catch (BadUserException e) {
-			System.err.println("Unusual error with twitter user: " + u.id);
+			try{
+				throw new BadIDException("Bad id given to getFollowers: " + toFriend.id);
+			}
+			catch (NullPointerException f){
+				throw new BadIDException("Null value given to getFollowers as an id");
+			}
 		}
 		return out;
 	}
 	
-	static ArrayList<User> getSomeFollowers(User u) throws BadIDException, TwitterException {
-		ArrayList<User> out = new ArrayList<User>();
+	static ToUser getSomeFriends(ToFollow toFriend) throws BadIDException, TwitterException {
+		ToUser out = null;
 		try {
-			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
-			for (long l : IDvals.getIDs()) {
-				try{
-					TwitterUser t = getUser(l, u.firstDepth + 1);
-					out.add(t);
-				} catch(TwitterException e){
-					if (e.getErrorCode() == 50){
-						System.err.println("User could not be found:"+l+"\ncontinuing collection.");
-					}
-					else if (e.getErrorCode() == 63) {
-						System.err.println("User "+l+" has been suspended and ignored.");
-						continue;
-					}
-					else throw e;
-				}
-			}
-		} catch (BadUserException e) {
-			System.err.println("Unusual error with twitter user: " + u.id);
+			IDs IDvals = getTwitter().getFriendsIDs(Long.valueOf(toFriend.id), toFriend.cursor);
+			long[] ids = IDvals.getIDs();
+			String[] sIds = new String[ids.length];
+			out = User.sample.new ToUser(sIds, toFriend.depth+1);
 		} catch (TwitterException e){
 			if (e.getErrorCode() != -1) throw e;
-			//otherwise this is just a protected user.
+			//otherwise this is just a protected user or we're gettting a similar permissions problem.
+		}
+		return out;
+	}
+
+	static ToUser getFollowers(ToFollow toFol) throws BadIDException, TwitterException {
+		ToUser out = null;
+		try {
+			//get the user ids!
+			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor);
+			long[] ids = IDvals.getIDs();
+			String[] sIds = new String[ids.length];
+			out = User.sample.new ToUser(sIds, toFol.depth+1);
+			
+			//we only collected the first batch of followers for this user.
+			//If there are more, add the remaining back to the getFollowingQueue.
+			toFol.cursor = IDvals.getNextCursor();
+			if (toFol.cursor != 0){
+				User.sample.getFollowingQ.add(toFol);
+			}
+			
+		} catch (NumberFormatException e) {
+			try{
+				throw new BadIDException("Bad id given to getFollowers: " + toFol.id);
+			}
+			catch (NullPointerException f){
+				throw new BadIDException("Null value given to getFollowers as an id");
+			}
 		}
 		return out;
 	}
 	
-	private static int Collected(LinkedList<long[]> l){
-		int total = 0;
-		for (long[] p : l){
-			total += p.length;
+//	static ArrayList<User> getFollowers(User u) throws BadIDException, TwitterException {
+//		ArrayList<User> out = new ArrayList<User>();
+//		ArrayList<long[]> pages = new ArrayList<long[]>();
+//		try {
+//			long cursor = -1;
+//			while (cursor != 0) {
+//				IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), cursor);
+//				pages.add(IDvals.getIDs());
+//				cursor = IDvals.getNextCursor();
+//			}
+//			for (long[] p : pages) {
+//				for (long l : p) {
+//					try{
+//						TwitterUser t = getUser(l, u.firstDepth + 1);
+//						out.add(t);
+//					} catch(TwitterException e){
+//						if (e.getErrorCode() == 50){
+//							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
+//						}
+//						else if (e.getErrorCode() == 63) {
+//							System.err.println("User "+l+" has been suspended and ignored.");
+//							continue;
+//						}
+//						else throw e;
+//					}
+//				}
+//			}
+//		} catch (NumberFormatException e) {
+//			throw new BadIDException("Bad id given to getFollowers: " + u.id);
+//		} catch (BadUserException e) {
+//			System.err.println("Unusual error with twitter user: " + u.id);
+//		}
+//		return out;
+//	}
+	
+	static ToUser getSomeFollowers(ToFollow toFol) throws BadIDException, TwitterException {
+		ToUser out = null;
+		try {
+			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor);
+			long[] ids = IDvals.getIDs();
+			String[] sIds = new String[ids.length];
+			out = User.sample.new ToUser(sIds, toFol.depth+1);
+		} catch (TwitterException e){
+			if (e.getErrorCode() != -1) throw e;
+			//otherwise this is just a protected user or we're gettting a similar permissions problem.
 		}
-		return total;
+		return out;
 	}
 	
+	
+//	/**
+//	 * 
+//	 * Returns at most x followers for each call. Less could be called if the user doesn't follow
+//	 * a lot of people.
+//	 * 
+//	 * @param u
+//	 * @param num
+//	 * @return
+//	 * @throws BadIDException
+//	 * @throws TwitterException
+//	 */
+//	static ArrayList<User> getxFollowers(User u, int num) throws BadIDException, TwitterException {
+//		ArrayList<User> out = new ArrayList<User>();
+//		try {
+//			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
+//			long[] ids = IDvals.getIDs();
+//			if (ids.length < num){ //either the user doesn't follow many people or we didn't get enough from twitter
+//				if (IDvals.getNextCursor() != 0 ){ //if we can get more from twitter, do
+//					LinkedList<long[]> pages = new LinkedList<long[]>();
+//					pages.add(ids);
+//					while (IDvals.getNextCursor() != 0 && Collected(pages) < num){
+//						IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), IDvals.getNextCursor());
+//						ids = IDvals.getIDs();
+//						pages.add(ids);
+//					}
+//					for (long[] page : pages){ // go through and add more users until we're done
+//						for(long id : page){
+//							if (out.size() < num){
+//								try{
+//									TwitterUser t = getUser(id, u.firstDepth + 1);
+//									out.add(t);
+//								} catch(TwitterException e){
+//									if (e.getErrorCode() == 50){
+//										System.err.println("User could not be found:"+id+"\ncontinuing collection.");
+//									}
+//									else if (e.getErrorCode() == 63) {
+//										System.err.println("User "+id+" has been suspended and ignored.");
+//										continue;
+//									}
+//									else throw e;
+//								}
+//							}
+//							else{ //we're done!
+//								return out;
+//							}
+//						}
+//					}
+//				}
+//				else{ // the user doesn't follow many people. just return who they do follow.
+//					for(long id : ids){			
+//						try{
+//							TwitterUser t = getUser(id, u.firstDepth + 1);
+//							out.add(t);
+//						} catch(TwitterException e){
+//							if (e.getErrorCode() == 50){
+//								System.err.println("User could not be found:"+id+"\ncontinuing collection.");
+//							}
+//							else if (e.getErrorCode() == 63) {
+//								System.err.println("User "+id+" has been suspended and ignored.");
+//								continue;
+//							}
+//							else throw e;
+//						}
+//					}
+//				}
+//			}
+//			else{ //we collected enough followers with one getFollowers call! great!
+//				for (int i = 0; i < num; i++) {
+//					long l = ids[i];
+//					try{
+//						TwitterUser t = getUser(l, u.firstDepth + 1);
+//						out.add(t);
+//					} catch(TwitterException e){
+//						if (e.getErrorCode() == 50){
+//							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
+//						}
+//						else throw e;
+//					}
+//				}
+//			}
+//		} catch (BadUserException e) {
+//			System.err.println("Unusual error with twitter user: " + u.id);
+//		} catch (TwitterException e){
+//			if (e.getErrorCode() != -1) throw e;
+//			System.err.println("Unusual error with twitter user: " + u.id);
+//			if (u.username != null){
+//				System.err.println("username of weird error account: "+ u.username);
+//			}
+//			else{
+//				System.err.println("username of weird error account was null.");
+//			}
+//		}
+//		return out;
+//	}
+	
+//	/**
+//	 * @return up to 
+//	 * @throws TwitterException 
+//	 */
+//	static String[] getSomeFollowerIds(User u) throws TwitterException{
+//		IDs IDvals;
+//		try {
+//			IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
+//			long[] ids = IDvals.getIDs();
+//			String[] out = new String[ids.length];
+//			int i = 0;
+//			for (long id : ids){
+//				out[i++] = Long.toString(id);
+//			}
+//			return out;
+//		} catch (NumberFormatException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (TwitterException e){
+//			if (e.getErrorCode() != -1) throw e;
+//			System.err.println("Unusual error with twitter user: " + u.id);
+//			if (u.username != null){
+//				System.err.println("username of weird error account: "+ u.username);
+//			}
+//			else{
+//				System.err.println("username of weird error account was null.");
+//			}
+//		}
+//		return null;
+//	}
+
 	/**
+	 * @see getUsers
 	 * 
-	 * Returns at most x followers for each call. Less could be called if the user doesn't follow
-	 * a lot of people.
-	 * 
-	 * @param u
-	 * @param num
+	 * @param id
+	 * @param depth
 	 * @return
-	 * @throws BadIDException
+	 * @throws BadUserException
 	 * @throws TwitterException
 	 */
-	static ArrayList<User> getxFollowers(User u, int num) throws BadIDException, TwitterException {
-		ArrayList<User> out = new ArrayList<User>();
-		try {
-			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
-			long[] ids = IDvals.getIDs();
-			if (ids.length < num){ //either the user doesn't follow many people or we didn't get enough from twitter
-				if (IDvals.getNextCursor() != 0 ){ //if we can get more from twitter, do
-					LinkedList<long[]> pages = new LinkedList<long[]>();
-					pages.add(ids);
-					while (IDvals.getNextCursor() != 0 && Collected(pages) < num){
-						IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), IDvals.getNextCursor());
-						ids = IDvals.getIDs();
-						pages.add(ids);
-					}
-					for (long[] page : pages){ // go through and add more users until we're done
-						for(long id : page){
-							if (out.size() < num){
-								try{
-									TwitterUser t = getUser(id, u.firstDepth + 1);
-									out.add(t);
-								} catch(TwitterException e){
-									if (e.getErrorCode() == 50){
-										System.err.println("User could not be found:"+id+"\ncontinuing collection.");
-									}
-									else if (e.getErrorCode() == 63) {
-										System.err.println("User "+id+" has been suspended and ignored.");
-										continue;
-									}
-									else throw e;
-								}
-							}
-							else{ //we're done!
-								return out;
-							}
-						}
-					}
-				}
-				else{ // the user doesn't follow many people. just return who they do follow.
-					for(long id : ids){			
-						try{
-							TwitterUser t = getUser(id, u.firstDepth + 1);
-							out.add(t);
-						} catch(TwitterException e){
-							if (e.getErrorCode() == 50){
-								System.err.println("User could not be found:"+id+"\ncontinuing collection.");
-							}
-							else if (e.getErrorCode() == 63) {
-								System.err.println("User "+id+" has been suspended and ignored.");
-								continue;
-							}
-							else throw e;
-						}
-					}
-				}
-			}
-			else{ //we collected enough followers with one getFollowers call! great!
-				for (int i = 0; i < num; i++) {
-					long l = ids[i];
-					try{
-						TwitterUser t = getUser(l, u.firstDepth + 1);
-						out.add(t);
-					} catch(TwitterException e){
-						if (e.getErrorCode() == 50){
-							System.err.println("User could not be found:"+l+"\ncontinuing collection.");
-						}
-						else throw e;
-					}
-				}
-			}
-		} catch (BadUserException e) {
-			System.err.println("Unusual error with twitter user: " + u.id);
-		} catch (TwitterException e){
-			if (e.getErrorCode() != -1) throw e;
-			System.err.println("Unusual error with twitter user: " + u.id);
-			if (u.username != null){
-				System.err.println("username of weird error account: "+ u.username);
-			}
-			else{
-				System.err.println("username of weird error account was null.");
-			}
-		}
-		return out;
-	}
-	
-	/**
-	 * @return up to 
-	 * @throws TwitterException 
-	 */
-	static String[] getSomeFollowerIds(User u) throws TwitterException{
-		IDs IDvals;
-		try {
-			IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
-			long[] ids = IDvals.getIDs();
-			String[] out = new String[ids.length];
-			int i = 0;
-			for (long id : ids){
-				out[i++] = Long.toString(id);
-			}
-			return out;
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TwitterException e){
-			if (e.getErrorCode() != -1) throw e;
-			System.err.println("Unusual error with twitter user: " + u.id);
-			if (u.username != null){
-				System.err.println("username of weird error account: "+ u.username);
-			}
-			else{
-				System.err.println("username of weird error account was null.");
-			}
-		}
-		return null;
-	}
-
 	static TwitterUser getUser(long id, int depth) throws BadUserException, TwitterException {
 		try {
 			TwitterUser t = new TwitterUser(Long.toString(id), depth);
@@ -274,6 +331,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		Paging paging = new Paging(1, 100);
 		List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 		for (Status s : statuses) {
+			//TODO save raw statuses via a new TwitterSample method System.out.println("status: "+s.toString());
 			Post p = new TwitterStatus(s);
 			try {
 				u.addPost(p);

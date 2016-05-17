@@ -15,7 +15,7 @@ import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import twitter4j.TwitterException;
 
 public abstract class TwitterSample extends Sample {
-	TwitterRequestHandler t = new TwitterRequestHandler();
+	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	long[] open = TwitterAuth.open;
 	boolean fsleep;
 	boolean usleep;
@@ -23,7 +23,7 @@ public abstract class TwitterSample extends Sample {
 	boolean[] sleep = {ssleep, usleep, fsleep};
 	
 	public TwitterSample(){
-		this.getFollowingQ = new LinkedList<TwitterUser>();
+		this.getFollowingQ = new LinkedList<ToFollow>();
 		this.getPostsQ = new LinkedList<TwitterUser>();
 		this.getUserQ = new LinkedList<ToUser>();
 	}
@@ -70,10 +70,28 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	@Override
-	public String[] getFol(User u) {
+	public ToUser getFol(ToFollow u) {
 		try {
-			return TwitterRequestHandler.getSomeFollowerIds(u);
+			return TwitterRequestHandler.getFollowers(u);
 		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+			return null;
+		} catch (BadIDException e) {
+			e.printStackTrace();
+			System.exit(0);
+			return null;
+		}
+	}
+	
+	public ToUser getFriends(ToFollow u){
+		try {
+			return TwitterRequestHandler.getFriends(u);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+			System.exit(0);
+			return null;
+		} catch (BadIDException e) {
 			e.printStackTrace();
 			System.exit(0);
 			return null;
@@ -137,6 +155,8 @@ public abstract class TwitterSample extends Sample {
 			}
 		}
 	}
+	
+	//directly save the incoming tweets and users as they come in imo!
 	
 	public void usersToTSV() {
 		PrintWriter w = fileHandler(name + "_users.tsv");

@@ -2,6 +2,7 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 
+import SocialNetworkAnalysis.Sample.ToUser;
 import twitter4j.TwitterException;
 
 /**
@@ -22,9 +23,20 @@ public class TwitterUser extends User {
 	}
 
 	@Override
-	public ArrayList<User> getFollowers() throws APIException {
+	public ToUser getFollowers() throws APIException {
 		try {
-			return TwitterRequestHandler.getFollowers(this);
+			return TwitterRequestHandler.getFollowers(User.sample.new ToFollow(this));
+		} catch (BadIDException e) {
+			System.err.println("TwitterUser.getFollowers() recieved a bad ID: " + this.id);
+			return null; // TODO double check that this is fine
+		} catch (TwitterException e) {
+			throw new APIException(e);
+		}
+	}
+	
+	public ToUser getFriends() throws APIException{
+		try {
+			return TwitterRequestHandler.getFriends(User.sample.new ToFollow(this));
 		} catch (BadIDException e) {
 			System.err.println("TwitterUser.getFollowers() recieved a bad ID: " + this.id);
 			return null; // TODO double check that this is fine
@@ -43,35 +55,35 @@ public class TwitterUser extends User {
 		return posts;
 	}
 
-	@Override
-	public ArrayList<User> getSomeFollowers() throws APIException {
-		try {
-			return TwitterRequestHandler.getSomeFollowers(this);
-		} catch (BadIDException e) {
-			System.err.println("TwitterUser.getSomeFollowers() recieved a bad ID: " + this.id);
-			System.err.println("Saving and quitting.");
-			sample.usersToTSV();
-			System.exit(1);
-			return null; // for the compiler
-		} catch (TwitterException e) {
-			throw new APIException(e);
-		}
-	}
+//	@Override
+//	public ArrayList<User> getSomeFollowers() throws APIException {
+//		try {
+//			return TwitterRequestHandler.getSomeFollowers(this);
+//		} catch (BadIDException e) {
+//			System.err.println("TwitterUser.getSomeFollowers() recieved a bad ID: " + this.id);
+//			System.err.println("Saving and quitting.");
+//			sample.usersToTSV();
+//			System.exit(1);
+//			return null; // for the compiler
+//		} catch (TwitterException e) {
+//			throw new APIException(e);
+//		}
+//	}
 	
-	@Override
-	public ArrayList<User> getxFollowers(int n) throws APIException{
-		try {
-			return TwitterRequestHandler.getxFollowers(this, n);
-		} catch (BadIDException e) {
-			System.err.println("TwitterUser.getxFollowers() recieved a bad ID: " + this.id);
-			System.err.println("Saving and quitting.");
-			sample.usersToTSV();
-			System.exit(1);
-			return null; // for the compiler
-		} catch (TwitterException e) {
-			throw new APIException(e);
-		}
-	}
+//	@Override
+//	public ToUser getxFollowers(int n) throws APIException{
+//		try {
+//			return TwitterRequestHandler.getxFollowers(this, n);
+//		} catch (BadIDException e) {
+//			System.err.println("TwitterUser.getxFollowers() recieved a bad ID: " + this.id);
+//			System.err.println("Saving and quitting.");
+//			sample.usersToTSV();
+//			System.exit(1);
+//			return null; // for the compiler
+//		} catch (TwitterException e) {
+//			throw new APIException(e);
+//		}
+//	}
 	
 	public String toString(){
 		if (location != null){

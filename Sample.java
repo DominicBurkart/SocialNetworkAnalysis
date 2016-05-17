@@ -60,7 +60,7 @@ public abstract class Sample extends SNA_Root {
 	 */
 	abstract boolean userSleeping();
 	
-	public Queue<TwitterUser> getFollowingQ;
+	public Queue<ToFollow> getFollowingQ;
 	public Queue<TwitterUser> getPostsQ; //TODO make this more portable
 	public Queue<ToUser> getUserQ;
 	
@@ -91,12 +91,14 @@ public abstract class Sample extends SNA_Root {
 	public abstract void start();
 	
 	/**
-	 * Get a string of IDs from a user!
+	 * Get the ids of a user's followers in a handy ToUser object!
 	 */
-	public abstract String[] getFol(User u);
+	public abstract ToUser getFol(ToFollow toFol);
 	
 	/**
 	 * Get a user from an ID!
+	 * 
+	 * @see getUsers
 	 */
 	public abstract User getUser(ToUser id);
 	
@@ -120,9 +122,8 @@ public abstract class Sample extends SNA_Root {
 		start();
 		while (!completed()){
 			if (!getFollowingQ.isEmpty() && !followingSleeping()){
-				User parent = getFollowingQ.poll();
-				String[] ids = getFol(parent);
-				ToUser babies = new ToUser(ids, parent.firstDepth+1);
+				ToFollow parent = getFollowingQ.poll();
+				ToUser babies = getFol(parent);
 				if (followingConditions(babies)) followAction(babies);
 			}
 			if (!getUserQ.isEmpty() && !userSleeping()){
@@ -150,6 +151,11 @@ public abstract class Sample extends SNA_Root {
 			}
 		}
 		System.out.println("Iterative collection completed.");
+		finish();
+	}
+	
+	public void finish(){
+		System.out.println("Running sample.finish(). Saving data.");
 		toTSV();
 	}
 	
@@ -174,6 +180,32 @@ public abstract class Sample extends SNA_Root {
 			this.ids = ids;
 			this.depth = depth;
 			single = false;
+		}
+	}
+	
+	public class ToFollow{
+		String id; //user to follow
+		long cursor = -1;
+		int depth; //depth of user we have the id of.
+		
+		public ToFollow(User u, long cursor){
+			this(u);
+			this.cursor = cursor;
+		}
+		
+		public ToFollow(User u){
+			this.id = u.id;
+			this.depth = u.firstDepth;
+		}
+		
+		public ToFollow(String id, int depth, long cursor){
+			this(id, depth);
+			this.cursor = cursor;
+		}
+		
+		public ToFollow(String id, int depth){
+			this.id = id;
+			this.depth = depth;
 		}
 	}
 	
