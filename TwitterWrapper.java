@@ -69,18 +69,20 @@ public class TwitterWrapper implements Twitter {
 	int source;
 	Twitter t;
 	int[] limits;
-	boolean verbose = false; //turn on to see the limits in each callable value
+	boolean verbose = false; // turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
-	
-	//functions used: getUserTimeline, showUser, getRetweeterIDs, getFollowersIDs, getFriends, search
-	//families: statuses, users, statuses, followers, search
-	// ^ TODO assumes that getFriends and getFollowersIDs share a ratelimit (should be checked).
+
+	// functions used: getUserTimeline, showUser, getRetweeterIDs,
+	// getFollowersIDs, getFriends, search
+	// families: statuses, users, statuses, followers, search
+	// ^ TODO assumes that getFriends and getFollowersIDs share a ratelimit
+	// (should be checked).
 	// |families| = 3
 
 	public TwitterWrapper(Twitter t, int source) {
 		this.source = source;
 		this.t = t;
-		while (source >= getSources().size()){
+		while (source >= getSources().size()) {
 			getSources().add(new int[4]);
 		}
 		limits = getSources().get(source);
@@ -556,10 +558,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -574,10 +576,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -592,10 +594,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -610,10 +612,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -628,10 +630,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -690,10 +692,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -708,10 +710,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -726,10 +728,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -744,10 +746,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -762,10 +764,10 @@ public class TwitterWrapper implements Twitter {
 			limit.reached(2);
 			limits[2] = 0;
 		}
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -1057,10 +1059,10 @@ public class TwitterWrapper implements Twitter {
 			limits[1] = 0;
 		}
 		limits[1]++;
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in showUser: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}
@@ -1075,10 +1077,10 @@ public class TwitterWrapper implements Twitter {
 			limits[1] = 0;
 		}
 		limits[1]++;
-		if (verbose){
+		if (verbose) {
 			System.out.print("limits in showUser: ");
-			for (int limit : limits){
-				System.out.print(limit+" ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
 			}
 			System.out.println();
 		}

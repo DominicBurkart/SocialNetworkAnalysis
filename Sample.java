@@ -17,135 +17,125 @@ public abstract class Sample extends SNA_Root {
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>();
 	String outDir;
 	public String name = "collection";
-	
-	public Sample(){
+
+	public Sample() {
 		User.sample = this;
 		Interaction.sample = this;
 		Post.sample = this;
 	}
-	
+
 	/**
-	 * Determines whether there is 
-	 * still more data to collect.
+	 * Determines whether there is still more data to collect.
 	 * 
-	 * @return true when the collection
-	 * is sufficient
+	 * @return true when the collection is sufficient
 	 */
 	abstract boolean completed();
-	
+
 	/**
-	 * Checks if we can query for 
-	 * followers.
+	 * Checks if we can query for followers.
 	 * 
-	 * @return true if the resource is
-	 * currently unaccessible.
+	 * @return true if the resource is currently unaccessible.
 	 */
 	abstract boolean followingSleeping();
-	
+
 	/**
-	 * Checks if we can query for 
-	 * a user's posts.
+	 * Checks if we can query for a user's posts.
 	 * 
-	 * @return true if the resource is
-	 * currently unaccessible.
+	 * @return true if the resource is currently unaccessible.
 	 */
 	abstract boolean postSleeping();
-	
+
 	/**
-	 * Checks if we can query for 
-	 * a user profile.
+	 * Checks if we can query for a user profile.
 	 * 
-	 * @return true if the resource is
-	 * currently unaccessible.
+	 * @return true if the resource is currently unaccessible.
 	 */
 	abstract boolean userSleeping();
-	
+
 	public Queue<ToFollow> getFollowingQ;
-	public Queue<TwitterUser> getPostsQ; //TODO make this more portable
+	public Queue<TwitterUser> getPostsQ; // TODO make this more portable
 	public Queue<ToUser> getUserQ;
-	
+
 	/**
-	 * Returns true if we should
-	 * do the defined userAction to 
-	 * the user.
+	 * Returns true if we should do the defined userAction to the user.
 	 */
 	public abstract boolean userConditions(User u);
+
 	public abstract void userAction(User u);
-	
+
 	/**
-	 * Returns true if we should
-	 * do the defined followAction to 
-	 * the list of IDs.
+	 * Returns true if we should do the defined followAction to the list of IDs.
 	 */
 	public abstract boolean followingConditions(ToUser ids);
+
 	public abstract void followAction(ToUser ids);
 
-	
 	/**
-	 * Seed of data collection (eg, when
-	 * constructing a network of Hillary 
-	 * Clinton's twitter followers, start()
-	 * collects the twitter account of 
+	 * Seed of data collection (eg, when constructing a network of Hillary
+	 * Clinton's twitter followers, start() collects the twitter account of
 	 * Hillary Clinton).
 	 */
 	public abstract void start();
-	
+
 	/**
 	 * Get the ids of a user's followers in a handy ToUser object!
 	 */
 	public abstract ToUser getFol(ToFollow toFol);
-	
+
 	/**
 	 * Get a user from an ID!
 	 * 
 	 * @see getUsers
 	 */
 	public abstract User getUser(ToUser id);
-	
+
 	/**
 	 * Get a collection of users from a list of IDs.
 	 * 
-	 * Assumes that all users have the same depth,
-	 * which you assign to them.
+	 * Assumes that all users have the same depth, which you assign to them when
+	 * you make the ToUser object passed to this method.
 	 */
 	public abstract User[] getUsers(ToUser ids);
-	
+
 	/**
 	 * Get posts from a user!
 	 */
 	public abstract void getPosts(User u);
-	
+
 	/**
 	 * Runs the data collection.
 	 */
-	public void run(){
+	public void run() {
 		start();
-		while (!completed()){
-			if (!getFollowingQ.isEmpty() && !followingSleeping()){
+		System.out.println("Beginning run() while loop.");
+		while (!completed()) {
+			if (!getFollowingQ.isEmpty() && !followingSleeping()) {
 				ToFollow parent = getFollowingQ.poll();
 				ToUser babies = getFol(parent);
-				if (followingConditions(babies)) followAction(babies);
+				if (followingConditions(babies))
+					followAction(babies);
 			}
-			if (!getUserQ.isEmpty() && !userSleeping()){
+			if (!getUserQ.isEmpty() && !userSleeping()) {
 				ToUser account = getUserQ.poll();
-				if (account.single){
+				if (account.single) {
 					User u = getUser(account);
-					if (userConditions(u)) userAction(u);
-				}
-				else{
+					if (userConditions(u))
+						userAction(u);
+				} else {
 					User[] us = getUsers(account);
-					for (User u : us){
-						if (userConditions(u)) userAction(u);
+					for (User u : us) {
+						if (userConditions(u))
+							userAction(u);
 					}
 				}
 			}
-			if (!getPostsQ.isEmpty() && !postSleeping()){
+			if (!getPostsQ.isEmpty() && !postSleeping()) {
 				getPosts(getPostsQ.poll());
 			}
-			if (verbose == true){
+			if (verbose == true) {
 				System.out.print("Q lengths: ");
-				for (int length : QueueLengths()){
-					System.out.print(length+" ");
+				for (int length : QueueLengths()) {
+					System.out.print(length + " ");
 				}
 				System.out.println();
 			}
@@ -153,72 +143,72 @@ public abstract class Sample extends SNA_Root {
 		System.out.println("Iterative collection completed.");
 		finish();
 	}
-	
-	public void finish(){
+
+	public void finish() {
 		System.out.println("Running sample.finish(). Saving data.");
 		toTSV();
 	}
-	
-	public int[] QueueLengths(){
-		int[] sizes = {getFollowingQ.size(), getUserQ.size(), getPostsQ.size()};
+
+	public int[] QueueLengths() {
+		int[] sizes = { getFollowingQ.size(), getUserQ.size(), getPostsQ.size() };
 		return sizes;
 	}
-	
-	public class ToUser{
-		boolean single;
-		String id;
+
+	public class ToUser {
+		public boolean single;
+		public String id;
 		public String[] ids;
 		public int depth;
-		
-		public ToUser(String id, int depth){
+
+		public ToUser(String id, int depth) {
 			this.id = id;
 			this.depth = depth;
-			single = true;
+			this.single = true;
 		}
-		
-		public ToUser(String[] ids, int depth){
+
+		public ToUser(String[] ids, int depth) {
 			this.ids = ids;
 			this.depth = depth;
-			single = false;
+			this.single = false;
 		}
 	}
-	
-	public class ToFollow{
-		String id; //user to follow
+
+	public class ToFollow {
+		String id; // user to follow
 		long cursor = -1;
-		int depth; //depth of user we have the id of.
-		
-		public ToFollow(User u, long cursor){
+		int depth; // depth of user we have the id of.
+
+		public ToFollow(User u, long cursor) {
 			this(u);
 			this.cursor = cursor;
 		}
-		
-		public ToFollow(User u){
+
+		public ToFollow(User u) {
 			this.id = u.id;
 			this.depth = u.firstDepth;
 		}
-		
-		public ToFollow(String id, int depth, long cursor){
+
+		public ToFollow(String id, int depth, long cursor) {
 			this(id, depth);
 			this.cursor = cursor;
 		}
-		
-		public ToFollow(String id, int depth){
+
+		public ToFollow(String id, int depth) {
 			this.id = id;
 			this.depth = depth;
 		}
 	}
-	
-	public void toTSV(){
+
+	public void toTSV() {
 		interactionsToTSV();
 		usersToTSV();
 		followsToTSV();
 		postsToTSV();
 	}
-	
+
 	public void toTSV(String outDir) {
 		this.outDir = outDir;
-		interactionsToTSV(); //saving order is arbitrary
+		interactionsToTSV(); // saving order is arbitrary
 		usersToTSV();
 		followsToTSV();
 		postsToTSV();
@@ -238,45 +228,41 @@ public abstract class Sample extends SNA_Root {
 	abstract void followsToTSV();
 
 	abstract void postsToTSV();
-	
-	public void loadFromTSV(){
+
+	public void loadFromTSV() {
 		String dir = System.getProperty("user.dir");
-		System.out.println("load from csv()'s dir: "+dir);
+		System.out.println("load from csv()'s dir: " + dir);
 		loadFromTSV(dir);
 	}
-	
-	public class Fwrap implements Comparable<Fwrap>{
+
+	public class Fwrap implements Comparable<Fwrap> {
 		String n;
 		File f;
 		int ordering;
-		
-		public Fwrap(File f){
-			if (f.getName().endsWith(".tsv")){
+
+		public Fwrap(File f) {
+			if (f.getName().endsWith(".tsv")) {
 				this.f = f;
 				this.n = f.getName();
 				defOrd();
-			}
-			else{
-				System.out.println("Discluding file "+f.getName());
+			} else {
+				System.out.println("Discluding file " + f.getName());
 			}
 		}
-		
-		private void defOrd(){
-			if (n.endsWith("_users.tsv")){
+
+		private void defOrd() {
+			if (n.endsWith("_users.tsv")) {
 				ordering = 1;
-			}
-			else if (n.endsWith("_posts.tsv")){ //dependent on loading users
+			} else if (n.endsWith("_posts.tsv")) { // dependent on loading users
 				ordering = 2;
-			}
-			else if (n.endsWith("_follows.tsv")){ // dep on users
+			} else if (n.endsWith("_follows.tsv")) { // dep on users
 				ordering = 3;
-			}
-			else if (n.endsWith("_interactions.tsv")){ //dep on posts, follows
+			} else if (n.endsWith("_interactions.tsv")) { // dep on posts,
+															// follows
 				ordering = 4;
-			}
-			else{
-				ordering = 5; //all other files will ordered as 5.
-				System.out.println("Discluding file "+n);
+			} else {
+				ordering = 5; // all other files will ordered as 5.
+				System.out.println("Discluding file " + n);
 			}
 		}
 
@@ -285,7 +271,7 @@ public abstract class Sample extends SNA_Root {
 			return this.ordering - o.ordering;
 		}
 	}
-	
+
 	abstract void loadFromTSV(String dir);
 
 	public PrintWriter fileHandler(String fname) {

@@ -7,13 +7,14 @@ import java.util.Iterator;
 import SocialNetworkAnalysis.Sample.ToUser;
 
 /**
- * Allows for the manipulation of User objects collected from any supported site.
+ * Allows for the manipulation of User objects collected from any supported
+ * site.
  * 
  * @author dominicburkart
  */
-public abstract class User extends SNA_Root{
+public abstract class User extends SNA_Root {
 	public static Sample sample;
-	
+
 	private Tensors tensors = new Tensors();
 
 	public class Tensors {
@@ -65,9 +66,9 @@ public abstract class User extends SNA_Root{
 
 	public abstract ToUser getFollowers() throws APIException;
 
-//	public abstract ToUser getSomeFollowers() throws APIException;
-//	
-//	public abstract ToUser getxFollowers(int x) throws APIException;
+	// public abstract ToUser getSomeFollowers() throws APIException;
+	//
+	// public abstract ToUser getxFollowers(int x) throws APIException;
 
 	public abstract ArrayList<Post> getPosts() throws APIException;
 
@@ -114,23 +115,26 @@ public abstract class User extends SNA_Root{
 
 	@Override
 	public String toString() {
-		return (username.toString() + "\t" + id.toString() + "\t" + Utilities.cleanstring(description.toString()) + "\t" + firstDepth);
+		return (username.toString() + "\t" + id.toString() + "\t" + Utilities.cleanstring(description.toString()) + "\t"
+				+ firstDepth);
 	}
-	
-	public User(){}
-	
-	/**	EXCLUSIVELY FOR MAKING A USER OBJECT FROM A 
-	 *  STRING MADE BY THE toString() METHOD.
+
+	public User() {
+	}
+
+	/**
+	 * EXCLUSIVELY FOR MAKING A USER OBJECT FROM A STRING MADE BY THE toString()
+	 * METHOD.
 	 */
-	public User(String stringified){
+	public User(String stringified) {
 		String s = stringified;
 		int tab1 = s.indexOf('\t');
 		username = s.substring(0, tab1);
-		int tab2 = s.indexOf('\t', tab1+1);
-		id = s.substring(tab1+1, tab2);
-		tab1 = s.indexOf('\t', tab2+1);
-		description = s.substring(tab2+1, tab1);
-		firstDepth = Integer.parseInt(s.substring(tab1+1));
+		int tab2 = s.indexOf('\t', tab1 + 1);
+		id = s.substring(tab1 + 1, tab2);
+		tab1 = s.indexOf('\t', tab2 + 1);
+		description = s.substring(tab2 + 1, tab1);
+		firstDepth = Integer.parseInt(s.substring(tab1 + 1));
 	}
 
 	public Tensors getTensors() {

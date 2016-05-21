@@ -1,4 +1,5 @@
 package SocialNetworkAnalysis;
+
 /**
  * Parent class for almost all of the other classes in this package!
  * 
