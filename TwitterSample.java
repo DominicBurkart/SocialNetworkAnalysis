@@ -14,6 +14,13 @@ import java.util.Scanner;
 import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import twitter4j.TwitterException;
 
+/**
+ * Implements methods useful specifically for twitter samples and fleshes
+ * out stuff established as important in sample. Wraps TwitterRequestHandler
+ * queries and holds the boolean values of whether or not a request family is sleeping.
+ * 
+ * @author dominicburkart
+ */
 public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	long[] open = TwitterAuth.open;
@@ -132,8 +139,7 @@ public abstract class TwitterSample extends Sample {
 			idsNum[i] = Long.parseLong(id);
 			i++;
 		}
-		if (ids.ids.length > 100) { // should only be given lists of less than
-									// 100!!!!!
+		if (ids.ids.length > 100) { // should only be given lists < 100!!!!!
 			System.err.println(
 					"Bad list of IDs to getUsers. Max depth is 100 and this input had a depth of " + ids.ids.length);
 			System.err.println("Attempting to return the first 100 users.");
@@ -171,7 +177,7 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 
-	// directly save the incoming tweets and users as they come in imo!
+	//TODO directly save the incoming tweets and users as they come in imo!
 
 	public void usersToTSV() {
 		PrintWriter w = fileHandler(name + "_users.tsv");

@@ -10,6 +10,12 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Abstract class to refer to a data collecion. Provides Framework to 
+ * perform iterative behaviors and optimizes API usage given ratelimiting.
+ * 
+ * @author dominicburkart
+ */
 public abstract class Sample extends SNA_Root {
 	Hashtable<String, Post> posts = new Hashtable<String, Post>();
 	public Hashtable<String, User> users = new Hashtable<String, User>();
@@ -53,7 +59,7 @@ public abstract class Sample extends SNA_Root {
 	abstract boolean userSleeping();
 
 	public Queue<ToFollow> getFollowingQ;
-	public Queue<TwitterUser> getPostsQ; // TODO make this more portable
+	public Queue<TwitterUser> getPostsQ; // TODO make this more portable by creating a GetPost class to store the User
 	public Queue<ToUser> getUserQ;
 
 	/**
@@ -253,12 +259,11 @@ public abstract class Sample extends SNA_Root {
 		private void defOrd() {
 			if (n.endsWith("_users.tsv")) {
 				ordering = 1;
-			} else if (n.endsWith("_posts.tsv")) { // dependent on loading users
+			} else if (n.endsWith("_posts.tsv")) { //  dependent on loading users
 				ordering = 2;
 			} else if (n.endsWith("_follows.tsv")) { // dep on users
 				ordering = 3;
-			} else if (n.endsWith("_interactions.tsv")) { // dep on posts,
-															// follows
+			} else if (n.endsWith("_interactions.tsv")) { //dep on posts, follows
 				ordering = 4;
 			} else {
 				ordering = 5; // all other files will ordered as 5.

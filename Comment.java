@@ -2,6 +2,13 @@ package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
 
+/**
+ * Class used to denote a comment tensor between two users,
+ * based on the source adding commentary to a specific post
+ * of the target.
+ * 
+ * @author dominicburkart
+ */
 public class Comment extends Interaction {
 	Post post;
 	String comment = "null";

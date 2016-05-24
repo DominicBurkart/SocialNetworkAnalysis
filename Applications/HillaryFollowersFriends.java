@@ -4,6 +4,12 @@ import SocialNetworkAnalysis.*;
 
 import java.util.Arrays;
 
+/**
+ * Collects Clinton's account, some of her followers, and the friends of those
+ * followers. 
+ * 
+ * @author dominicburkart
+ */
 public class HillaryFollowersFriends extends TwitterSample {
 	static final int DEPTH = 1;
 	int collected = 0;

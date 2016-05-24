@@ -2,6 +2,10 @@ package SocialNetworkAnalysis;
 
 import twitter4j.Status;
 
+/**
+ * Specific class to refer to a tweet.
+ * @author dominicburkart
+ */
 public class TwitterStatus extends Post {
 
 	@Override

@@ -1,5 +1,10 @@
 package SocialNetworkAnalysis;
 
+/**
+ * Denotes that a user (source) "liked" or "favorited"
+ * a specific post from another user (target).
+ * @author dominicburkart
+ */
 public class Like extends Interaction {
 	Post post;
 

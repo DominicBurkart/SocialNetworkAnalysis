@@ -1,7 +1,10 @@
 package SocialNetworkAnalysis;
 
 /**
- * Calls TwiterAuth's .LimitReached() when triggered via .reached()
+ * If no listener is given to the constructor, calls TwiterAuth's
+ * .LimitReached(int family_number) when triggered via .reached(int family_number)
+ * 
+ * Otherwise, calls the assigned listener's .reached(int i) method.
  * 
  * @author dominicburkart
  */

@@ -4,6 +4,10 @@ import SocialNetworkAnalysis.*;
 
 import java.util.Arrays;
 
+/**
+ * test data collection to see that everything works!
+ * @author dominicburkart
+ */
 public class HillaryFollowers extends TwitterSample {
 	static final int DEPTH = 1;
 	int collected = 0;

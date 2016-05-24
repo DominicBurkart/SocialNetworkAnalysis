@@ -1,5 +1,11 @@
 package SocialNetworkAnalysis;
 
+/**
+ * Refers to a user (source) reposting the
+ * content of another user (target).
+ * 
+ * @author dominicburkart
+ */
 public class Repost extends Interaction {
 	String type = "repost";
 	Post post;
