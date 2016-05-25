@@ -44,6 +44,10 @@ public class TwitterRequestHandler extends SNA_Root {
 			IDs IDvals = getTwitter().getFriendsIDs(Long.valueOf(toFriend.id), toFriend.cursor);
 			long[] ids = IDvals.getIDs();
 			String[] sIds = new String[ids.length];
+			int i = 0;
+			for (long id : ids){
+				sIds[i++] = Long.toString(id);
+			}
 			out = User.sample.new ToUser(sIds, toFriend.depth + 1);
 
 			// we only collected the first batch of followers for this user.
@@ -81,12 +85,24 @@ public class TwitterRequestHandler extends SNA_Root {
 	}
 
 	static ToUser getFollowers(ToFollow toFol) throws BadIDException, TwitterException {
+		System.out.println("getFollowers called.");
 		ToUser out = null;
 		try {
 			// get the user ids!
-			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor);
+			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor); 
 			long[] ids = IDvals.getIDs();
+			System.out.println("incoming id list in TwitterRequestHandler.getFollowers: ");
+			for (long id : ids){
+				System.out.print(id+" ");
+			}
+			System.out.println();
 			String[] sIds = new String[ids.length];
+			int i = 0;
+			System.out.print("values to be strung: ");
+			for (long vId : ids){
+				System.out.print(vId+" ");
+				sIds[i++] = Long.toString(vId);
+			}
 			out = User.sample.new ToUser(sIds, toFol.depth + 1);
 
 			// we only collected the first batch of followers for this user.
@@ -150,6 +166,10 @@ public class TwitterRequestHandler extends SNA_Root {
 			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor);
 			long[] ids = IDvals.getIDs();
 			String[] sIds = new String[ids.length];
+			int i = 0;
+			for (long vId : ids){
+				sIds[i++] = Long.toString(vId);
+			}
 			out = User.sample.new ToUser(sIds, toFol.depth + 1);
 		} catch (TwitterException e) {
 			if (e.getErrorCode() != -1)

@@ -114,21 +114,37 @@ public abstract class Sample extends SNA_Root {
 	public void run() {
 		start();
 		System.out.println("Beginning run() while loop.");
+		long it = 0;
 		while (!completed()) {
+			if (verbose) System.out.println("current run while loop iteration: "+it++);
 			if (!getFollowingQ.isEmpty() && !followingSleeping()) {
+				System.out.println("following request in run()!");
 				ToFollow parent = getFollowingQ.poll();
 				ToUser babies = getFol(parent);
 				if (followingConditions(babies))
 					followAction(babies);
 			}
 			if (!getUserQ.isEmpty() && !userSleeping()) {
+				System.out.println("user request in run()!");
 				ToUser account = getUserQ.poll();
+				System.out.print("Account (from Sample.run()'s getUser condition): ");
+				System.out.print("account is single: "+account.single+" ");
+				System.out.print("id(s):");
+				if (account.single){
+					System.out.println(" "+account.id);
+				}
+				else{
+					for (String id: account.ids){
+						System.out.print(" "+id);
+					}
+				}
+				System.out.println();
 				if (account.single) {
 					User u = getUser(account);
 					if (userConditions(u))
 						userAction(u);
 				} else {
-					User[] us = getUsers(account);
+					User[] us = getUsers(account); 
 					for (User u : us) {
 						if (userConditions(u))
 							userAction(u);
@@ -136,6 +152,7 @@ public abstract class Sample extends SNA_Root {
 				}
 			}
 			if (!getPostsQ.isEmpty() && !postSleeping()) {
+				System.out.println("post request in run()!");
 				getPosts(getPostsQ.poll());
 			}
 			if (verbose == true) {

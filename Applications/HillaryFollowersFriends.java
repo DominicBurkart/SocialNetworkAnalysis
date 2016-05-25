@@ -16,8 +16,8 @@ public class HillaryFollowersFriends extends TwitterSample {
 	int goal = 5000; // max collectable followers per user with this algorithm
 
 	public static void main(String[] args) {
-		System.out.println("main running!");
-		HillaryFollowers h = new HillaryFollowers();
+		System.out.println("HillaryFollowerFriends main is running!");
+		HillaryFollowersFriends h = new HillaryFollowersFriends();
 		h.name = "hillaryFollowersFriends";
 		h.run();
 	}
@@ -70,6 +70,18 @@ public class HillaryFollowersFriends extends TwitterSample {
 
 	@Override
 	public void followAction(ToUser ids) {
+		System.out.print("HillaryFollowersFriends followAction input: ");
+		if (ids.single){
+			System.out.print("ToUser is single. ");
+			System.out.print("id: "+ids.id);
+		}
+		else{
+			System.out.print("ToUser holds multiple values. ");
+			for (String id : ids.ids){
+				System.out.print(id+" ");
+			}
+		}
+		System.out.println();
 		if (ids.ids.length < 100) {
 			getUserQ.add(ids);
 		} else { // splits one big ToUser object into many small enough to fit
@@ -87,9 +99,8 @@ public class HillaryFollowersFriends extends TwitterSample {
 				if (next > total)
 					next = total;
 				String[] vals = Arrays.copyOfRange(ids.ids, last, next);
-				chunks[i] = new ToUser(vals, ids.depth);
+				chunks[i++] = new ToUser(vals, ids.depth);
 				last = next;
-				i++;
 			}
 			for (ToUser chunk : chunks) {
 				if (verbose) {
@@ -105,11 +116,10 @@ public class HillaryFollowersFriends extends TwitterSample {
 
 	@Override
 	public void start() {
-		System.out.println("Starting data collection with start()!");
+		if (verbose) System.out.println("Starting data collection in HillaryFollowerFriends start()!");
 		ToUser hillary = new ToUser("1339835893", 0);
-		System.out.println("hillary single value: " + hillary.single);
 		getUserQ.add(hillary);
-		System.out.println("start() completed.");
+		if (verbose) System.out.println("start() completed.");
 	}
 
 	@Override

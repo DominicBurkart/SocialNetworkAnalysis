@@ -80,10 +80,12 @@ public abstract class TwitterSample extends Sample {
 		try {
 			return TwitterRequestHandler.getFollowers(u);
 		} catch (TwitterException e) {
+			System.out.println("TwitterSample.getFol problem");
 			e.printStackTrace();
 			System.exit(0);
 			return null;
 		} catch (BadIDException e) {
+			System.out.println("TwitterSample.getFol problem");
 			e.printStackTrace();
 			System.exit(0);
 			return null;
