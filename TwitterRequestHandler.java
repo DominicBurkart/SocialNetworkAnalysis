@@ -53,11 +53,10 @@ public class TwitterRequestHandler extends SNA_Root {
 			// we only collected the first batch of followers for this user.
 			// If there are more, add the remaining back to the
 			// getFollowingQueue.
-			toFriend.cursor = IDvals.getNextCursor();
-			if (toFriend.cursor != 0) {
+			if (IDvals.getNextCursor() != 0) {
+				toFriend.cursor = IDvals.getNextCursor();
 				User.sample.getFollowingQ.add(toFriend);
 			}
-
 		} catch (NumberFormatException e) {
 			try {
 				throw new BadIDException("Bad id given to getFollowers: " + toFriend.id);
@@ -108,8 +107,8 @@ public class TwitterRequestHandler extends SNA_Root {
 			// we only collected the first batch of followers for this user.
 			// If there are more, add the remaining back to the
 			// getFollowingQueue.
-			toFol.cursor = IDvals.getNextCursor();
-			if (toFol.cursor != 0) {
+			if (IDvals.getNextCursor() != 0) {
+				toFol.cursor = IDvals.getNextCursor();
 				User.sample.getFollowingQ.add(toFol);
 			}
 

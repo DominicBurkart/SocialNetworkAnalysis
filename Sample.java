@@ -164,6 +164,8 @@ public abstract class Sample extends SNA_Root {
 			}
 		}
 		System.out.println("Iterative collection completed.");
+		if (!completed()) System.out.print("Completion conditions were not met, but all query queues are empty. Finishing program.");
+		// ^ redundant with TwitterSample's default completed() since that just works off of queues, but useful when completed() is modified.
 		finish();
 	}
 

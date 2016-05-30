@@ -15,6 +15,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 	int collected = 0;
 	int goal = 5000; // max collectable followers per user with this algorithm
 
+	
 	public static void main(String[] args) {
 		System.out.println("HillaryFollowerFriends main is running!");
 		HillaryFollowersFriends h = new HillaryFollowersFriends();
@@ -27,7 +28,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public ToUser getFol(ToFollow u) {
-		return super.getFriends(u);
+		return getFriends(u);
 	}
 
 	/**
@@ -70,18 +71,20 @@ public class HillaryFollowersFriends extends TwitterSample {
 
 	@Override
 	public void followAction(ToUser ids) {
-		System.out.print("HillaryFollowersFriends followAction input: ");
-		if (ids.single){
-			System.out.print("ToUser is single. ");
-			System.out.print("id: "+ids.id);
-		}
-		else{
-			System.out.print("ToUser holds multiple values. ");
-			for (String id : ids.ids){
-				System.out.print(id+" ");
+		if (verbose){
+			System.out.print("HillaryFollowersFriends followAction input: ");
+			if (ids.single){
+				System.out.print("ToUser is single. ");
+				System.out.print("id: "+ids.id);
 			}
+			else{
+				System.out.print("ToUser holds multiple values. ");
+				for (String id : ids.ids){
+					System.out.print(id+" ");
+				}
+			}
+			System.out.println("\n");
 		}
-		System.out.println();
 		if (ids.ids.length < 100) {
 			getUserQ.add(ids);
 		} else { // splits one big ToUser object into many small enough to fit
@@ -104,10 +107,11 @@ public class HillaryFollowersFriends extends TwitterSample {
 			}
 			for (ToUser chunk : chunks) {
 				if (verbose) {
+					System.out.print("chunk being added to getUserQ in HillaryFollowersFriends.followAction: ");
 					for (String id : chunk.ids) {
 						System.out.print(id + " ");
 					}
-					System.out.println("\nlength: " + chunk.ids.length);
+					System.out.println("\nlength of chunk: " + chunk.ids.length+"\n");
 				}
 				getUserQ.add(chunk);
 			}
@@ -116,9 +120,11 @@ public class HillaryFollowersFriends extends TwitterSample {
 
 	@Override
 	public void start() {
-		if (verbose) System.out.println("Starting data collection in HillaryFollowerFriends start()!");
+		if (verbose) System.out.println("Starting data collection in HillaryFollowerFriends start()!\n");
 		ToUser hillary = new ToUser("1339835893", 0);
-		getUserQ.add(hillary);
+		User u = getUser(hillary);
+		ToFollow f = new ToFollow(u);
+		super.getFol(f); //actual getFollowers, where the getFollowers in this class actually gets friends.
 		if (verbose) System.out.println("start() completed.");
 	}
 
