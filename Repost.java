@@ -25,6 +25,7 @@ public class Repost extends Interaction {
 		post = sample.posts.get(split[split.length - 1]);
 	}
 
+	@Override
 	public String toString() {
 		return (super.toString() + '\t' + post.getId());
 	}

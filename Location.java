@@ -31,6 +31,7 @@ public class Location extends SNA_Root {
 		}
 	}
 
+	@Override
 	public String toString() {
 		if (getName() != null && getLocationType() != null) {
 			return (getName() + "|||" + getLocationType() + "|||" + getLatitude() + "|||" + getLongitude());

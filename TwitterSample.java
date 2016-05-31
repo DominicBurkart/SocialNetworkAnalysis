@@ -23,11 +23,8 @@ import twitter4j.TwitterException;
  */
 public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
-	long[] open = TwitterAuth.open;
-	boolean fsleep;
-	boolean usleep;
-	boolean ssleep;
-	boolean[] sleep = { ssleep, usleep, fsleep };
+	static long[] open = new long[3];
+	static boolean[] sleep = new boolean[3];
 
 	public TwitterSample() {
 		this.getFollowingQ = new LinkedList<ToFollow>();
@@ -42,17 +39,13 @@ public abstract class TwitterSample extends Sample {
 		return false;
 	}
 
-	static String[] fams = { "Status", "User", "Following" };
-
 	private boolean sleeping(int i) {
-
 		if (!sleep[i])
 			return false;
 		else {
 			long now = java.lang.System.currentTimeMillis();
 			if (now > open[i]) {
 				sleep[i] = false;
-				System.out.println(fams[i] + " family is resuming queries.");
 				return false;
 			} else {
 				return true;
@@ -160,27 +153,29 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 
-	class Listener implements Ratelimit_Reached_Listener {
+	public static class Listener implements Ratelimit_Reached_Listener {
 		@Override
 		public void reached(int i) {
-			switch (i) {
-			case 0:
-				ssleep = true;
-				break;
-			case 1:
-				usleep = true;
-				break;
-			case 2:
-				fsleep = true;
-				break;
-			default:
-				System.err.println("Weird value passed to reached() method in TwitterSample.Listener");
+			if (i >= sleep.length){
+				System.err.println("Bad value passed to TwitterSample's Listener class: "+i);
+				System.err.println("Sleep size in TwitterSample is only "+sleep.length);
+				System.err.println("Quitting without saving.");
+				System.exit(0);
 			}
+			else if (i < 0){
+				System.err.println("Bad value passed to TwitterSample's Listener class: "+i);
+				System.err.println("Value should correspond to a bool index in the datafield 'sleep'.");
+				System.err.println("Quitting without saving.");
+				System.exit(0);
+			}
+			sleep[i] = true;
+			open[i] = java.lang.System.currentTimeMillis() + (15 * 1000);
 		}
 	}
 
 	//TODO directly save the incoming tweets and users as they come in imo!
 
+	@Override
 	public void usersToTSV() {
 		PrintWriter w = fileHandler(name + "_users.tsv");
 		w.println("~users~");
@@ -191,6 +186,7 @@ public abstract class TwitterSample extends Sample {
 		w.close();
 	}
 
+	@Override
 	public void followsToTSV() {
 		PrintWriter w = fileHandler(name + "_follows.tsv");
 		w.println("~follows~");
@@ -200,6 +196,7 @@ public abstract class TwitterSample extends Sample {
 		w.close();
 	}
 
+	@Override
 	public void postsToTSV() {
 		PrintWriter w = fileHandler(name + "_posts.tsv");
 		w.println("~posts~");
@@ -210,6 +207,7 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	// TODO
+	@Override
 	public void loadFromTSV(String dir) {
 		File p = new File(Paths.get(dir).toString()); // in case the input path
 														// isn't absolute

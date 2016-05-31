@@ -25,7 +25,7 @@ public class TwitterRequestHandler extends SNA_Root {
 	static Twitter getTwitter() {
 		return authorized.getTwitter();
 	}
-
+	
 	static TwitterStatus[] search(String terms) throws TwitterException {
 		Query q = new Query(terms);
 		List<Status> l = getTwitter().search(q).getTweets();

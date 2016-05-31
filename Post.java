@@ -81,6 +81,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 		return ats;
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		for (String o : getAttributes()) {

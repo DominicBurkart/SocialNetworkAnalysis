@@ -71,21 +71,32 @@ public class TwitterWrapper implements Twitter {
 	int[] limits;
 	boolean verbose = false; // turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
-
 	// functions used: getUserTimeline, showUser, getRetweeterIDs,
-	// getFollowersIDs, getFriends, search
-	// families: statuses, users, statuses, followers, search
-	// ^ TODO assumes that getFriends and getFollowersIDs share a ratelimit
-	// (should be checked).
-	// |families| = 3
+	// getFollowersIDs, getFriendsIDs, search
 
 	public TwitterWrapper(Twitter t, int source) {
 		this.source = source;
 		this.t = t;
 		while (source >= getSources().size()) {
-			getSources().add(new int[4]);
+			getSources().add(new int[6]);
 		}
 		limits = getSources().get(source);
+	}
+	
+	private void rCheck(int resource, int max){
+		if (limits[resource] >= max) {
+			getTimelimited()[resource] = new Date();
+			limit.reached(resource);
+			limits[resource] = 0;
+		}
+		if (verbose) {
+			System.out.print("limits in "+ TwitterAuth.LimitReached.fams[resource]+": ");
+			for (int limit : limits) {
+				System.out.print(limit + " ");
+			}
+			System.out.println();
+		}
+		limits[resource]++;
 	}
 
 	@Override
@@ -279,67 +290,37 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public ResponseList<Status> getUserTimeline() throws TwitterException {
-		if (limits[0] >= 299) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(0, 299);
 		return t.getUserTimeline();
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(String arg0) throws TwitterException {
-		if (limits[0] >= 299) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(0, 299);
 		return t.getUserTimeline(arg0);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(long arg0) throws TwitterException {
-		if (limits[0] >= 299) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(0, 299);
 		return t.getUserTimeline(arg0);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(Paging arg0) throws TwitterException {
-		if (limits[0] >= 299) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(0, 299);
 		return t.getUserTimeline(arg0);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(String arg0, Paging arg1) throws TwitterException {
-		if (limits[0] >= 299) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(0, 299);
 		return t.getUserTimeline(arg0, arg1);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(long arg0, Paging arg1) throws TwitterException {
-		if (limits[0] >= 299) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(0, 299);
 		return t.getUserTimeline(arg0, arg1);
 	}
 
@@ -359,23 +340,13 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getRetweeterIds(long arg0, long arg1) throws TwitterException {
-		if (limits[0] >= 59) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(2, 59);
 		return t.getRetweeterIds(arg0, arg1);
 	}
 
 	@Override
 	public IDs getRetweeterIds(long arg0, int arg1, long arg2) throws TwitterException {
-		if (limits[0] >= 59) {
-			getTimelimited()[0] = new Date();
-			limit.reached(0);
-			limits[0] = 0;
-		}
-		limits[0]++;
+		rCheck(2, 59);
 		return t.getRetweeterIds(arg0, arg1, arg2);
 	}
 
@@ -437,12 +408,7 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public QueryResult search(Query arg0) throws TwitterException {
-		if (limits[3] >= 449) {
-			getTimelimited()[3] = new Date();
-			limit.reached(3);
-			limits[3] = 0;
-		}
-		limits[3]++;
+		rCheck(5, 449);
 		return t.search(arg0);
 	}
 
@@ -553,91 +519,31 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getFollowersIDs(long arg0) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(3, 14);
 		return t.getFollowersIDs(arg0);
 	}
 
 	@Override
 	public IDs getFollowersIDs(long arg0, long arg1) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(3, 14);
 		return t.getFollowersIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFollowersIDs(String arg0, long arg1) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(3, 14);
 		return t.getFollowersIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFollowersIDs(long arg0, long arg1, int arg2) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(3, 14);
 		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
 
 	@Override
 	public IDs getFollowersIDs(String arg0, long arg1, int arg2) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFollowersIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(3, 14);
 		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
 
@@ -687,91 +593,31 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getFriendsIDs(long arg0) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(4, 14);
 		return t.getFriendsIDs(arg0);
 	}
 
 	@Override
 	public IDs getFriendsIDs(long arg0, long arg1) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(4, 14);
 		return t.getFriendsIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFriendsIDs(String arg0, long arg1) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(4, 14);
 		return t.getFriendsIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFriendsIDs(long arg0, long arg1, int arg2) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(4, 14);
 		return t.getFriendsIDs(arg0, arg1, arg2);
 	}
 
 	@Override
 	public IDs getFriendsIDs(String arg0, long arg1, int arg2) throws TwitterException {
-		if (limits[2] >= 14) {
-			getTimelimited()[2] = new Date();
-			limit.reached(2);
-			limits[2] = 0;
-		}
-		if (verbose) {
-			System.out.print("limits in getFriendsIDs: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		limits[2]++;
+		rCheck(4, 14);
 		return t.getFriendsIDs(arg0, arg1, arg2);
 	}
 
@@ -1053,37 +899,13 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public User showUser(long arg0) throws TwitterException {
-		if (limits[1] >= 179) {
-			getTimelimited()[1] = new Date();
-			limit.reached(1);
-			limits[1] = 0;
-		}
-		limits[1]++;
-		if (verbose) {
-			System.out.print("limits in showUser: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
+		rCheck(1, 179);
 		return t.showUser(arg0);
 	}
 
 	@Override
 	public User showUser(String arg0) throws TwitterException {
-		if (limits[1] >= 179) {
-			getTimelimited()[1] = new Date();
-			limit.reached(1);
-			limits[1] = 0;
-		}
-		limits[1]++;
-		if (verbose) {
-			System.out.print("limits in showUser: ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
+		rCheck(1, 179);
 		return t.showUser(arg0);
 	}
 

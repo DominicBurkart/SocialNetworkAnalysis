@@ -30,6 +30,7 @@ public class Comment extends Interaction {
 		tags = Utilities.tagsFromString(s[5]);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer s = new StringBuffer();
 		if (post != null) {

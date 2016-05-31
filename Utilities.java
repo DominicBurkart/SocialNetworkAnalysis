@@ -36,4 +36,38 @@ public class Utilities extends SNA_Root {
 		}
 		return out;
 	}
+	
+	/**
+	 * is given a twitter resource number:
+	 * - getUserTimeline = 0
+	 * - showUser = 1
+	 * - getRetweeterIDs = 2
+	 * - getFollowersIDs = 3
+	 * - getFriendsIDs = 4
+	 * - search = 5
+	 * 
+	 * and converts it to a family number:
+	 *  - posts = 0
+	 *  - users = 1
+	 *  - following = 2
+	 *  
+	 *  This is used in making sure that Sample's run() function doesn't call sleeping resources.
+	 * 
+	 * @param r
+	 */
+	static int resourceToFamily(int r){
+		switch (r){
+		case 0: return 0;
+		case 1: return 1;
+		case 2: return 2;
+		case 3: return 2;
+		case 4: return 2;
+		case 5: return 0;
+		default: 
+			System.err.println("Bad value passed to resourceToFamily: "+r);
+			System.err.println("Quitting without saving.");
+			System.exit(0);
+			return 0;
+		}
+	}
 }

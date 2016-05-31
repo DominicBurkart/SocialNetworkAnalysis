@@ -15,6 +15,7 @@ public class Interaction {
 		sample.allInteractions.add(this);
 	}
 
+	@Override
 	public String toString() {
 		String[] ats = { source.id, target.id, type };
 		String s = "";

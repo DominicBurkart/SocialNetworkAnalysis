@@ -24,6 +24,7 @@ public class Like extends Interaction {
 		System.out.println("like imported: " + this.toString());
 	}
 
+	@Override
 	public String toString() {
 		if (post != null)
 			return (super.toString() + '\t' + post.getId() + '\t' + post.getMessage());

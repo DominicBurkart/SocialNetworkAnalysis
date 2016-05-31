@@ -34,6 +34,7 @@ public class TwitterStatus extends Post {
 		super(stringify);
 	}
 
+	@Override
 	public String toString() {
 		return super.toString();
 	}

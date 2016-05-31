@@ -88,6 +88,7 @@ public class TwitterUser extends User {
 	// }
 	// }
 
+	@Override
 	public String toString() {
 		if (location != null) {
 			return super.toString() + "\t" + location.toString();

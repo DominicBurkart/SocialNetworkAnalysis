@@ -11,7 +11,7 @@ import java.util.Arrays;
  * @author dominicburkart
  */
 public class HillaryFollowersFriends extends TwitterSample {
-	static final int DEPTH = 1;
+	static final int DEPTH = 2;
 	int collected = 0;
 	int goal = 5000; // max collectable followers per user with this algorithm
 
