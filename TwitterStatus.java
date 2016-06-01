@@ -51,9 +51,20 @@ public class TwitterStatus extends Post {
 			Location l = new Location();
 			l.setLatitude(s.getGeoLocation().getLatitude());
 			l.setLongitude(s.getGeoLocation().getLongitude());
-			l.setName(s.getPlace().getFullName());
-			l.setLocationType(s.getPlace().getPlaceType());
 			this.setLocation(l);
+		}
+		if (s.getPlace() != null){
+			if (this.getLocation() != null){
+				Location l = this.getLocation();
+				l.setName(s.getPlace().getFullName());
+				l.setLocationType(s.getPlace().getPlaceType());
+			}
+			else{
+				Location l = new Location();
+				l.setName(s.getPlace().getFullName());
+				l.setLocationType(s.getPlace().getPlaceType());
+				this.setLocation(l);
+			}
 		}
 		if (verbose)
 			System.out.println("Twitter status collected:\t" + this.toString());

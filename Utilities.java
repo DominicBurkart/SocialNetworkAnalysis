@@ -70,4 +70,16 @@ public class Utilities extends SNA_Root {
 			return 0;
 		}
 	}
+	
+	/**
+	 * returns the least value from an array of long values.
+	 */
+	static long least(long[] vals){
+		if (vals.length == 0) throw new IllegalArgumentException("Value input for least function was null.");
+		long least = vals[0];
+		for (long v : vals){
+			if (v < least) least = v;
+		}
+		return least;
+	}
 }

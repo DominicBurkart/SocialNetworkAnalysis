@@ -107,6 +107,11 @@ public abstract class Sample extends SNA_Root {
 	 * Get posts from a user!
 	 */
 	public abstract void getPosts(User u);
+	
+	/**
+	 * can be set to have the program wait until the next resource awakens.
+	 */
+	public abstract void filler();
 
 	/**
 	 * Runs the data collection.
@@ -164,6 +169,7 @@ public abstract class Sample extends SNA_Root {
 				}
 				System.out.println();
 			}
+			filler();
 		}
 		System.out.println("Iterative collection completed.");
 		if (!completed()) System.out.print("Completion conditions were not met, but all query queues are empty. Finishing program.");
@@ -202,7 +208,7 @@ public abstract class Sample extends SNA_Root {
 
 	public class ToFollow {
 		String id; // user to follow
-		long cursor = -1;
+		long cursor = -1; //standard first cursor for twitter paging
 		int depth; // depth of user we have the id of.
 
 		public ToFollow(User u, long cursor) {
@@ -227,7 +233,7 @@ public abstract class Sample extends SNA_Root {
 	}
 
 	public void toTSV() {
-		interactionsToTSV();
+		interactionsToTSV(); // saving order is arbitrary
 		usersToTSV();
 		followsToTSV();
 		postsToTSV();
@@ -235,10 +241,7 @@ public abstract class Sample extends SNA_Root {
 
 	public void toTSV(String outDir) {
 		this.outDir = outDir;
-		interactionsToTSV(); // saving order is arbitrary
-		usersToTSV();
-		followsToTSV();
-		postsToTSV();
+		toTSV();
 	}
 
 	public void interactionsToTSV() {

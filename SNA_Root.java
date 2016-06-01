@@ -8,5 +8,5 @@ package SocialNetworkAnalysis;
  * @author dominicburkart
  */
 public class SNA_Root {
-	public boolean verbose = true;
+	public static boolean verbose = true;
 }

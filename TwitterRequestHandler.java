@@ -1,6 +1,7 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import SocialNetworkAnalysis.Sample.ToFollow;
@@ -45,8 +46,19 @@ public class TwitterRequestHandler extends SNA_Root {
 			long[] ids = IDvals.getIDs();
 			String[] sIds = new String[ids.length];
 			int i = 0;
+			User friender = User.sample.users.get(toFriend.id);
 			for (long id : ids){
-				sIds[i++] = Long.toString(id);
+				sIds[i] = Long.toString(id);
+				LinkedList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
+				if (uL == null){
+					uL = new LinkedList<User>();
+					uL.add(friender);
+					TwitterSample.toLinkFriends.put(sIds[i], uL);
+				}
+				else{
+					uL.add(friender);
+				}
+				i++;
 			}
 			out = User.sample.new ToUser(sIds, toFriend.depth + 1);
 
@@ -62,6 +74,10 @@ public class TwitterRequestHandler extends SNA_Root {
 				throw new BadIDException("Bad id given to getFollowers: " + toFriend.id);
 			} catch (NullPointerException f) {
 				throw new BadIDException("Null value given to getFollowers as an id");
+			}
+		} catch (TwitterException e){
+			if (e.getErrorCode() == 401){
+				return null;
 			}
 		}
 		return out;
@@ -97,10 +113,12 @@ public class TwitterRequestHandler extends SNA_Root {
 			System.out.println();
 			String[] sIds = new String[ids.length];
 			int i = 0;
-			System.out.print("values to be strung: ");
-			for (long vId : ids){
-				System.out.print(vId+" ");
-				sIds[i++] = Long.toString(vId);
+			if (verbose){
+				System.out.print("values to be strung: ");
+				for (long vId : ids){
+					System.out.print(vId+" ");
+					sIds[i++] = Long.toString(vId);
+				}
 			}
 			out = User.sample.new ToUser(sIds, toFol.depth + 1);
 
@@ -361,13 +379,14 @@ public class TwitterRequestHandler extends SNA_Root {
 	}
 
 	static void getPosts(User u) throws TwitterException {
+		if (u == null) return;
 		// TODO fill this out or use twitter4j's user implementation bc there's
 		// a lot more to work with!
-		Paging paging = new Paging(1, 100);
+		Paging paging = new Paging(1, 200); //200 is the max page size for this twitter resource as of june 2016
 		List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 		for (Status s : statuses) {
 			// TODO save raw statuses via a new TwitterSample method
-			// System.out.println("status: "+s.toString());
+			if (verbose) System.out.println("status collected in TwitterRequestHandler.getPosts: "+s.toString());
 			Post p = new TwitterStatus(s);
 			try {
 				u.addPost(p);
@@ -382,7 +401,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		while (cursor != 0) {
 			IDs pages = getTwitter().getRetweeterIds(Long.valueOf(p.getId()), -1);
 			for (long id : pages.getIDs()) {
-
+				
 				ids.add(id);
 
 				try {

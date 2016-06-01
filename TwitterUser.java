@@ -1,6 +1,7 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import SocialNetworkAnalysis.Sample.ToUser;
 import twitter4j.TwitterException;
@@ -14,13 +15,25 @@ import twitter4j.TwitterException;
 public class TwitterUser extends User {
 
 	Location location;
+	
+	private void checkToLinkFriends(){
+		if (TwitterSample.toLinkFriends.containsKey(this.id)){
+			LinkedList<User> uL = TwitterSample.toLinkFriends.get(this.id);
+			if (verbose) System.out.println("While instantiating user "+this.id+" toLinkFriends detected. number of links: "+uL.size());
+			for (User u : uL){
+				new Follow(u, this);
+			}
+		}
+	}
 
 	public TwitterUser(String username, String id, int depth) throws RedundantEntryException {
 		super(username, id, depth);
+		checkToLinkFriends();
 	}
 
 	public TwitterUser(String id, int depth) throws RedundantEntryException {
 		super(id, depth);
+		checkToLinkFriends();
 	}
 
 	@Override

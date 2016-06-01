@@ -16,16 +16,26 @@ public abstract class User extends SNA_Root {
 	public static Sample sample;
 
 	private Tensors tensors = new Tensors();
+	
+	ArrayList<Post> posts = new ArrayList<Post>();
+	public String description = "";
 
+	public int firstDepth = 0;
+
+	public String id = "";
+	public String username = "";
+	
 	public class Tensors {
 		ArrayList<Like> likes = new ArrayList<Like>();
 		ArrayList<Repost> reposts = new ArrayList<Repost>();
 		ArrayList<Comment> comments = new ArrayList<Comment>();
 		ArrayList<Follow> follows = new ArrayList<Follow>();
+		ArrayList<Follow> friends = new ArrayList<Follow>(); //people who this user follows.
 
 		ArrayList<Interaction> getTensors() {
 			ArrayList<Interaction> tensors = new ArrayList<Interaction>();
 			tensors.addAll(follows);
+			tensors.addAll(friends);
 			tensors.addAll(reposts);
 			tensors.addAll(comments);
 			tensors.addAll(likes);
@@ -41,7 +51,12 @@ public abstract class User extends SNA_Root {
 		public void add(Interaction i) {
 			switch (i.type) {
 			case "follow":
-				follows.add((Follow) i);
+				if (i.source.id.equals(id)){
+					friends.add((Follow) i);
+				}
+				else{
+					follows.add((Follow) i);
+				}
 				break;
 			case "like":
 				likes.add((Like) i);
@@ -52,17 +67,9 @@ public abstract class User extends SNA_Root {
 			case "comment":
 				comments.add((Comment) i);
 				break;
-			}
+		}
 		}
 	}
-
-	ArrayList<Post> posts = new ArrayList<Post>();
-	public String description = "";
-
-	public int firstDepth = 0;
-
-	public String id = "";
-	public String username = "";
 
 	public abstract ToUser getFollowers() throws APIException;
 

@@ -38,7 +38,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public boolean userConditions(User u) {
-		if (u.firstDepth <= DEPTH - 1)
+		if (u != null && u.firstDepth <= DEPTH - 1)
 			return true;
 		else
 			return false;
@@ -63,7 +63,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public boolean followingConditions(ToUser ids) {
-		if (collected < goal)
+		if (collected < goal && ids != null)
 			return true;
 		else
 			return false;

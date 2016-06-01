@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -25,6 +26,8 @@ public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	static long[] open = new long[3];
 	static boolean[] sleep = new boolean[3];
+	private static boolean[] trues = {true, true, true};
+	static  Hashtable<String, LinkedList<User>> toLinkFriends = new Hashtable<String,LinkedList<User>>();
 
 	public TwitterSample() {
 		this.getFollowingQ = new LinkedList<ToFollow>();
@@ -40,15 +43,35 @@ public abstract class TwitterSample extends Sample {
 	}
 
 	private boolean sleeping(int i) {
-		if (!sleep[i])
+		if (verbose) System.out.println("Checking if resource #"+i+" is available for queries.");
+		if (!sleep[i]){
+			if (verbose) System.out.println("resource #"+i+" is not asleep and thus is available for queries.");
 			return false;
+		}
 		else {
+			if (verbose) System.out.println("resource #"+i+" was set to asleep. Checking to see if resource can be woken up.");
 			long now = java.lang.System.currentTimeMillis();
 			if (now > open[i]) {
+				if (verbose) System.out.println("TwitterSample.sleeping: current time "+now +" is larger than projected open time "+open[i]+", indicating that the resource can be woken up.");
 				sleep[i] = false;
 				return false;
 			} else {
+				if (verbose) System.out.println("TwitterSample.sleeping: current time "+now +" is smaller than projected open time "+open[i]+", indicating that the resource cannot be woken up.");
 				return true;
+			}
+		}
+	}
+	
+	@Override
+	public void filler(){
+		if (sleep.equals(trues)){
+			toTSV();
+			long sleep = Utilities.least(open) - java.lang.System.currentTimeMillis();
+			if (verbose) System.out.println("All resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up. Collected data has been saved.");
+			try {
+				Thread.sleep(sleep);
+			} catch (InterruptedException e) {
+				System.err.println("System could not sleep for designated period. Continuing program.");
 			}
 		}
 	}
@@ -156,6 +179,9 @@ public abstract class TwitterSample extends Sample {
 	public static class Listener implements Ratelimit_Reached_Listener {
 		@Override
 		public void reached(int i) {
+			if (verbose){
+				System.out.println("Reached method called in TwitterSample.Listener for family: "+i);
+			}
 			if (i >= sleep.length){
 				System.err.println("Bad value passed to TwitterSample's Listener class: "+i);
 				System.err.println("Sleep size in TwitterSample is only "+sleep.length);
@@ -169,7 +195,19 @@ public abstract class TwitterSample extends Sample {
 				System.exit(0);
 			}
 			sleep[i] = true;
-			open[i] = java.lang.System.currentTimeMillis() + (15 * 1000);
+			open[i] = java.lang.System.currentTimeMillis() + (16 * 60 * 1000);
+			if (verbose){
+				System.out.print("Values for sleep after update in TwitterSample.Listener: ");
+				for (boolean s : sleep){
+					System.out.print(Boolean.toString(s)+" ");
+				}
+				System.out.println();
+				System.out.println("Values for open after update in TwitterSample.Listener: ");
+				for (long o : open){
+					System.out.print(o+" ");
+				}
+				System.out.println();
+			}
 		}
 	}
 
@@ -177,11 +215,24 @@ public abstract class TwitterSample extends Sample {
 
 	@Override
 	public void usersToTSV() {
-		PrintWriter w = fileHandler(name + "_users.tsv");
+		///File userDirectory = new File(name+"users");
+		PrintWriter w = fileHandler(name + "_users.tsv"); //for master user file
 		w.println("~users~");
 		Enumeration<String> keys = users.keys();
-		while (keys.hasMoreElements()) {
-			w.println(users.get(keys.nextElement()));
+		while (keys.hasMoreElements()) { //adds a line per user to the master user file and also makes baby files for each user
+			User u = users.get(keys.nextElement());
+			String n = name+"_user_"+u.id+"_"; //for naming files
+			w.println(u);
+			PrintWriter friends = fileHandler(n+"friends.tsv");
+			for (Follow fol : u.getTensors().friends){
+				friends.println(fol.target);
+			}
+			friends.close();
+			PrintWriter posts = fileHandler(n+"posts.tsv");
+			for (Post p : u.posts){
+				posts.println(p);
+			}
+			posts.close();
 		}
 		w.close();
 	}
