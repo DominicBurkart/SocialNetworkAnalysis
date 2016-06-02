@@ -26,7 +26,6 @@ public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	static long[] open = new long[3];
 	static boolean[] sleep = new boolean[3];
-	private static boolean[] trues = {true, true, true};
 	static  Hashtable<String, LinkedList<User>> toLinkFriends = new Hashtable<String,LinkedList<User>>();
 
 	public TwitterSample() {
@@ -62,17 +61,22 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 	
+	/**
+	 * filler() methods have the computer wait until the next resource is available for queries. This one assumes balanced querying, where all families usually have queued queries waiting for them.
+	 */
 	@Override
 	public void filler(){
-		if (sleep.equals(trues)){
-			toTSV();
-			long sleep = Utilities.least(open) - java.lang.System.currentTimeMillis();
-			if (verbose) System.out.println("All resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up. Collected data has been saved.");
-			try {
-				Thread.sleep(sleep);
-			} catch (InterruptedException e) {
-				System.err.println("System could not sleep for designated period. Continuing program.");
-			}
+		for (boolean s : sleep){
+			if (!s) return; //quit if a resource is awake so we can continue data collection.
+		}
+		//otherwise go to sleep until the next resource is awake.
+		toTSV();
+		long sleep = Utilities.least(open) - java.lang.System.currentTimeMillis();
+		if (verbose) System.out.println("All resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up. Collected data has been saved.");
+		try {
+			Thread.sleep(sleep);
+		} catch (InterruptedException e) {
+			System.err.println("System could not sleep for designated period. Continuing program.");
 		}
 	}
 

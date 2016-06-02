@@ -81,7 +81,16 @@ public class TwitterWrapper implements Twitter {
 		limits = getSources().get(source);
 	}
 	
-	private void rCheck(int resource, int max){
+	private void rCheck(int resource){
+		int max = -3; //buffer to prevent accidental overflow
+		switch (resource){ //ratelimits for each resource
+		case 0: max += 180; break;
+		case 1: max += 180; break;
+		case 2: max += 15; break;
+		case 3: max += 15; break;
+		case 4: max += 15; break;
+		case 5: max += 180; break;
+		}
 		if (limits[resource] >= max) {
 			limit.reached(resource);
 			limits[resource] = 0;
@@ -287,37 +296,37 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public ResponseList<Status> getUserTimeline() throws TwitterException {
-		rCheck(0, 295);
+		rCheck(0);
 		return t.getUserTimeline();
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(String arg0) throws TwitterException {
-		rCheck(0, 295);
+		rCheck(0);
 		return t.getUserTimeline(arg0);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(long arg0) throws TwitterException {
-		rCheck(0, 295);
+		rCheck(0);
 		return t.getUserTimeline(arg0);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(Paging arg0) throws TwitterException {
-		rCheck(0, 295);
+		rCheck(0);
 		return t.getUserTimeline(arg0);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(String arg0, Paging arg1) throws TwitterException {
-		rCheck(0, 295);
+		rCheck(0);
 		return t.getUserTimeline(arg0, arg1);
 	}
 
 	@Override
 	public ResponseList<Status> getUserTimeline(long arg0, Paging arg1) throws TwitterException {
-		rCheck(0, 295);
+		rCheck(0);
 		return t.getUserTimeline(arg0, arg1);
 	}
 
@@ -337,13 +346,13 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getRetweeterIds(long arg0, long arg1) throws TwitterException {
-		rCheck(2, 58);
+		rCheck(2);
 		return t.getRetweeterIds(arg0, arg1);
 	}
 
 	@Override
 	public IDs getRetweeterIds(long arg0, int arg1, long arg2) throws TwitterException {
-		rCheck(2, 58);
+		rCheck(2);
 		return t.getRetweeterIds(arg0, arg1, arg2);
 	}
 
@@ -405,7 +414,7 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public QueryResult search(Query arg0) throws TwitterException {
-		rCheck(5, 448);
+		rCheck(5);
 		return t.search(arg0);
 	}
 
@@ -516,31 +525,31 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getFollowersIDs(long arg0) throws TwitterException {
-		rCheck(3, 13);
+		rCheck(3);
 		return t.getFollowersIDs(arg0);
 	}
 
 	@Override
 	public IDs getFollowersIDs(long arg0, long arg1) throws TwitterException {
-		rCheck(3, 13);
+		rCheck(3);
 		return t.getFollowersIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFollowersIDs(String arg0, long arg1) throws TwitterException {
-		rCheck(3, 13);
+		rCheck(3);
 		return t.getFollowersIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFollowersIDs(long arg0, long arg1, int arg2) throws TwitterException {
-		rCheck(3, 13);
+		rCheck(3);
 		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
 
 	@Override
 	public IDs getFollowersIDs(String arg0, long arg1, int arg2) throws TwitterException {
-		rCheck(3, 13);
+		rCheck(3);
 		return t.getFollowersIDs(arg0, arg1, arg2);
 	}
 
@@ -590,31 +599,31 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public IDs getFriendsIDs(long arg0) throws TwitterException {
-		rCheck(4, 13);
+		rCheck(4);
 		return t.getFriendsIDs(arg0);
 	}
 
 	@Override
 	public IDs getFriendsIDs(long arg0, long arg1) throws TwitterException {
-		rCheck(4, 13);
+		rCheck(4);
 		return t.getFriendsIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFriendsIDs(String arg0, long arg1) throws TwitterException {
-		rCheck(4, 13);
+		rCheck(4);
 		return t.getFriendsIDs(arg0, arg1);
 	}
 
 	@Override
 	public IDs getFriendsIDs(long arg0, long arg1, int arg2) throws TwitterException {
-		rCheck(4, 13);
+		rCheck(4);
 		return t.getFriendsIDs(arg0, arg1, arg2);
 	}
 
 	@Override
 	public IDs getFriendsIDs(String arg0, long arg1, int arg2) throws TwitterException {
-		rCheck(4, 13);
+		rCheck(4);
 		return t.getFriendsIDs(arg0, arg1, arg2);
 	}
 
@@ -894,13 +903,13 @@ public class TwitterWrapper implements Twitter {
 
 	@Override
 	public User showUser(long arg0) throws TwitterException {
-		rCheck(1, 178);
+		rCheck(1);
 		return t.showUser(arg0);
 	}
 
 	@Override
 	public User showUser(String arg0) throws TwitterException {
-		rCheck(1, 178);
+		rCheck(1);
 		return t.showUser(arg0);
 	}
 
