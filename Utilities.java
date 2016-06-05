@@ -1,6 +1,10 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+
+import SocialNetworkAnalysis.Sample.ToUser;
 
 /**
  * Convenient place for methods used across this package!
@@ -10,7 +14,7 @@ import java.util.ArrayList;
 public class Utilities extends SNA_Root {
 
 	static String cleanstring(String s) {
-		String clean = s.replaceAll("\\s+", " ");
+		String clean = s.replaceAll("\\s", " ");
 		return clean;
 	}
 
@@ -81,5 +85,45 @@ public class Utilities extends SNA_Root {
 			if (v < least) least = v;
 		}
 		return least;
+	}
+
+	public static void toUserChunker(ToUser ids) {
+		// splits one big ToUser object into many small enough to fit
+		// into Twitter's batch querying system.
+		int total = ids.ids.length;
+		int chunkNum = total / 100;
+		if (total % 100 > 0) {
+			chunkNum++;
+		}
+		ToUser[] chunks = new ToUser[chunkNum];
+		int last = 0;
+		int i = 0;
+		while (last < total) {
+			int next = last + 100;
+			if (next > total)
+				next = total;
+			String[] vals = Arrays.copyOfRange(ids.ids, last, next);
+			chunks[i++] = User.sample.new ToUser(vals, ids.depth);
+			last = next;
+		}
+		for (ToUser chunk : chunks) {
+			if (verbose) {
+				System.out.print("chunk being added to getUserQ in HillaryFollowersFriends.followAction: ");
+				for (String id : chunk.ids) {
+					System.out.print(id + " ");
+				}
+				System.out.println("\nlength of chunk: " + chunk.ids.length+"\n");
+			}
+			User.sample.getUserQ.add(chunk);
+		}
+	}
+	
+	/**
+	 * @return a string of the current system time plus the given duration (in milliseconds).
+	 */
+	static public String durationToTimeString(long dur){
+		Date d = new Date();
+		d.setTime(dur + java.lang.System.currentTimeMillis());
+		return d.toString();
 	}
 }

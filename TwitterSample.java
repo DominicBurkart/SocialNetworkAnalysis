@@ -5,8 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -61,20 +61,44 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 	
+	
 	/**
-	 * filler() methods have the computer wait until the next resource is available for queries. This one assumes balanced querying, where all families usually have queued queries waiting for them.
+	 * @return a linked list with the indexes of the active (non-empty) queues.
+	 */
+	private LinkedList<Integer> activeQueues(){
+		LinkedList<Integer> active = new LinkedList<Integer>();
+		if (getPostsQ.size() > 0) active.add(0);
+		if (getUserQ.size() > 0) active.add(1);
+		if (getFollowingQ.size() > 0) active.add(2);
+		return active;
+	}
+	
+	/**
+	 * sleeps the program when no resources with non-empty queues are awake until one wakes up.
 	 */
 	@Override
 	public void filler(){
-		for (boolean s : sleep){
-			if (!s) return; //quit if a resource is awake so we can continue data collection.
+		LinkedList<Integer> active = activeQueues();
+		for (int relevantIndex : active){
+			if (!sleep[relevantIndex]) return; //a resource is open and has waiting queries! 
 		}
-		//otherwise go to sleep until the next resource is awake.
+		// if we make it here then the active resources are all alseep. let's figure out how long to wait.
+		long[] relevantOpens = new long[active.size()];
+		int i = 0;
+		for (int relevantIndex : active){
+			relevantOpens[i++] = open[relevantIndex];
+		}
+		long sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
+		if (sleep <= 0) return;
+		//okay, we know that we have to wait and for how long. Save current data and go to sleep.
 		toTSV();
-		long sleep = Utilities.least(open) - java.lang.System.currentTimeMillis();
-		if (verbose) System.out.println("All resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up. Collected data has been saved.");
+		System.out.println("All relevant resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up. Collected data has been saved.");
+		Date d = new Date();
+		System.out.println("Current time: "+d.toString());
+		System.out.println("Waking at: "+ Utilities.durationToTimeString(sleep));
 		try {
 			Thread.sleep(sleep);
+			System.out.println("Awake! Continuing collection.");
 		} catch (InterruptedException e) {
 			System.err.println("System could not sleep for designated period. Continuing program.");
 		}
@@ -98,13 +122,8 @@ public abstract class TwitterSample extends Sample {
 	@Override
 	public ToUser getFol(ToFollow u) {
 		try {
-			return TwitterRequestHandler.getFollowers(u);
-		} catch (TwitterException e) {
-			System.out.println("TwitterSample.getFol problem");
-			e.printStackTrace();
-			System.exit(0);
-			return null;
-		} catch (BadIDException e) {
+			return TwitterRequestHandler.getSomeFollowers(u);
+		} catch (TwitterException | BadIDException e) {
 			System.out.println("TwitterSample.getFol problem");
 			e.printStackTrace();
 			System.exit(0);
@@ -137,9 +156,6 @@ public abstract class TwitterSample extends Sample {
 		} catch (BadUserException e) {
 			e.printStackTrace();
 			System.exit(0);
-		} catch (TwitterException e) {
-			e.printStackTrace();
-			System.exit(0);
 		}
 		return null;
 	}
@@ -161,11 +177,9 @@ public abstract class TwitterSample extends Sample {
 			idsNum[i] = Long.parseLong(id);
 			i++;
 		}
-		if (ids.ids.length > 100) { // should only be given lists < 100!!!!!
-			System.err.println(
-					"Bad list of IDs to getUsers. Max depth is 100 and this input had a depth of " + ids.ids.length);
-			System.err.println("Attempting to return the first 100 users.");
-			return TwitterRequestHandler.getUsers(Arrays.copyOf(idsNum, 100), ids.depth);
+		if (ids.ids.length > 100) {
+			Utilities.toUserChunker(ids); //splits the overly large toUser object and puts the chunks onto the correct queue.
+			return getUsers(getUserQ.poll()); //returns null since it added all of the values it was going to query to its own queue to query later.
 		} else
 			return TwitterRequestHandler.getUsers(idsNum, ids.depth);
 	}

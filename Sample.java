@@ -120,17 +120,19 @@ public abstract class Sample extends SNA_Root {
 		start();
 		if (verbose) System.out.println("Beginning run() while loop.");
 		long it = 0;
-		while (!completed()) {
+		do {
 			if (verbose) System.out.println("current run while loop iteration: "+it++);
 			if (!getFollowingQ.isEmpty() && !followingSleeping()) {
 				if (verbose) System.out.println("following request in run()!");
 				ToFollow parent = getFollowingQ.poll();
+				if (parent == null) continue;
 				ToUser babies = getFol(parent);
 				if (followingConditions(babies))
 					followAction(babies);
 			}
 			if (!getUserQ.isEmpty() && !userSleeping()) {
 				ToUser account = getUserQ.poll();
+				if (account == null) continue;
 				if (verbose){
 					System.out.println("user request in run()!");
 					System.out.print("Account (from Sample.run()'s getUser condition): ");
@@ -148,6 +150,7 @@ public abstract class Sample extends SNA_Root {
 				}
 				if (account.single) {
 					User u = getUser(account);
+					if (u == null) continue;
 					if (userConditions(u))
 						userAction(u);
 				} else {
@@ -170,11 +173,12 @@ public abstract class Sample extends SNA_Root {
 				System.out.println();
 			}
 			filler();
-		}
+		} while (!completed());
 		System.out.println("Iterative collection completed.");
 		if (!completed()) System.out.print("Completion conditions were not met, but all query queues are empty. Finishing program.");
 		// ^ redundant with TwitterSample's default completed() since that just works off of queues, but useful when completed() is modified.
 		finish();
+		if (verbose) System.out.println("Finish() completed. Run() completed.");
 	}
 
 	public void finish() {

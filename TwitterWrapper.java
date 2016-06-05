@@ -84,7 +84,7 @@ public class TwitterWrapper implements Twitter {
 	private void rCheck(int resource){
 		int max = -3; //buffer to prevent accidental overflow
 		switch (resource){ //ratelimits for each resource
-		case 0: max += 180; break;
+		case 0: max += 179; break;
 		case 1: max += 180; break;
 		case 2: max += 15; break;
 		case 3: max += 15; break;

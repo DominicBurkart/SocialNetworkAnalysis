@@ -23,6 +23,7 @@ public class TwitterUser extends User {
 			for (User u : uL){
 				new Follow(u, this);
 			}
+			TwitterSample.toLinkFriends.remove(this.id); //keeps toLinkFriends small.
 		}
 	}
 

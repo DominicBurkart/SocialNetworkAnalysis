@@ -2,8 +2,6 @@ package SocialNetworkAnalysis.Applications;
 
 import SocialNetworkAnalysis.*;
 
-import java.util.Arrays;
-
 /**
  * Collects Clinton's account, some of her followers, and the friends of those
  * followers. 
@@ -13,7 +11,7 @@ import java.util.Arrays;
 public class HillaryFollowersFriends extends TwitterSample {
 	static final int DEPTH = 2;
 	int collected = 0;
-	int goal = 5000; // max collectable followers per user with this algorithm
+	int goal = 5000; // max collectable followers per user with this algorithm is 5k
 
 	
 	public static void main(String[] args) {
@@ -87,34 +85,8 @@ public class HillaryFollowersFriends extends TwitterSample {
 		}
 		if (ids.ids.length < 100) {
 			getUserQ.add(ids);
-		} else { // splits one big ToUser object into many small enough to fit
-					// into Twitter's batch querying system.
-			int total = ids.ids.length;
-			int chunkNum = total / 100;
-			if (total % 100 > 0) {
-				chunkNum++;
-			}
-			ToUser[] chunks = new ToUser[chunkNum];
-			int last = 0;
-			int i = 0;
-			while (last < total) {
-				int next = last + 100;
-				if (next > total)
-					next = total;
-				String[] vals = Arrays.copyOfRange(ids.ids, last, next);
-				chunks[i++] = new ToUser(vals, ids.depth);
-				last = next;
-			}
-			for (ToUser chunk : chunks) {
-				if (verbose) {
-					System.out.print("chunk being added to getUserQ in HillaryFollowersFriends.followAction: ");
-					for (String id : chunk.ids) {
-						System.out.print(id + " ");
-					}
-					System.out.println("\nlength of chunk: " + chunk.ids.length+"\n");
-				}
-				getUserQ.add(chunk);
-			}
+		} else { 
+			Utilities.toUserChunker(ids);
 		}
 	}
 
@@ -124,7 +96,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 		ToUser hillary = new ToUser("1339835893", 0);
 		User u = getUser(hillary);
 		ToFollow f = new ToFollow(u);
-		super.getFol(f); //actual getFollowers, where the getFollowers in this class actually gets friends.
+		getUserQ.add(super.getFol(f)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
 		if (verbose) System.out.println("start() completed.");
 	}
 
