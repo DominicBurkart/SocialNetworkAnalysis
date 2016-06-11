@@ -30,7 +30,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 		this.setId(id);
 		this.setAuthor(author);
 		this.authorID = author.id;
-		this.setMessage(message);
+		this.setMessage(Utilities.cleanstring(message));
 		sample.posts.put(id, this);
 	}
 
@@ -140,7 +140,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 	}
 
 	public void setMessage(String message) {
-		this.message = message;
+		this.message = Utilities.cleanstring(message);
 	}
 
 	public Date getTime() {

@@ -29,10 +29,10 @@ public class TwitterRequestHandler extends SNA_Root {
 
 	static private void handleTwitterException(TwitterException e) throws TwitterException{
 		int code = e.getErrorCode();
-		if (code == 403 || code == 404){
+		if (code == 404 || code == 17 || code == 34){
 			return; //we aren't authorized to view this resource or it was deleted.
 		}
-		else if (code == 500 || code == 502 || code == 503 || code == 504){
+		else if (code == 500 || code == 502 || code == 503 || code == 504 || code == 131 || code == 130){
 			System.err.println("Internal error "+code+" in Twitter's servers. Sleeping for five minutes before resuming program.");
 			try {
 				Thread.sleep(5 * 60 * 1000);
@@ -52,6 +52,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		if (e.getErrorCode() != -1)
 			throw e; //throws everything else that we didn't handle.
 	}
+	
 	static TwitterStatus[] search(String terms) throws TwitterException {
 		Query q = new Query(terms);
 		try{
@@ -225,6 +226,36 @@ public class TwitterRequestHandler extends SNA_Root {
 			return null;
 		}
 	}
+	
+	/**
+	 * returns the least of these possible values:
+	 *  1. x followers of a user (where x is passed to the function),
+	 *  2. 5000 followers for a user, or
+	 *  3. all of the followers of a given user.
+	 *  
+	 * @param f the toFollow element to find followers from.
+	 * @param x the number of followers to try to collect.
+	 * @return the toUser elements collected in a linked list.
+	 * @throws TwitterException
+	 * @throws BadUserException
+	 */
+	static ToUser getxFollowers(ToFollow f, int x) throws TwitterException{
+		try{
+			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(f.id), -1);
+			int[] limits = {IDvals.getIDs().length , x};
+			int max = Utilities.least(limits);
+			String[] ids = new String[max];
+			for (int i = 0; i < max; i++){
+				long l = IDvals.getIDs()[i];
+				ids[i] = Long.toString(l);
+			}
+			ToUser t = User.sample.new ToUser(ids, f.depth+1);
+			return t;
+		} catch (TwitterException e){
+			handleTwitterException(e);
+			return null;
+		}
+	}
 
 	// /**
 	// *
@@ -380,6 +411,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		} catch (RedundantEntryException e) {
 			return (TwitterUser) e.user;
 		} catch (TwitterException e){
+			if (verbose) e.printStackTrace();
 			try{
 				handleTwitterException(e);
 			} catch(TwitterException f){

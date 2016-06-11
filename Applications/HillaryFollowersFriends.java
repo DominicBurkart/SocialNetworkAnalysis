@@ -9,16 +9,15 @@ import SocialNetworkAnalysis.*;
  * @author dominicburkart
  */
 public class HillaryFollowersFriends extends TwitterSample {
-	static final int DEPTH = 2;
-	int collected = 0;
-	int goal = 5000; // max collectable followers per user with this algorithm is 5k
-
+	static final int DEPTH = 2; //TODO does this actually work or should it be 2?
+	static int goal = 1; // max collectable followers per user with this algorithm is 5k
 	
 	public static void main(String[] args) {
 		System.out.println("HillaryFollowerFriends main is running!");
 		HillaryFollowersFriends h = new HillaryFollowersFriends();
 		h.name = "hillaryFollowersFriends";
 		h.run();
+		if (verbose) System.out.println("Program complete.");
 	}
 
 	/**
@@ -36,10 +35,18 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public boolean userConditions(User u) {
-		if (u != null && u.firstDepth <= DEPTH - 1)
+		if (goal < users.size() && u != null && u.firstDepth < DEPTH){
+			if (verbose) System.out.println("User included for userAction: "+u);
 			return true;
-		else
+		}
+		else{
+			try{
+				if (verbose) System.out.println("User excluded from userAction: "+u);
+			} catch (NullPointerException e){
+				if (verbose) System.out.println("Null value passed to userConditions and exempted from userActions.");
+			}
 			return false;
+		}
 	}
 
 	/**
@@ -61,7 +68,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public boolean followingConditions(ToUser ids) {
-		if (collected < goal && ids != null)
+		if (ids != null && ids.depth < DEPTH)
 			return true;
 		else
 			return false;
@@ -96,12 +103,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 		ToUser hillary = new ToUser("1339835893", 0);
 		User u = getUser(hillary);
 		ToFollow f = new ToFollow(u);
-		getUserQ.add(super.getFol(f)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
+		getUserQ.add(super.getSomeFol(f, goal)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
 		if (verbose) System.out.println("start() completed.");
-	}
-
-	@Override
-	public void finish() {
-		toTSV();
 	}
 }

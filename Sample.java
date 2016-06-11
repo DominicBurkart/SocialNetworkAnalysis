@@ -3,8 +3,6 @@ package SocialNetworkAnalysis;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -21,8 +19,8 @@ public abstract class Sample extends SNA_Root {
 	public Hashtable<String, User> users = new Hashtable<String, User>();
 	LinkedList<Follow> follows = new LinkedList<Follow>();
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>();
-	String outDir;
 	public String name = "collection";
+	String outDir = name+"_output";
 
 	public Sample() {
 		User.sample = this;
@@ -119,7 +117,7 @@ public abstract class Sample extends SNA_Root {
 	public void run() {
 		start();
 		if (verbose) System.out.println("Beginning run() while loop.");
-		long it = 0;
+		long it = 0; //iterations of while loop (exactly the same as total # of calls)
 		do {
 			if (verbose) System.out.println("current run while loop iteration: "+it++);
 			if (!getFollowingQ.isEmpty() && !followingSleeping()) {
@@ -130,7 +128,7 @@ public abstract class Sample extends SNA_Root {
 				if (followingConditions(babies))
 					followAction(babies);
 			}
-			if (!getUserQ.isEmpty() && !userSleeping()) {
+			else if (!getUserQ.isEmpty() && !userSleeping()) {
 				ToUser account = getUserQ.poll();
 				if (account == null) continue;
 				if (verbose){
@@ -161,12 +159,12 @@ public abstract class Sample extends SNA_Root {
 					}
 				}
 			}
-			if (!getPostsQ.isEmpty() && !postSleeping()) {
+			else if (!getPostsQ.isEmpty() && !postSleeping()) {
 				if (verbose) System.out.println("post request in run()!");
 				getPosts(getPostsQ.poll());
 			}
 			if (verbose == true) {
-				System.out.print("Q lengths: ");
+				System.out.print("Q lengths (following, user, posts): ");
 				for (int length : QueueLengths()) {
 					System.out.print(length + " ");
 				}
@@ -174,9 +172,9 @@ public abstract class Sample extends SNA_Root {
 			}
 			filler();
 		} while (!completed());
-		System.out.println("Iterative collection completed.");
+		System.out.println("Iterative collection completed after "+it+" calls.");
 		if (!completed()) System.out.print("Completion conditions were not met, but all query queues are empty. Finishing program.");
-		// ^ redundant with TwitterSample's default completed() since that just works off of queues, but useful when completed() is modified.
+		// ^ redundant with TwitterSample's default completed() since that just works off of queues, but useful when completed() is overriden.
 		finish();
 		if (verbose) System.out.println("Finish() completed. Run() completed.");
 	}
@@ -241,6 +239,7 @@ public abstract class Sample extends SNA_Root {
 		usersToTSV();
 		followsToTSV();
 		postsToTSV();
+		if (verbose) System.out.println("toTSV() completed.");
 	}
 
 	public void toTSV(String outDir) {
@@ -308,12 +307,16 @@ public abstract class Sample extends SNA_Root {
 	abstract void loadFromTSV(String dir);
 
 	public PrintWriter fileHandler(String fname) {
+		outDir = name +"_output";
 		checkTestOut();
 		File f;
 		if (outDir != null || outDir != "") {
-			Path p = Paths.get(outDir);
-			p = p.toAbsolutePath();
-			f = new File(p + "/" + fname);
+			File outdir = new File(outDir);
+			if (!outdir.exists()) {
+			    System.out.println("creating directory: " + outDir);
+			    outdir.mkdirs();
+			}
+			f = new File(outdir, fname);
 		} else {
 			f = new File(fname);
 		}
@@ -322,7 +325,7 @@ public abstract class Sample extends SNA_Root {
 			out = new PrintWriter(f);
 			return out;
 		} catch (FileNotFoundException e) {
-			System.err.println("Sample.CheckTestOut() failed.");
+			System.err.println("File could not be instantiated.");
 			return null;
 		}
 	}
@@ -334,9 +337,12 @@ public abstract class Sample extends SNA_Root {
 		} else if (outDir != "") {
 			File f;
 			try {
-				Path p = Paths.get(outDir);
-				p = p.toAbsolutePath();
-				f = new File(p + "/" + "temp");
+				File outdir = new File(outDir);
+				if (!outdir.exists()) {
+				    if (verbose) System.out.println("creating directory: " + outDir);
+				    outdir.mkdirs();
+				}
+				f = new File(outdir, "temp");
 				PrintWriter out = new PrintWriter(f);
 				out.close();
 				f.delete();

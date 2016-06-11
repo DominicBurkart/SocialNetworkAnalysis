@@ -86,6 +86,18 @@ public class Utilities extends SNA_Root {
 		}
 		return least;
 	}
+	
+	/**
+	 * returns the least value from an array of int values.
+	 */
+	static int least(int[] vals){
+		if (vals.length == 0) throw new IllegalArgumentException("Value input for least function was null.");
+		int least = vals[0];
+		for (int v : vals){
+			if (v < least) least = v;
+		}
+		return least;
+	}
 
 	public static void toUserChunker(ToUser ids) {
 		// splits one big ToUser object into many small enough to fit

@@ -88,25 +88,31 @@ public abstract class TwitterSample extends Sample {
 		for (int relevantIndex : active){
 			relevantOpens[i++] = open[relevantIndex];
 		}
-		long sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
-		if (sleep <= 0) return;
-		//okay, we know that we have to wait and for how long. Save current data and go to sleep.
-		toTSV();
-		System.out.println("All relevant resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up. Collected data has been saved.");
-		Date d = new Date();
-		System.out.println("Current time: "+d.toString());
-		System.out.println("Waking at: "+ Utilities.durationToTimeString(sleep));
-		try {
-			Thread.sleep(sleep);
-			System.out.println("Awake! Continuing collection.");
-		} catch (InterruptedException e) {
-			System.err.println("System could not sleep for designated period. Continuing program.");
+		try{
+			long sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
+			if (sleep <= 0) return;
+			//okay, we know that we have to wait and for how long. Save current data and go to sleep.
+			System.out.println("All relevant resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up.");
+			Date d = new Date();
+			System.out.println("Current time: "+d.toString());
+			if (sleep > 1000 * 60 * 14){
+				//only save files if we're sleeping for more than fourteen minutes.
+				toTSV();
+				sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
+				if (sleep <= 0) return;
+				//recalculate sleep after saving all of those files.
+			}
+			System.out.println("Waking at: "+ Utilities.durationToTimeString(sleep));
+			try {
+				Thread.sleep(sleep);
+				System.out.println("Awake! Continuing collection.");
+			} catch (InterruptedException e) {
+				System.err.println("System could not sleep for designated period. Continuing program.");
+			}
+		} catch (IllegalArgumentException e){ //thrown by Utilities.least method
+			if (verbose) System.out.println("All queues are empty. Exiting filler method.");
+			return;
 		}
-	}
-
-	@Override
-	boolean followingSleeping() {
-		return sleeping(2);
 	}
 
 	@Override
@@ -117,6 +123,11 @@ public abstract class TwitterSample extends Sample {
 	@Override
 	boolean userSleeping() {
 		return sleeping(1);
+	}
+	
+	@Override
+	boolean followingSleeping() {
+		return sleeping(2);
 	}
 
 	@Override
@@ -220,7 +231,7 @@ public abstract class TwitterSample extends Sample {
 					System.out.print(Boolean.toString(s)+" ");
 				}
 				System.out.println();
-				System.out.println("Values for open after update in TwitterSample.Listener: ");
+				System.out.print("Values for open after update in TwitterSample.Listener: ");
 				for (long o : open){
 					System.out.print(o+" ");
 				}
@@ -385,6 +396,17 @@ public abstract class TwitterSample extends Sample {
 				// case "comment": new Comment(cur); break;
 				}
 			}
+		}
+	}
+
+	public ToUser getSomeFol(ToFollow f, int some) {
+		try {
+			return TwitterRequestHandler.getxFollowers(f, some);
+		} catch (TwitterException e) {
+			System.out.println("TwitterSample.getFol problem");
+			e.printStackTrace();
+			System.exit(0);
+			return null;
 		}
 	}
 

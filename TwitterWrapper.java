@@ -2,6 +2,7 @@ package SocialNetworkAnalysis;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -65,23 +66,57 @@ import twitter4j.util.function.Consumer;
 public class TwitterWrapper implements Twitter {
 	private static LinkedList<int[]> sources = new LinkedList<int[]>();
 	int source;
+	static int famnum = 6; //specific resource endpoint nubers (getUserTimeline, showUser etc.)
+	ArrayList<LinkedList<Long>> qTimes = new ArrayList<LinkedList<Long>>(famnum);
+	//  ^ holds the query time for each query to each resource.
 	Twitter t;
 	int[] limits;
 	boolean verbose = false; // turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 	// functions used: getUserTimeline, showUser, getRetweeterIDs,
 	// getFollowersIDs, getFriendsIDs, search
-
+	static final int FIFTEENMINUTES = 15 * 60 * 1000;
+	
 	public TwitterWrapper(Twitter t, int source) {
 		this.source = source;
 		this.t = t;
 		while (source >= getSources().size()) {
-			getSources().add(new int[6]);
+			getSources().add(new int[famnum]);
+		}
+		for (int i = 0; i < famnum; i++){
+			qTimes.add(new LinkedList<Long>());
 		}
 		limits = getSources().get(source);
 	}
 	
+	private void timeManager(int resource){
+		LinkedList<Long> limTimes = qTimes.get(resource);
+		Long cur = java.lang.System.currentTimeMillis();
+		for (Long time : limTimes){
+			if (cur - time > FIFTEENMINUTES){
+				limTimes.remove(time);
+				limits[resource]--;
+				// ^ removes old queries that no long effect current ratelimit.
+			}
+			else{
+				limTimes.add(java.lang.System.currentTimeMillis());
+				// ^current query
+				return; //assumes list is FIFO (queue, not stack) and thus sorted.
+			}
+		}
+		limTimes.add(java.lang.System.currentTimeMillis());
+		// ^ current query
+	}
+	
+	/**
+	 * Alerts other classes that this resource is asleep when we reach its limit,
+	 * decreases the query requests recorded for a limit as they are timed out (via timeManager),
+	 * and increases the query requests each time the resource is called.
+	 * 
+	 * @param resource the method being queried. 
+	 */
 	private void rCheck(int resource){
+		timeManager(resource);
 		int max = -3; //buffer to prevent accidental overflow
 		switch (resource){ //ratelimits for each resource
 		case 0: max += 179; break;
