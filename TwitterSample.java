@@ -252,11 +252,13 @@ public abstract class TwitterSample extends Sample {
 			User u = users.get(keys.nextElement());
 			String n = name+"_user_"+u.id+"_"; //for naming files
 			w.println(u);
-			PrintWriter friends = fileHandler(n+"friends.tsv");
-			for (Follow fol : u.getTensors().friends){
-				friends.println(fol.target);
+			if (u.getTensors().friends != null && u.getTensors().friends.size() > 0){
+				PrintWriter friends = fileHandler(n+"friends.tsv");
+				for (Follow fol : u.getTensors().friends){
+					friends.println(fol.target);
+				}
+				friends.close();
 			}
-			friends.close();
 			PrintWriter posts = fileHandler(n+"posts.tsv");
 			for (Post p : u.posts){
 				posts.println(p);

@@ -28,6 +28,7 @@ public class TwitterRequestHandler extends SNA_Root {
 	}
 
 	static private void handleTwitterException(TwitterException e) throws TwitterException{
+		if (verbose) System.err.println("attempting to handle twitter exception: "+e.getErrorCode()+" message: "+e.getErrorMessage());
 		int code = e.getErrorCode();
 		if (code == 404 || code == 17 || code == 34){
 			return; //we aren't authorized to view this resource or it was deleted.
@@ -466,8 +467,7 @@ public class TwitterRequestHandler extends SNA_Root {
 				Post p = new TwitterStatus(s);
 				try {
 					u.addPost(p);
-				} catch (RedundantEntryException e) {
-				}
+				} catch (RedundantEntryException e) {}
 			}
 		} catch (TwitterException e){
 			handleTwitterException(e);

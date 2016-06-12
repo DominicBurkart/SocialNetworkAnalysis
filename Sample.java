@@ -116,20 +116,30 @@ public abstract class Sample extends SNA_Root {
 	 */
 	public void run() {
 		start();
+		if (roadmap){
+			System.out.println("Collected users after start(): ");
+			for (String id : users.keySet()){
+				System.out.println(users.get(id));
+			}
+		}
 		if (verbose) System.out.println("Beginning run() while loop.");
-		long it = 0; //iterations of while loop (exactly the same as total # of calls)
+		long it = 1; //iterations of while loop (exactly the same as total # of calls)
 		do {
-			if (verbose) System.out.println("current run while loop iteration: "+it++);
+			if (verbose || roadmap) System.out.println("current run while loop iteration: "+it);
 			if (!getFollowingQ.isEmpty() && !followingSleeping()) {
 				if (verbose) System.out.println("following request in run()!");
 				ToFollow parent = getFollowingQ.poll();
-				if (parent == null) continue;
+				if (parent == null){
+					if (verbose) System.out.println("null ToFollow object exempted from getFol.");
+					continue;
+				}
 				ToUser babies = getFol(parent);
 				if (followingConditions(babies))
 					followAction(babies);
 			}
 			else if (!getUserQ.isEmpty() && !userSleeping()) {
 				ToUser account = getUserQ.poll();
+				if (roadmap) System.out.println("Degree of next user/users to collect: "+account.depth);
 				if (account == null) continue;
 				if (verbose){
 					System.out.println("user request in run()!");
@@ -163,7 +173,7 @@ public abstract class Sample extends SNA_Root {
 				if (verbose) System.out.println("post request in run()!");
 				getPosts(getPostsQ.poll());
 			}
-			if (verbose == true) {
+			if (verbose || roadmap) {
 				System.out.print("Q lengths (following, user, posts): ");
 				for (int length : QueueLengths()) {
 					System.out.print(length + " ");
@@ -171,6 +181,7 @@ public abstract class Sample extends SNA_Root {
 				System.out.println();
 			}
 			filler();
+			it++;
 		} while (!completed());
 		System.out.println("Iterative collection completed after "+it+" calls.");
 		if (!completed()) System.out.print("Completion conditions were not met, but all query queues are empty. Finishing program.");

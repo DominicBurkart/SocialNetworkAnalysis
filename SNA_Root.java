@@ -9,4 +9,5 @@ package SocialNetworkAnalysis;
  */
 public class SNA_Root {
 	public static boolean verbose = true;
+	public static boolean roadmap = false;
 }

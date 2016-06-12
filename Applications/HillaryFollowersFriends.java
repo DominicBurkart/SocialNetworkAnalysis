@@ -9,8 +9,9 @@ import SocialNetworkAnalysis.*;
  * @author dominicburkart
  */
 public class HillaryFollowersFriends extends TwitterSample {
-	static final int DEPTH = 2; //TODO does this actually work or should it be 2?
-	static int goal = 1; // max collectable followers per user with this algorithm is 5k
+	static final int DEPTH = 2;
+	static int goal = 2000; // max collectable followers per user with this algorithm is 5k
+	User root;
 	
 	public static void main(String[] args) {
 		System.out.println("HillaryFollowerFriends main is running!");
@@ -32,10 +33,15 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 * conditions under which we will apply userAction.
 	 * 
 	 * Returns true when conditions have been met.
+	 * 
+	 * This userConditions additionally adds every user to
+	 * the getPostsQ, so we have a sample of tweets from each
+	 * user.
 	 */
 	@Override
 	public boolean userConditions(User u) {
-		if (goal < users.size() && u != null && u.firstDepth < DEPTH){
+		this.getPostsQ.add((TwitterUser) u);
+		if (u != null && u.firstDepth < DEPTH && u != root){
 			if (verbose) System.out.println("User included for userAction: "+u);
 			return true;
 		}
@@ -57,10 +63,8 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public void userAction(User user) {
-		TwitterUser u = (TwitterUser) user;
 		ToFollow toFol = new ToFollow(user);
 		this.getFollowingQ.add(toFol);
-		this.getPostsQ.add(u);
 	}
 
 	/**
@@ -68,12 +72,16 @@ public class HillaryFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public boolean followingConditions(ToUser ids) {
-		if (ids != null && ids.depth < DEPTH)
+		if (ids != null)
 			return true;
 		else
 			return false;
 	}
 
+	/**
+	 * followAction defines what to do with the ids we collected. In this case,
+	 * we turn them into full user objects by adding them to the getUser queue.
+	 */
 	@Override
 	public void followAction(ToUser ids) {
 		if (verbose){
@@ -101,8 +109,8 @@ public class HillaryFollowersFriends extends TwitterSample {
 	public void start() {
 		if (verbose) System.out.println("Starting data collection in HillaryFollowerFriends start()!\n");
 		ToUser hillary = new ToUser("1339835893", 0);
-		User u = getUser(hillary);
-		ToFollow f = new ToFollow(u);
+		root = getUser(hillary);
+		ToFollow f = new ToFollow(root);
 		getUserQ.add(super.getSomeFol(f, goal)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
 		if (verbose) System.out.println("start() completed.");
 	}

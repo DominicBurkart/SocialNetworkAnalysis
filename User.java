@@ -15,7 +15,7 @@ import SocialNetworkAnalysis.Sample.ToUser;
 public abstract class User extends SNA_Root {
 	public static Sample sample;
 
-	private Tensors tensors = new Tensors();
+	Tensors tensors = new Tensors();
 	
 	ArrayList<Post> posts = new ArrayList<Post>();
 	public String description = "";

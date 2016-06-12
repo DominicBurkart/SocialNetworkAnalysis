@@ -13,8 +13,8 @@ public class Follow extends Interaction {
 		this.target = target;
 		type = "follow";
 		sample.follows.add(this);
-		source.getTensors().friends.add(this);
-		target.getTensors().follows.add(this);
+		source.tensors.friends.add(this);
+		target.tensors.follows.add(this);
 	}
 
 	/**
