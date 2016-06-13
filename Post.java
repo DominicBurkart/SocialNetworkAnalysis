@@ -31,14 +31,18 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 		this.setAuthor(author);
 		this.authorID = author.id;
 		this.setMessage(Utilities.cleanstring(message));
-		sample.posts.put(id, this);
+		if (sample != null) sample.posts.put(id, this);
+		// sample is null when we're streaming instead
+		// of using the REST api.
 	}
 
 	public Post(String id, String authorID, String message) {
 		this.setId(id);
 		this.authorID = authorID;
 		this.setMessage(message);
-		sample.posts.put(id, this);
+		if (sample != null) sample.posts.put(id, this);
+		// sample is null when we're streaming instead
+		// of using the REST api.
 	}
 
 	// TODO public Post(String stringified){

@@ -259,11 +259,13 @@ public abstract class TwitterSample extends Sample {
 				}
 				friends.close();
 			}
-			PrintWriter posts = fileHandler(n+"posts.tsv");
-			for (Post p : u.posts){
-				posts.println(p);
+			if (u.posts != null && u.posts.size() > 0){
+				PrintWriter posts = fileHandler(n+"posts.tsv");
+				for (Post p : u.posts){
+					posts.println(p);
+				}
+				posts.close();
 			}
-			posts.close();
 		}
 		w.close();
 	}

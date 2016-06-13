@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 import SocialNetworkAnalysis.Sample.ToUser;
+import twitter4j.TwitterException;
 
 /**
  * Convenient place for methods used across this package!
@@ -137,5 +138,54 @@ public class Utilities extends SNA_Root {
 		Date d = new Date();
 		d.setTime(dur + java.lang.System.currentTimeMillis());
 		return d.toString();
+	}
+	
+	/**	 
+	 * @return a single string with every element of a string array represented with
+	 * a single underscore between them (eg: ["a","b","c"] yields "a_b_c").
+	 */
+	static public String strFromAr(String[] ar){
+		StringBuffer b = new StringBuffer();
+		for (String s : ar){
+			if (s.length() != 0) b.append("_");
+			b.append(s);
+		}
+		return b.toString();
+	}
+	
+	static public void handleTwitterException(TwitterException e) throws TwitterException{
+		if (verbose) System.err.println("attempting to handle twitter exception: "+e.getErrorCode()+" message: "+e.getErrorMessage());
+		int code = e.getErrorCode();
+		if (code == 404 || code == 17 || code == 34){
+			return; //we aren't authorized to view this resource or it was deleted.
+		}
+		else if (code == 500 || code == 502 || code == 503 || code == 504 || code == 131 || code == 130){
+			System.err.println("Internal error "+code+" in Twitter's servers. Sleeping for five minutes before resuming program.");
+			try {
+				Thread.sleep(5 * 60 * 1000);
+			} catch (InterruptedException e1) {
+				System.err.println("System could not sleep because the thread was interrupted. Attempting to continue data collection.");
+			}
+			return;
+		}
+		else if (e.getErrorCode() == 50){
+			System.err.println("Error code fifty returned.");
+			return;
+		}
+		else if (e.getErrorCode() == 63) {
+			System.err.println("Queried user has been suspended and so was not able to be collected. Continuing");
+			return;
+		}
+		else if (e.exceededRateLimitation() || e.getStatusCode() == 420){
+			System.err.println("Exceeded ratelimit. Sleeping relevant thread.");
+			try {
+				Thread.sleep(15 * 1000 * 60);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+				System.exit(0);
+			}
+		}
+		if (e.getErrorCode() != -1)
+			throw e; //throws everything else that we didn't handle.
 	}
 }

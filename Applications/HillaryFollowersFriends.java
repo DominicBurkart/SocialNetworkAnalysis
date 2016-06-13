@@ -10,7 +10,7 @@ import SocialNetworkAnalysis.*;
  */
 public class HillaryFollowersFriends extends TwitterSample {
 	static final int DEPTH = 2;
-	static int goal = 2000; // max collectable followers per user with this algorithm is 5k
+	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
 	User root;
 	
 	public static void main(String[] args) {
@@ -18,7 +18,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 		HillaryFollowersFriends h = new HillaryFollowersFriends();
 		h.name = "hillaryFollowersFriends";
 		h.run();
-		if (verbose) System.out.println("Program complete.");
+		System.out.println("Program complete.");
 	}
 
 	/**
@@ -111,7 +111,8 @@ public class HillaryFollowersFriends extends TwitterSample {
 		ToUser hillary = new ToUser("1339835893", 0);
 		root = getUser(hillary);
 		ToFollow f = new ToFollow(root);
-		getUserQ.add(super.getSomeFol(f, goal)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
+		getUserQ.add(super.getSomeFol(f, GOAL)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
+		getPostsQ.add((TwitterUser) root);
 		if (verbose) System.out.println("start() completed.");
 	}
 }

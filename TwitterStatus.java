@@ -25,9 +25,11 @@ public class TwitterStatus extends Post {
 
 	public TwitterStatus(Status s) {
 		super(Long.toString(s.getId()), Long.toString(s.getUser().getId()), s.getText());
-		User u = sample.users.get(Long.toString(s.getId()));
-		set(s, u); // yields null value for parent user when user hasn't been
-					// collected (acceptable)
+		if (sample != null){ //sample is null when collecting streaming / not REST data.
+			User u = sample.users.get(Long.toString(s.getId()));
+			set(s, u); // yields null value for parent user when user hasn't been
+						// collected (acceptable)
+		}
 	}
 
 	public TwitterStatus(String stringify) {
