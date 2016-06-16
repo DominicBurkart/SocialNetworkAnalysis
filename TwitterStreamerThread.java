@@ -18,7 +18,7 @@ import java.util.Arrays;
  * 
  * original program: https://github.com/yusuke/twitter4j/blob/master/twitter4j-examples/src/main/java/twitter4j/examples/stream/PrintFilterStream.java
  * 
- * @author Yusuke Yamamoto - yusuke at mac.com,
+ * @author Yusuke Yamamoto,
  * 		   Dominic Burkart
  */
 public final class TwitterStreamerThread implements Runnable{
@@ -63,6 +63,7 @@ public final class TwitterStreamerThread implements Runnable{
      * @param args follow(comma separated user ids) track(comma separated filter terms)
      */
     public void run() {
+    	final String name = Thread.currentThread().getName();
     	
         if (args.length < 1) {
             System.out.println("Usage: java twitter4j.examples.PrintFilterStream [follow(comma separated numerical user ids)] [track(comma separated filter terms)]");
@@ -80,22 +81,22 @@ public final class TwitterStreamerThread implements Runnable{
 
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                System.out.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+                System.out.println(name+": Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
             }
 
             @Override
             public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                System.out.println("Got track limitation notice:" + numberOfLimitedStatuses);
+                System.out.println(name+": Got track limitation notice:" + numberOfLimitedStatuses);
             }
 
             @Override
             public void onScrubGeo(long userId, long upToStatusId) {
-                System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+                System.out.println(name+": Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
             }
 
             @Override
             public void onStallWarning(StallWarning warning) {
-                System.out.println("Got stall warning:" + warning);
+                System.out.println(name+": Got stall warning:" + warning);
             }
 
             @Override

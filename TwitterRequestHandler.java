@@ -224,6 +224,16 @@ public class TwitterRequestHandler extends SNA_Root {
 				ids[i] = Long.toString(l);
 			}
 			ToUser t = User.sample.new ToUser(ids, f.depth+1);
+			for (String id : ids){
+				if (TwitterSample.toLinkFriends.containsKey(id)){
+					TwitterSample.toLinkFriends.get(id).add(f.u);
+				} else{
+					User target = f.u;
+					LinkedList<User> uL = new LinkedList<User>();
+					uL.add(target);
+					TwitterSample.toLinkFriends.put(id, uL);
+				}
+			}
 			return t;
 		} catch (TwitterException e){
 			Utilities.handleTwitterException(e);

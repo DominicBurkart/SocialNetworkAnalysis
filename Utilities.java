@@ -159,6 +159,9 @@ public class Utilities extends SNA_Root {
 		if (code == 404 || code == 17 || code == 34){
 			return; //we aren't authorized to view this resource or it was deleted.
 		}
+		else if (code == 17){
+			System.err.println("Error code 17 returned: \"no user matches for specified terms.\"");
+		}
 		else if (code == 500 || code == 502 || code == 503 || code == 504 || code == 131 || code == 130){
 			System.err.println("Internal error "+code+" in Twitter's servers. Sleeping for five minutes before resuming program.");
 			try {

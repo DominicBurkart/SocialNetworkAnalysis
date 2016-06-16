@@ -16,25 +16,44 @@ import twitter4j.conf.ConfigurationBuilder;
 public class QueerMultiStream {
 	@SuppressWarnings("unused")
 	private static TwitterAuth auth = new TwitterAuth(); //initializes authorizations
-	private static ArrayList<ConfigurationBuilder> figs = TwitterAuth.getConfigurationBuilders();
 	static int i = 0;
 	
+	private static void sleep(){
+		try {
+			Thread.sleep(1000 * 2);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 	
 	public static void main(String[] args){
 		String[] queerArgs = {"queer"};
 		StreamThreader(queerArgs, "queer");
 		
+		sleep();
+		
 		String[] lgbiaArgs = {"gay", "lesbian", "bisexual", "pansexual", "intersex", "asexual"};
 		StreamThreader(lgbiaArgs, "lgbia");
 		
-		String[] transArgs = {"trans", "transgender", "transsexual", "trans*"};
+		sleep();
+		
+		String[] transArgs = {"trans", "transgender", "transsexual", "trans*", "transman", "transmen", "transwoman", "transwomen", "nonbinary", "non binary", "non-binary"};
 		StreamThreader(transArgs, "trans");
 		
-		String[] slurArgs = {"faggot", "faggots", "fag", "fags", "tranny"};
+		sleep();
+		
+		String[] slurArgs = {"faggot", "faggots", "fag", "fags", "tranny", "trannies", "shemale", "shemales", "dyke", "dykes"};
 		StreamThreader(slurArgs, "slurs");
+		
+		sleep();
+		
+		String[] orlArgs = {"orlando", "pulse", "orlandoshooting", "orlandounited", "orlando survivor", "pulse orlando"};
+		StreamThreader(orlArgs, "orlando");
 	}
 	
 	private static Configuration getFig(){
+		ArrayList<ConfigurationBuilder> figs = TwitterAuth.getConfigurationBuilders();
 		return figs.get(i++ % figs.size()).build();
 	}
 	

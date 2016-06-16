@@ -26,7 +26,7 @@ public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	static long[] open = new long[3];
 	static boolean[] sleep = new boolean[3];
-	static  Hashtable<String, LinkedList<User>> toLinkFriends = new Hashtable<String,LinkedList<User>>();
+	public static  Hashtable<String, LinkedList<User>> toLinkFriends = new Hashtable<String,LinkedList<User>>();
 
 	public TwitterSample() {
 		this.getFollowingQ = new LinkedList<ToFollow>();

@@ -223,6 +223,7 @@ public abstract class Sample extends SNA_Root {
 		String id; // user to follow
 		long cursor = -1; //standard first cursor for twitter paging
 		int depth; // depth of user we have the id of.
+		User u;
 
 		public ToFollow(User u, long cursor) {
 			this(u);
@@ -232,16 +233,7 @@ public abstract class Sample extends SNA_Root {
 		public ToFollow(User u) {
 			this.id = u.id;
 			this.depth = u.firstDepth;
-		}
-
-		public ToFollow(String id, int depth, long cursor) {
-			this(id, depth);
-			this.cursor = cursor;
-		}
-
-		public ToFollow(String id, int depth) {
-			this.id = id;
-			this.depth = depth;
+			this.u = u;
 		}
 	}
 
