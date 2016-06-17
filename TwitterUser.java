@@ -1,6 +1,5 @@
 package SocialNetworkAnalysis;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import SocialNetworkAnalysis.Sample.ToUser;
@@ -8,7 +7,8 @@ import twitter4j.TwitterException;
 
 /**
  * Gives us the abstract framework of a User plus specialized functions for
- * twitter stuff!
+ * twitter network stuff! Needs to be used with the REST API / an instantiated 
+ * TwitterSample object.
  * 
  * @author dominicburkart
  */
@@ -16,7 +16,7 @@ public class TwitterUser extends User {
 
 	Location location;
 	
-	private void checkToLinkFriends(){
+	private void checkToLinks(){
 		if (TwitterSample.toLinkFriends.containsKey(this.id)){
 			LinkedList<User> uL = TwitterSample.toLinkFriends.get(this.id);
 			if (verbose) System.out.println("While instantiating user "+this.id+" toLinkFriends detected. number of links: "+uL.size());
@@ -25,28 +25,24 @@ public class TwitterUser extends User {
 			}
 			TwitterSample.toLinkFriends.remove(this.id); //keeps toLinkFriends small.
 		}
+		if (TwitterSample.toLinkFollowers.containsKey(this.id)){
+			LinkedList<User> uL = TwitterSample.toLinkFollowers.get(this.id);
+			if (verbose) System.out.println("While instantiating user "+this.id+" toLinkFollowers detected. number of links: "+uL.size());
+			for (User u : uL){
+				new Follow(this, u);
+			}
+			TwitterSample.toLinkFollowers.remove(this.id); 
+		}
 	}
 
 	public TwitterUser(String username, String id, int depth) throws RedundantEntryException {
 		super(username, id, depth);
-		checkToLinkFriends();
+		checkToLinks();
 	}
 
 	public TwitterUser(String id, int depth) throws RedundantEntryException {
 		super(id, depth);
-		checkToLinkFriends();
-	}
-
-	@Override
-	public ToUser getFollowers() throws APIException {
-		try {
-			return TwitterRequestHandler.getFollowers(User.sample.new ToFollow(this));
-		} catch (BadIDException e) {
-			System.err.println("TwitterUser.getFollowers() recieved a bad ID: " + this.id);
-			return null; // TODO double check that this is fine
-		} catch (TwitterException e) {
-			throw new APIException(e);
-		}
+		checkToLinks();
 	}
 
 	public ToUser getFriends() throws APIException {
@@ -54,53 +50,11 @@ public class TwitterUser extends User {
 			return TwitterRequestHandler.getFriends(User.sample.new ToFollow(this));
 		} catch (BadIDException e) {
 			System.err.println("TwitterUser.getFollowers() recieved a bad ID: " + this.id);
-			return null; // TODO double check that this is fine
+			return null;
 		} catch (TwitterException e) {
 			throw new APIException(e);
 		}
 	}
-
-	@Override
-	public ArrayList<Post> getPosts() throws APIException {
-		try {
-			TwitterRequestHandler.getPosts(this);
-		} catch (TwitterException e) {
-			throw new APIException(e);
-		}
-		return posts;
-	}
-
-	// @Override
-	// public ArrayList<User> getSomeFollowers() throws APIException {
-	// try {
-	// return TwitterRequestHandler.getSomeFollowers(this);
-	// } catch (BadIDException e) {
-	// System.err.println("TwitterUser.getSomeFollowers() recieved a bad ID: " +
-	// this.id);
-	// System.err.println("Saving and quitting.");
-	// sample.usersToTSV();
-	// System.exit(1);
-	// return null; // for the compiler
-	// } catch (TwitterException e) {
-	// throw new APIException(e);
-	// }
-	// }
-
-	// @Override
-	// public ToUser getxFollowers(int n) throws APIException{
-	// try {
-	// return TwitterRequestHandler.getxFollowers(this, n);
-	// } catch (BadIDException e) {
-	// System.err.println("TwitterUser.getxFollowers() recieved a bad ID: " +
-	// this.id);
-	// System.err.println("Saving and quitting.");
-	// sample.usersToTSV();
-	// System.exit(1);
-	// return null; // for the compiler
-	// } catch (TwitterException e) {
-	// throw new APIException(e);
-	// }
-	// }
 
 	@Override
 	public String toString() {

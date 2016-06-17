@@ -27,6 +27,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		return authorized.getTwitter();
 	}
 	
+	
 	static TwitterStatus[] search(String terms) throws TwitterException {
 		Query q = new Query(terms);
 		try{
@@ -93,12 +94,27 @@ public class TwitterRequestHandler extends SNA_Root {
 			IDs IDvals = getTwitter().getFriendsIDs(Long.valueOf(toFriend.id), toFriend.cursor);
 			long[] ids = IDvals.getIDs();
 			String[] sIds = new String[ids.length];
+			User friender = User.sample.users.get(toFriend.id);
+			int i = 0;
+			for (long id : ids){
+				sIds[i] = Long.toString(id);
+				LinkedList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
+				if (uL == null){
+					uL = new LinkedList<User>();
+					uL.add(friender);
+					TwitterSample.toLinkFriends.put(sIds[i], uL);
+				}
+				else{
+					uL.add(friender);
+				}
+				i++;
+			}
 			out = User.sample.new ToUser(sIds, toFriend.depth + 1);
+			return out;
 		} catch (TwitterException e){
 			Utilities.handleTwitterException(e);
 			return null;
 		}
-		return out;
 	}
 
 	static ToUser getFollowers(ToFollow toFol) throws BadIDException, TwitterException {
@@ -117,11 +133,15 @@ public class TwitterRequestHandler extends SNA_Root {
 			}
 			String[] sIds = new String[ids.length];
 			int i = 0;
-			if (verbose){
-				System.out.print("values to be strung: ");
-				for (long vId : ids){
-					System.out.print(vId+" ");
-					sIds[i++] = Long.toString(vId);
+			for (long vId : ids){ //builds sIds, fills toLinkFollowers
+				String id = sIds[i++] = Long.toString(vId);
+				if (TwitterSample.toLinkFollowers.containsKey(id)){
+					TwitterSample.toLinkFollowers.get(id).add(toFol.u);
+				} else{
+					User target = toFol.u;
+					LinkedList<User> uL = new LinkedList<User>();
+					uL.add(target);
+					TwitterSample.toLinkFollowers.put(id, uL);
 				}
 			}
 			out = User.sample.new ToUser(sIds, toFol.depth + 1);
@@ -146,43 +166,6 @@ public class TwitterRequestHandler extends SNA_Root {
 		}
 	}
 
-	// static ArrayList<User> getFollowers(User u) throws BadIDException,
-	// TwitterException {
-	// ArrayList<User> out = new ArrayList<User>();
-	// ArrayList<long[]> pages = new ArrayList<long[]>();
-	// try {
-	// long cursor = -1;
-	// while (cursor != 0) {
-	// IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), cursor);
-	// pages.add(IDvals.getIDs());
-	// cursor = IDvals.getNextCursor();
-	// }
-	// for (long[] p : pages) {
-	// for (long l : p) {
-	// try{
-	// TwitterUser t = getUser(l, u.firstDepth + 1);
-	// out.add(t);
-	// } catch(TwitterException e){
-	// if (e.getErrorCode() == 50){
-	// System.err.println("User could not be found:"+l+"\ncontinuing
-	// collection.");
-	// }
-	// else if (e.getErrorCode() == 63) {
-	// System.err.println("User "+l+" has been suspended and ignored.");
-	// continue;
-	// }
-	// else throw e;
-	// }
-	// }
-	// }
-	// } catch (NumberFormatException e) {
-	// throw new BadIDException("Bad id given to getFollowers: " + u.id);
-	// } catch (BadUserException e) {
-	// System.err.println("Unusual error with twitter user: " + u.id);
-	// }
-	// return out;
-	// }
-
 	static ToUser getSomeFollowers(ToFollow toFol) throws BadIDException, TwitterException {
 		ToUser out = null;
 		try {
@@ -191,7 +174,15 @@ public class TwitterRequestHandler extends SNA_Root {
 			String[] sIds = new String[ids.length];
 			int i = 0;
 			for (long vId : ids){
-				sIds[i++] = Long.toString(vId);
+				String id = sIds[i++] = Long.toString(vId);
+				if (TwitterSample.toLinkFollowers.containsKey(id)){
+					TwitterSample.toLinkFollowers.get(id).add(toFol.u);
+				} else{
+					User target = toFol.u;
+					LinkedList<User> uL = new LinkedList<User>();
+					uL.add(target);
+					TwitterSample.toLinkFollowers.put(id, uL);
+				}
 			}
 			out = User.sample.new ToUser(sIds, toFol.depth + 1);
 			return out;
@@ -221,160 +212,23 @@ public class TwitterRequestHandler extends SNA_Root {
 			String[] ids = new String[max];
 			for (int i = 0; i < max; i++){
 				long l = IDvals.getIDs()[i];
-				ids[i] = Long.toString(l);
-			}
-			ToUser t = User.sample.new ToUser(ids, f.depth+1);
-			for (String id : ids){
-				if (TwitterSample.toLinkFriends.containsKey(id)){
-					TwitterSample.toLinkFriends.get(id).add(f.u);
+				String id = ids[i] = Long.toString(l);
+				if (TwitterSample.toLinkFollowers.containsKey(id)){
+					TwitterSample.toLinkFollowers.get(id).add(f.u);
 				} else{
 					User target = f.u;
 					LinkedList<User> uL = new LinkedList<User>();
 					uL.add(target);
-					TwitterSample.toLinkFriends.put(id, uL);
+					TwitterSample.toLinkFollowers.put(id, uL);
 				}
 			}
+			ToUser t = User.sample.new ToUser(ids, f.depth+1);
 			return t;
 		} catch (TwitterException e){
 			Utilities.handleTwitterException(e);
 			return null;
 		}
 	}
-
-	// /**
-	// *
-	// * Returns at most x followers for each call. Less could be called if the
-	// user doesn't follow
-	// * a lot of people.
-	// *
-	// * @param u
-	// * @param num
-	// * @return
-	// * @throws BadIDException
-	// * @throws TwitterException
-	// */
-	// static ArrayList<User> getxFollowers(User u, int num) throws
-	// BadIDException, TwitterException {
-	// ArrayList<User> out = new ArrayList<User>();
-	// try {
-	// IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
-	// long[] ids = IDvals.getIDs();
-	// if (ids.length < num){ //either the user doesn't follow many people or we
-	// didn't get enough from twitter
-	// if (IDvals.getNextCursor() != 0 ){ //if we can get more from twitter, do
-	// LinkedList<long[]> pages = new LinkedList<long[]>();
-	// pages.add(ids);
-	// while (IDvals.getNextCursor() != 0 && Collected(pages) < num){
-	// IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id),
-	// IDvals.getNextCursor());
-	// ids = IDvals.getIDs();
-	// pages.add(ids);
-	// }
-	// for (long[] page : pages){ // go through and add more users until we're
-	// done
-	// for(long id : page){
-	// if (out.size() < num){
-	// try{
-	// TwitterUser t = getUser(id, u.firstDepth + 1);
-	// out.add(t);
-	// } catch(TwitterException e){
-	// if (e.getErrorCode() == 50){
-	// System.err.println("User could not be found:"+id+"\ncontinuing
-	// collection.");
-	// }
-	// else if (e.getErrorCode() == 63) {
-	// System.err.println("User "+id+" has been suspended and ignored.");
-	// continue;
-	// }
-	// else throw e;
-	// }
-	// }
-	// else{ //we're done!
-	// return out;
-	// }
-	// }
-	// }
-	// }
-	// else{ // the user doesn't follow many people. just return who they do
-	// follow.
-	// for(long id : ids){
-	// try{
-	// TwitterUser t = getUser(id, u.firstDepth + 1);
-	// out.add(t);
-	// } catch(TwitterException e){
-	// if (e.getErrorCode() == 50){
-	// System.err.println("User could not be found:"+id+"\ncontinuing
-	// collection.");
-	// }
-	// else if (e.getErrorCode() == 63) {
-	// System.err.println("User "+id+" has been suspended and ignored.");
-	// continue;
-	// }
-	// else throw e;
-	// }
-	// }
-	// }
-	// }
-	// else{ //we collected enough followers with one getFollowers call! great!
-	// for (int i = 0; i < num; i++) {
-	// long l = ids[i];
-	// try{
-	// TwitterUser t = getUser(l, u.firstDepth + 1);
-	// out.add(t);
-	// } catch(TwitterException e){
-	// if (e.getErrorCode() == 50){
-	// System.err.println("User could not be found:"+l+"\ncontinuing
-	// collection.");
-	// }
-	// else throw e;
-	// }
-	// }
-	// }
-	// } catch (BadUserException e) {
-	// System.err.println("Unusual error with twitter user: " + u.id);
-	// } catch (TwitterException e){
-	// if (e.getErrorCode() != -1) throw e;
-	// System.err.println("Unusual error with twitter user: " + u.id);
-	// if (u.username != null){
-	// System.err.println("username of weird error account: "+ u.username);
-	// }
-	// else{
-	// System.err.println("username of weird error account was null.");
-	// }
-	// }
-	// return out;
-	// }
-
-	// /**
-	// * @return up to
-	// * @throws TwitterException
-	// */
-	// static String[] getSomeFollowerIds(User u) throws TwitterException{
-	// IDs IDvals;
-	// try {
-	// IDvals = getTwitter().getFollowersIDs(Long.valueOf(u.id), -1);
-	// long[] ids = IDvals.getIDs();
-	// String[] out = new String[ids.length];
-	// int i = 0;
-	// for (long id : ids){
-	// out[i++] = Long.toString(id);
-	// }
-	// return out;
-	// } catch (NumberFormatException e) {
-	// // TODO Auto-generated catch block
-	// e.printStackTrace();
-	// } catch (TwitterException e){
-	// if (e.getErrorCode() != -1) throw e;
-	// System.err.println("Unusual error with twitter user: " + u.id);
-	// if (u.username != null){
-	// System.err.println("username of weird error account: "+ u.username);
-	// }
-	// else{
-	// System.err.println("username of weird error account was null.");
-	// }
-	// }
-	// return null;
-	// }
 
 	/**
 	 * @see getUsers

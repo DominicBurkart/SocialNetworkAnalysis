@@ -70,7 +70,7 @@ public class Utilities extends SNA_Root {
 		case 5: return 0;
 		default: 
 			System.err.println("Bad value passed to resourceToFamily: "+r);
-			System.err.println("Quitting without saving.");
+			System.err.println("Quitting.");
 			System.exit(0);
 			return 0;
 		}
@@ -99,7 +99,10 @@ public class Utilities extends SNA_Root {
 		}
 		return least;
 	}
-
+	
+	/**
+	 * for use with a Sample-based program.
+	 */
 	public static void toUserChunker(ToUser ids) {
 		// splits one big ToUser object into many small enough to fit
 		// into Twitter's batch querying system.
@@ -190,5 +193,26 @@ public class Utilities extends SNA_Root {
 		}
 		if (e.getErrorCode() != -1)
 			throw e; //throws everything else that we didn't handle.
+	}
+
+	public static void sleepFor(long sleep) {
+		if (sleep <= 0) return;
+		//okay, we know that we have to wait and for how long. Save current data and go to sleep.
+		Date d = new Date();
+		System.out.println("Current time: "+d.toString());
+		if (sleep > 1000 * 60 * 14 && User.sample != null){
+			//only save files if we're sleeping for more than fourteen minutes.
+			User.sample.toTSV();
+			sleep = sleep - (d.getTime() - java.lang.System.currentTimeMillis());
+			if (sleep <= 0) return;
+			//recalculate sleep after saving all of those files.
+		}
+		System.out.println("Waking at: "+ Utilities.durationToTimeString(sleep));
+		try {
+			Thread.sleep(sleep);
+			System.out.println("Awake! Continuing collection.");
+		} catch (InterruptedException e) {
+			System.err.println("System could not sleep for designated period. Continuing program.");
+		}
 	}
 }

@@ -1,7 +1,7 @@
 package SocialNetworkAnalysis;
 
 /**
- * Just reacts to ratelimit being reached somehow.
+ * Interface for a class to handle ratelimits being reached.
  * 
  * @author dominicburkart
  */

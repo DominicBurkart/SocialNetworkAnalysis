@@ -1,7 +1,7 @@
 package SocialNetworkAnalysis;
 
 /**
- * Class to refer to any directed relationship between two users.
+ * Superclass to refer to any directed relationship between two users.
  * 
  * @author dominicburkart
  */

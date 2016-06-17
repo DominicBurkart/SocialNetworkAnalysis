@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -19,6 +18,10 @@ import twitter4j.TwitterException;
  * Implements methods useful specifically for twitter samples and fleshes
  * out stuff established as important in sample. Wraps TwitterRequestHandler
  * queries and holds the boolean values of whether or not a request family is sleeping.
+ *
+ * @use  for use with Twitter's REST API. Not used for streaming API calls.
+ * 
+ * @see TwitterStreamerThread (used in the application QueerMultiStream) for a method for using streaming collection.
  * 
  * @author dominicburkart
  */
@@ -27,6 +30,7 @@ public abstract class TwitterSample extends Sample {
 	static long[] open = new long[3];
 	static boolean[] sleep = new boolean[3];
 	public static  Hashtable<String, LinkedList<User>> toLinkFriends = new Hashtable<String,LinkedList<User>>();
+	public static Hashtable<String, LinkedList<User>> toLinkFollowers = new Hashtable<String, LinkedList<User>>();
 
 	public TwitterSample() {
 		this.getFollowingQ = new LinkedList<ToFollow>();
@@ -90,25 +94,8 @@ public abstract class TwitterSample extends Sample {
 		}
 		try{
 			long sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
-			if (sleep <= 0) return;
-			//okay, we know that we have to wait and for how long. Save current data and go to sleep.
 			System.out.println("All relevant resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up.");
-			Date d = new Date();
-			System.out.println("Current time: "+d.toString());
-			if (sleep > 1000 * 60 * 14){
-				//only save files if we're sleeping for more than fourteen minutes.
-				toTSV();
-				sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
-				if (sleep <= 0) return;
-				//recalculate sleep after saving all of those files.
-			}
-			System.out.println("Waking at: "+ Utilities.durationToTimeString(sleep));
-			try {
-				Thread.sleep(sleep);
-				System.out.println("Awake! Continuing collection.");
-			} catch (InterruptedException e) {
-				System.err.println("System could not sleep for designated period. Continuing program.");
-			}
+			Utilities.sleepFor(sleep);
 		} catch (IllegalArgumentException e){ //thrown by Utilities.least method
 			if (verbose) System.out.println("All queues are empty. Exiting filler method.");
 			return;

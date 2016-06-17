@@ -20,13 +20,13 @@ public class Location extends SNA_Root {
 	public Location(String Stringified) {
 		String s = Stringified;
 		if (s != "null") {
-			int tab1 = s.indexOf("|||");
+			int tab1 = s.indexOf("   ");
 			setName(s.substring(0, tab1));
-			int tab2 = s.indexOf("|||", tab1);
+			int tab2 = s.indexOf("   ", tab1);
 			setLocationType(s.substring(tab1 + 1, tab2));
-			tab1 = s.indexOf("|||", tab2);
+			tab1 = s.indexOf("   ", tab2);
 			setLatitude(Double.parseDouble(s.substring(tab2 + 1, tab1)));
-			tab2 = s.indexOf("|||", tab1);
+			tab2 = s.indexOf("   ", tab1);
 			setLongitude(Double.parseDouble(s.substring(tab1 + 1, tab2)));
 		}
 	}
@@ -34,9 +34,9 @@ public class Location extends SNA_Root {
 	@Override
 	public String toString() {
 		if (getName() != null && getLocationType() != null) {
-			return (getName() + "|||" + getLocationType() + "|||" + getLatitude() + "|||" + getLongitude());
+			return (getName() + "   " + getLocationType() + "   " + getLatitude() + "   " + getLongitude());
 		} else if (latitude != 0 && longitude != 0) {
-			return ("null" + "|||" + "null" + "|||" + getLatitude() + "|||" + getLongitude());
+			return ("null" + "   " + "null" + "   " + getLatitude() + "   " + getLongitude());
 		} else {
 			return "null";
 		}

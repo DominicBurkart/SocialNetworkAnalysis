@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import SocialNetworkAnalysis.Sample.ToUser;
-
 /**
  * Allows for the manipulation of User objects collected from any supported
  * site.
@@ -70,14 +68,6 @@ public abstract class User extends SNA_Root {
 		}
 		}
 	}
-
-	public abstract ToUser getFollowers() throws APIException;
-
-	// public abstract ToUser getSomeFollowers() throws APIException;
-	//
-	// public abstract ToUser getxFollowers(int x) throws APIException;
-
-	public abstract ArrayList<Post> getPosts() throws APIException;
 
 	public User(String id, int depth) throws RedundantEntryException {
 		if (sample.users.containsKey(id))
