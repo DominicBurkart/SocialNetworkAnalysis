@@ -12,15 +12,35 @@ public class TwitterStatus extends Post {
 	public int compareTo(Post o) {
 		return super.compareTo(o);
 	}
-
-	public TwitterStatus(String id, User author, String message) {
-		super(id, author, message);
-		site = "twitter";
+	
+	private void checkIfRepost(Status s){
+		if (s.isRetweet()){
+			User retweetee;
+			Post retweetedStatus;
+			try {
+				retweetee = new TwitterUser(Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth+= 1);
+			} catch (RedundantEntryException e) {
+				retweetee = sample.users.get(s.getRetweetedStatus().getUser().getId());
+			}
+			if (!sample.posts.containsKey(Long.toString(s.getRetweetedStatus().getId()))){
+				retweetedStatus = new TwitterStatus(s.getRetweetedStatus(), retweetee);
+				try {
+					retweetee.addPost(retweetedStatus);
+				} catch (RedundantEntryException e) {
+					retweetedStatus = sample.posts.get(Long.toString(s.getRetweetedStatus().getId()));
+				}
+			} else{
+				retweetedStatus = sample.posts.get(Long.toString(s.getRetweetedStatus().getId()));
+			}
+			new Repost(retweetedStatus, this.getAuthor(), retweetee);
+		}
 	}
 
 	public TwitterStatus(Status s, User u) {
 		super(Long.toString(s.getId()), u.id, s.getText());
 		set(s, u);
+		if (sample != null) checkIfRepost(s);
+		site = "twitter";
 	}
 
 	public TwitterStatus(Status s) {
@@ -30,6 +50,8 @@ public class TwitterStatus extends Post {
 			set(s, u); // yields null value for parent user when user hasn't been
 						// collected (acceptable)
 		}
+		if (sample != null) checkIfRepost(s);
+		site = "twitter";
 	}
 
 	public TwitterStatus(String stringify) {

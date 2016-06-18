@@ -25,6 +25,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 	ArrayList<String> tags;
 	private Location location = new Location();
 	String site = ""; // eg "twitter" or "tumblr"
+	
 
 	public Post(String id, User author, String message) {
 		this.setId(id);
@@ -44,9 +45,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 		// sample is null when we're streaming instead
 		// of using the REST api.
 	}
-
-	// TODO public Post(String stringified){
-
+	
 	/**
 	 * @return 0 if the posts have the same id, otherwise returns the difference
 	 *         between this post's notes versus the other's.

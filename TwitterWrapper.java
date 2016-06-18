@@ -119,16 +119,12 @@ public class TwitterWrapper implements Twitter {
 		timeManager(resource);
 		int max = -3; //buffer to prevent accidental overflow
 		switch (resource){ //ratelimits for each resource
-		case 0: max += 179; break;
+		case 0: max += 180; break;
 		case 1: max += 180; break;
 		case 2: max += 15; break;
 		case 3: max += 15; break;
 		case 4: max += 15; break;
 		case 5: max += 180; break;
-		}
-		if (limits[resource] >= max) {
-			limit.reached(resource);
-			limits[resource] = 0;
 		}
 		if (verbose) {
 			System.out.print("limits in "+ TwitterAuth.LimitReached.fams[resource]+": ");
@@ -137,7 +133,13 @@ public class TwitterWrapper implements Twitter {
 			}
 			System.out.println();
 		}
-		limits[resource]++;
+		if (limits[resource] >= max) {
+			limit.reached(resource);
+			limits[resource] = 0;
+		}
+		else{
+			limits[resource]++;
+		}
 	}
 
 	@Override

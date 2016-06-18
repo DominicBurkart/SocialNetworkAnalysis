@@ -200,14 +200,16 @@ public class Utilities extends SNA_Root {
 		//okay, we know that we have to wait and for how long. Save current data and go to sleep.
 		Date d = new Date();
 		System.out.println("Current time: "+d.toString());
+		System.out.println("Waking at: "+ durationToTimeString(sleep));
 		if (sleep > 1000 * 60 * 14 && User.sample != null){
+			System.out.println("Saving files...");
 			//only save files if we're sleeping for more than fourteen minutes.
 			User.sample.toTSV();
-			sleep = sleep - (d.getTime() - java.lang.System.currentTimeMillis());
-			if (sleep <= 0) return;
+			System.out.println("Saving complete.");
 			//recalculate sleep after saving all of those files.
+			sleep = sleep - (d.getTime() - java.lang.System.currentTimeMillis());
 		}
-		System.out.println("Waking at: "+ Utilities.durationToTimeString(sleep));
+		if (sleep <= 0) return;
 		try {
 			Thread.sleep(sleep);
 			System.out.println("Awake! Continuing collection.");

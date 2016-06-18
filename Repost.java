@@ -14,9 +14,8 @@ public class Repost extends Interaction {
 		this.post = post;
 		this.source = source;
 		this.target = target;
-	}
-
-	public Repost() {
+		post.associatedInteractions.add(this);
+		this.source.getTensors().reposts.add(this);
 	}
 
 	public Repost(String stringified) {
