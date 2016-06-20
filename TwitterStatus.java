@@ -14,14 +14,16 @@ public class TwitterStatus extends Post {
 	}
 	
 	private void checkIfRepost(Status s){
-		if (s.isRetweet()){
+		if (s.isRetweet() && s.getRetweetedStatus().getUser() != null && this.getAuthor() != null){
+			if (verbose) System.out.println("retweet collected. Constructing Repost object.");
 			User retweetee;
 			Post retweetedStatus;
 			try {
-				retweetee = new TwitterUser(Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth+= 1);
+				retweetee = new TwitterUser(Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth + 1);
+				retweetee.fromRepost = true;
 			} catch (RedundantEntryException e) {
 				retweetee = sample.users.get(s.getRetweetedStatus().getUser().getId());
-			}
+			} 
 			if (!sample.posts.containsKey(Long.toString(s.getRetweetedStatus().getId()))){
 				retweetedStatus = new TwitterStatus(s.getRetweetedStatus(), retweetee);
 				try {

@@ -101,7 +101,8 @@ public class Utilities extends SNA_Root {
 	}
 	
 	/**
-	 * for use with a Sample-based program.
+	 * for use with a Sample-based program. Chunks an overly-large ToUser object
+	 * into chunks at or smaller than the correct size for Twitter queries.
 	 */
 	public static void toUserChunker(ToUser ids) {
 		// splits one big ToUser object into many small enough to fit
@@ -124,7 +125,7 @@ public class Utilities extends SNA_Root {
 		}
 		for (ToUser chunk : chunks) {
 			if (verbose) {
-				System.out.print("chunk being added to getUserQ in HillaryFollowersFriends.followAction: ");
+				System.out.print("chunk being added to getUserQ in Utilities.toUserChunker: ");
 				for (String id : chunk.ids) {
 					System.out.print(id + " ");
 				}
@@ -194,20 +195,30 @@ public class Utilities extends SNA_Root {
 		if (e.getErrorCode() != -1)
 			throw e; //throws everything else that we didn't handle.
 	}
-
+	
+	
+	private static long lastSaved = 0;
+	private static final long TWELVEHOURS = 1000 * 60 * 60 * 12;
+	
 	public static void sleepFor(long sleep) {
 		if (sleep <= 0) return;
 		//okay, we know that we have to wait and for how long. Save current data and go to sleep.
 		Date d = new Date();
 		System.out.println("Current time: "+d.toString());
 		System.out.println("Waking at: "+ durationToTimeString(sleep));
-		if (sleep > 1000 * 60 * 14 && User.sample != null){
+		if (saveProgress && sleep > 1000 * 60 * 14 && User.sample != null && java.lang.System.currentTimeMillis() - lastSaved > TWELVEHOURS){
 			System.out.println("Saving files...");
-			//only save files if we're sleeping for more than fourteen minutes.
+			//only save files if we're sleeping for more than fourteen minutes, and only every 12 hours.
 			User.sample.toTSV();
 			System.out.println("Saving complete.");
 			//recalculate sleep after saving all of those files.
-			sleep = sleep - (d.getTime() - java.lang.System.currentTimeMillis());
+			sleep -= (java.lang.System.currentTimeMillis() - d.getTime());
+			lastSaved = java.lang.System.currentTimeMillis();
+		} else if (saveProgress && User.sample != null && TWELVEHOURS * 2 < java.lang.System.currentTimeMillis() - lastSaved){
+			System.out.println("Files have not been saved in over 24 hours. Saving files...");
+			User.sample.toTSV();
+			lastSaved = java.lang.System.currentTimeMillis();
+			System.out.println("Saving complete.");
 		}
 		if (sleep <= 0) return;
 		try {

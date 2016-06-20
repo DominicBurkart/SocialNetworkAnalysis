@@ -1,5 +1,7 @@
 package SocialNetworkAnalysis.Applications;
 
+import java.util.Date;
+
 import SocialNetworkAnalysis.*;
 
 /**
@@ -18,7 +20,8 @@ public class TrumpFollowersFriends extends TwitterSample {
 		TrumpFollowersFriends h = new TrumpFollowersFriends();
 		h.name = "TrumpFollowersFriends";
 		h.run();
-		System.out.println("Program complete.");
+		Date d =  new Date();
+		System.out.println("Program complete. Current time: "+d.toString());
 	}
 
 	/**
@@ -41,7 +44,7 @@ public class TrumpFollowersFriends extends TwitterSample {
 	@Override
 	public boolean userConditions(User u) {
 		this.getPostsQ.add((TwitterUser) u);
-		if (u != null && u.firstDepth < DEPTH && u != root){
+		if (u != null && u.firstDepth < DEPTH && u != root && !u.fromRepost){
 			if (verbose) System.out.println("User included for userAction: "+u);
 			return true;
 		}

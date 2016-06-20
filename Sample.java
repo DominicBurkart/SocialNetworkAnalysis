@@ -174,7 +174,7 @@ public abstract class Sample extends SNA_Root {
 				getPosts(getPostsQ.poll());
 			}
 			if (verbose || roadmap) {
-				System.out.print("Q lengths (following, user, posts): ");
+				System.out.print("Q lengths (posts, users, followers): ");
 				for (int length : QueueLengths()) {
 					System.out.print(length + " ");
 				}
@@ -196,7 +196,7 @@ public abstract class Sample extends SNA_Root {
 	}
 
 	public int[] QueueLengths() {
-		int[] sizes = { getFollowingQ.size(), getUserQ.size(), getPostsQ.size() };
+		int[] sizes = { getPostsQ.size(), getUserQ.size(), getFollowingQ.size()  };
 		return sizes;
 	}
 
@@ -267,7 +267,7 @@ public abstract class Sample extends SNA_Root {
 
 	public void loadFromTSV() {
 		String dir = System.getProperty("user.dir");
-		System.out.println("load from csv()'s dir: " + dir);
+		System.out.println("load from tsv()'s dir: " + dir);
 		loadFromTSV(dir);
 	}
 

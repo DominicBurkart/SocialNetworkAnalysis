@@ -23,6 +23,8 @@ public abstract class User extends SNA_Root {
 	public String id = "";
 	public String username = "";
 	
+	public boolean fromRepost;
+	
 	public class Tensors {
 		ArrayList<Like> likes = new ArrayList<Like>();
 		ArrayList<Repost> reposts = new ArrayList<Repost>();

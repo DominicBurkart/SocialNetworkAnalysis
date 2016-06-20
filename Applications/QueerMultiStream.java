@@ -28,13 +28,24 @@ public class QueerMultiStream {
 	}
 	
 	public static void main(String[] args){
-		String[] queerArgs = {"queer"};
+		
+		String[] queerArgs = {"queer", "queers"};
 		StreamThreader(queerArgs, "queer");
 		
 		sleep();
 		
-		String[] lgbiaArgs = {"gay", "lesbian", "bisexual", "pansexual", "intersex", "asexual"};
-		StreamThreader(lgbiaArgs, "lgbia");
+		String[] gayArgs = {"gay", "gays"};
+		StreamThreader(gayArgs, "gay");
+		
+		sleep();
+		
+		String[] lesbArgs = {"lesbian", "lesbians"};
+		StreamThreader(lesbArgs, "lesbian");
+		
+		sleep();
+		
+		String[] biapArgs = {"bisexual", "bisexuals", "bi", "pan", "pansexual", "pansexuals", "intersex", "asexual", "asexuals"};
+		StreamThreader(biapArgs, "biap");
 		
 		sleep();
 		
@@ -50,6 +61,11 @@ public class QueerMultiStream {
 		
 		String[] orlArgs = {"orlando", "pulse", "orlandoshooting", "orlandounited", "orlando survivor", "pulse orlando"};
 		StreamThreader(orlArgs, "orlando");
+		
+		sleep();
+		
+		String[] homargs = {"homosexual", "homosexuals", "homo", "homos"};
+		StreamThreader(homargs, "homosexual");
 	}
 	
 	private static Configuration getFig(){
