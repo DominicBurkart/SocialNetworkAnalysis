@@ -3,6 +3,7 @@ package SocialNetworkAnalysis;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -73,9 +74,10 @@ public class TwitterWrapper implements Twitter {
 	int[] limits;
 	boolean verbose = false; // turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
+	static final int FIFTEENMINUTES = 15 * 60 * 1000;
+	
 	// functions used: getUserTimeline, showUser, getRetweeterIDs,
 	// getFollowersIDs, getFriendsIDs, search
-	static final int FIFTEENMINUTES = 15 * 60 * 1000;
 	
 	public TwitterWrapper(Twitter t, int source) {
 		this.source = source;
@@ -83,25 +85,24 @@ public class TwitterWrapper implements Twitter {
 		while (source >= getSources().size()) {
 			getSources().add(new int[famnum]);
 		}
+		// ^ populates sources if it's not already populated
 		for (int i = 0; i < famnum; i++){
 			qTimes.add(new LinkedList<Long>());
 		}
+		// ^ creates a new LinkedList for every function used (eg getUserTimeline)
 		limits = getSources().get(source);
 	}
 	
 	private void timeManager(int resource){
 		LinkedList<Long> limTimes = qTimes.get(resource);
 		Long cur = java.lang.System.currentTimeMillis();
-		for (Long time : limTimes){
+		Iterator<Long> times = limTimes.iterator();
+		while (times.hasNext()){
+			Long time = times.next();
 			if (cur - time > FIFTEENMINUTES){
 				limTimes.remove(time);
 				limits[resource]--;
-				// ^ removes old queries that no long effect current ratelimit.
-			}
-			else{
-				limTimes.add(java.lang.System.currentTimeMillis());
-				// ^current query
-				return; //assumes list is FIFO (queue, not stack) and thus sorted.
+				// ^ removes old queries that no longer affect current ratelimit.
 			}
 		}
 		limTimes.add(java.lang.System.currentTimeMillis());
@@ -117,7 +118,7 @@ public class TwitterWrapper implements Twitter {
 	 */
 	private void rCheck(int resource){
 		timeManager(resource);
-		int max = -3; //buffer to prevent accidental overflow
+		int max = 0;
 		switch (resource){ //ratelimits for each resource
 		case 0: max += 180; break;
 		case 1: max += 180; break;
