@@ -227,11 +227,8 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 
-	//TODO directly save the incoming tweets and users as they come in imo!
-
 	@Override
 	public void usersToTSV() {
-		///File userDirectory = new File(name+"users");
 		PrintWriter w = fileHandler(name + "_users.tsv"); //for master user file
 		w.println("~users~");
 		Enumeration<String> keys = users.keys();

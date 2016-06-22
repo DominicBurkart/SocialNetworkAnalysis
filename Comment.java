@@ -15,8 +15,8 @@ public class Comment extends Interaction {
 	ArrayList<String> tags = new ArrayList<String>();
 	String type = "comment";
 
-	public Comment(Post post) {
-		this.post = post;
+	public Comment(Post comment, User source, User target) {
+		this.post = comment;
 		this.comment = post.comment;
 		this.post.associatedInteractions.add(this);
 		this.tags = post.tags;

@@ -11,6 +11,7 @@ import SocialNetworkAnalysis.*;
  * @author dominicburkart
  */
 public class HillaryFollowersFriends extends TwitterSample {
+	// goal and depth must be > 0.
 	static final int DEPTH = 2;
 	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
 	User root;

@@ -7,7 +7,6 @@ package SocialNetworkAnalysis;
  * @author dominicburkart
  */
 public class Repost extends Interaction {
-	String type = "repost";
 	Post post;
 
 	public Repost(Post post, User source, User target) {
@@ -16,6 +15,8 @@ public class Repost extends Interaction {
 		this.target = target;
 		post.associatedInteractions.add(this);
 		this.source.getTensors().reposts.add(this);
+		sample.allInteractions.add(this);
+		type = "repost";
 	}
 
 	public Repost(String stringified) {

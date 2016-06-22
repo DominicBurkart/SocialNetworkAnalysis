@@ -49,7 +49,7 @@ public class QueerMultiStream {
 		
 		sleep();
 		
-		String[] transArgs = {"trans", "transgender", "transsexual", "trans*", "transman", "transmen", "transwoman", "transwomen", "nonbinary", "non binary", "non-binary"};
+		String[] transArgs = {"trans", "transgender", "transsexual", "transsexuals", "trans*", "transman", "transmen", "transwoman", "transwomen", "nonbinary", "non binary", "non-binary"};
 		StreamThreader(transArgs, "trans");
 		
 		sleep();

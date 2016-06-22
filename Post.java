@@ -12,7 +12,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 	public static Sample sample;
 
 	private String id = "unknown";
-	ArrayList<Interaction> associatedInteractions;
+	ArrayList<Interaction> associatedInteractions = new ArrayList<Interaction>();
 	private Date time = new Date();
 	private String message = "unknown";
 	private User author;

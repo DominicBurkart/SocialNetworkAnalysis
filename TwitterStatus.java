@@ -1,6 +1,7 @@
 package SocialNetworkAnalysis;
 
 import twitter4j.Status;
+import twitter4j.UserMentionEntity;
 
 /**
  * Specific class to refer to a tweet.
@@ -17,13 +18,17 @@ public class TwitterStatus extends Post {
 		if (s.isRetweet() && s.getRetweetedStatus().getUser() != null && this.getAuthor() != null){
 			if (verbose) System.out.println("retweet collected. Constructing Repost object.");
 			User retweetee;
-			Post retweetedStatus;
 			try {
-				retweetee = new TwitterUser(Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth + 1);
+				retweetee = new TwitterUser(s.getRetweetedStatus().getUser().getScreenName(), Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth + 1);
 				retweetee.fromRepost = true;
 			} catch (RedundantEntryException e) {
+				System.out.println("caught");
 				retweetee = sample.users.get(s.getRetweetedStatus().getUser().getId());
 			} 
+			if (retweetee == null){
+				System.out.print(s.getRetweetedStatus().getUser());
+			}
+			Post retweetedStatus;
 			if (!sample.posts.containsKey(Long.toString(s.getRetweetedStatus().getId()))){
 				retweetedStatus = new TwitterStatus(s.getRetweetedStatus(), retweetee);
 				try {
@@ -36,6 +41,26 @@ public class TwitterStatus extends Post {
 			}
 			new Repost(retweetedStatus, this.getAuthor(), retweetee);
 		}
+		else{
+			checkIfAtted(s);
+		}
+	}
+	
+	public void checkIfAtted(Status s){
+		//if it's just an @!
+		if (s.getUserMentionEntities() != null && s.getQuotedStatus() == null){
+			for (UserMentionEntity m : s.getUserMentionEntities()){
+				User mentioned;
+				try{
+					mentioned = new TwitterUser(m.getScreenName(), Long.toString(m.getId()), this.getAuthor().firstDepth +1);
+				} catch (RedundantEntryException e){
+					mentioned = sample.users.get(Long.toString(m.getId()));
+				}
+				System.out.println(m.getScreenName());
+				@SuppressWarnings("unused")
+				Mention mention = new Mention(this, this.getAuthor(), mentioned);
+			}
+		}
 	}
 
 	public TwitterStatus(Status s, User u) {
@@ -45,14 +70,19 @@ public class TwitterStatus extends Post {
 		site = "twitter";
 	}
 
+	/**
+	 * JUST FOR USE WITH TWITTERSTREAMER! NOT FOR THE REST API!
+	 * @param s
+	 */
 	public TwitterStatus(Status s) {
 		super(Long.toString(s.getId()), Long.toString(s.getUser().getId()), s.getText());
 		if (sample != null){ //sample is null when collecting streaming / not REST data.
+			System.err.println("USE ERROR: this function should not be used in a sample-based collection!");
 			User u = sample.users.get(Long.toString(s.getId()));
 			set(s, u); // yields null value for parent user when user hasn't been
 						// collected (acceptable)
+			checkIfRepost(s);
 		}
-		if (sample != null) checkIfRepost(s);
 		site = "twitter";
 	}
 
@@ -66,12 +96,12 @@ public class TwitterStatus extends Post {
 	}
 
 	private void set(Status s, User u) {
-		this.setId(Long.toString(s.getId()));
-		this.setNotes(s.getFavoriteCount());
-		this.setMessage(s.getText());
-		this.setTime(s.getCreatedAt());
-		this.setAuthor(u);
-		this.setOriginal(s.isRetweet());
+		setId(Long.toString(s.getId()));
+		setNotes(s.getFavoriteCount());
+		setMessage(s.getText());
+		setTime(s.getCreatedAt());
+		setAuthor(u);
+		setOriginal(s.isRetweet());
 		// deal w/ location
 		if (s.getGeoLocation() != null) {
 			Location l = new Location();

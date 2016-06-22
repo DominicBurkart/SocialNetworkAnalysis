@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -21,6 +22,7 @@ public abstract class Sample extends SNA_Root {
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>();
 	public String name = "collection";
 	String outDir = name+"_output";
+	Date instantiatedAt = new Date();
 
 	public Sample() {
 		User.sample = this;
@@ -111,6 +113,9 @@ public abstract class Sample extends SNA_Root {
 	 */
 	public abstract void filler();
 
+	
+	long it = 1; //iterations of while loop (exactly the same as total # of calls)
+	
 	/**
 	 * Runs the data collection.
 	 */
@@ -123,7 +128,6 @@ public abstract class Sample extends SNA_Root {
 			}
 		}
 		if (verbose) System.out.println("Beginning run() while loop.");
-		long it = 1; //iterations of while loop (exactly the same as total # of calls)
 		do {
 			if (verbose || roadmap) System.out.println("current run while loop iteration: "+it);
 			if (!getFollowingQ.isEmpty() && !followingSleeping()) {
@@ -187,12 +191,22 @@ public abstract class Sample extends SNA_Root {
 		if (!completed()) System.out.print("Completion conditions were not met, but all query queues are empty. Finishing program.");
 		// ^ redundant with TwitterSample's default completed() since that just works off of queues, but useful when completed() is overriden.
 		finish();
-		if (verbose) System.out.println("Finish() completed. Run() completed.");
+		log();
+		if (verbose) System.out.println("Finish() completed. Run() completed. Log() completed.");
 	}
 
 	public void finish() {
 		System.out.println("Running sample.finish(). Saving data.");
 		toTSV();
+	}
+	
+	public void log(){
+		PrintWriter log = fileHandler("log.txt");
+		log.println("start time: "+instantiatedAt.toString());
+		Date now = new Date();
+		log.println("end time: "+now.toString());
+		log.println("total number of calls: "+it);
+		log.close();
 	}
 
 	public int[] QueueLengths() {

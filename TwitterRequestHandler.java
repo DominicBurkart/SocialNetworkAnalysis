@@ -301,7 +301,7 @@ public class TwitterRequestHandler extends SNA_Root {
 			for (Status s : statuses) {
 				// TODO save raw statuses via a new TwitterSample method
 				if (verbose) System.out.println("status collected in TwitterRequestHandler.getPosts: "+s.toString());
-				Post p = new TwitterStatus(s);
+				Post p = new TwitterStatus(s, u);
 				try {
 					u.addPost(p);
 				} catch (RedundantEntryException e) {}

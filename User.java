@@ -3,6 +3,7 @@ package SocialNetworkAnalysis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * Allows for the manipulation of User objects collected from any supported
@@ -26,17 +27,19 @@ public abstract class User extends SNA_Root {
 	public boolean fromRepost;
 	
 	public class Tensors {
-		ArrayList<Like> likes = new ArrayList<Like>();
-		ArrayList<Repost> reposts = new ArrayList<Repost>();
-		ArrayList<Comment> comments = new ArrayList<Comment>();
-		ArrayList<Follow> follows = new ArrayList<Follow>();
+		LinkedList<Like> likes = new LinkedList<Like>();
+		LinkedList<Repost> reposts = new LinkedList<Repost>();
+		LinkedList<Comment> comments = new LinkedList<Comment>();
+		LinkedList<Follow> follows = new LinkedList<Follow>();
 		ArrayList<Follow> friends = new ArrayList<Follow>(); //people who this user follows.
+		ArrayList<Mention> mentions = new ArrayList<Mention>();
 
 		ArrayList<Interaction> getTensors() {
 			ArrayList<Interaction> tensors = new ArrayList<Interaction>();
 			tensors.addAll(follows);
 			tensors.addAll(friends);
 			tensors.addAll(reposts);
+			tensors.addAll(mentions);
 			tensors.addAll(comments);
 			tensors.addAll(likes);
 			return tensors;
@@ -72,8 +75,10 @@ public abstract class User extends SNA_Root {
 	}
 
 	public User(String id, int depth) throws RedundantEntryException {
-		if (sample.users.containsKey(id))
-			throw new RedundantEntryException("User with id " + id + " already exists.", sample.users.get(id));
+//		if (sample.users.containsKey(id))
+//			if (sample.users.get(id) != null)
+//				throw new RedundantEntryException("User with id " + id + " already exists.", sample.users.get(id));
+//			//otherwise, just fill in the information for the user now.
 		sample.users.put(id, this);
 		firstDepth = depth;
 		this.id = id;
