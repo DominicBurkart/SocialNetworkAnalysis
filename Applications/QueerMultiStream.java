@@ -20,7 +20,8 @@ public class QueerMultiStream {
 	
 	private static void sleep(){
 		try {
-			Thread.sleep(1000 * 2);
+			int seconds = (i / TwitterAuth.size()) + 5;
+			Thread.sleep(1000 * seconds);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			System.exit(0);
@@ -44,7 +45,7 @@ public class QueerMultiStream {
 		
 		sleep();
 		
-		String[] biapArgs = {"bisexual", "bisexuals", "bi", "pan", "pansexual", "pansexuals", "intersex", "asexual", "asexuals"};
+		String[] biapArgs = {"bisexual", "bisexuals", "pansexual", "pansexuals", "intersex", "asexual", "asexuals"};
 		StreamThreader(biapArgs, "biap");
 		
 		sleep();
@@ -66,10 +67,16 @@ public class QueerMultiStream {
 		
 		String[] homargs = {"homosexual", "homosexuals", "homo", "homos"};
 		StreamThreader(homargs, "homosexual");
+		
+		sleep();
+		
+		String[] prideArgs = {"pride", "pride2016"};
+		StreamThreader(prideArgs, "pride");
 	}
 	
 	private static Configuration getFig(){
 		ArrayList<ConfigurationBuilder> figs = TwitterAuth.getConfigurationBuilders();
+		System.out.println(i % figs.size());
 		return figs.get(i++ % figs.size()).build();
 	}
 	

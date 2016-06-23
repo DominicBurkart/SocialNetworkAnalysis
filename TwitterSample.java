@@ -1,15 +1,10 @@
 package SocialNetworkAnalysis;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.ArrayDeque;
 
 import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
 import twitter4j.TwitterException;
@@ -29,13 +24,13 @@ public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	static long[] open = new long[3];
 	static boolean[] sleep = new boolean[3];
-	public static  Hashtable<String, LinkedList<User>> toLinkFriends = new Hashtable<String,LinkedList<User>>();
-	public static Hashtable<String, LinkedList<User>> toLinkFollowers = new Hashtable<String, LinkedList<User>>();
+	public static  Hashtable<String, ArrayList<User>> toLinkFriends = new Hashtable<String,ArrayList<User>>();
+	public static Hashtable<String, ArrayList<User>> toLinkFollowers = new Hashtable<String, ArrayList<User>>();
 
 	public TwitterSample() {
-		this.getFollowingQ = new LinkedList<ToFollow>();
-		this.getPostsQ = new LinkedList<TwitterUser>();
-		this.getUserQ = new LinkedList<ToUser>();
+		this.getFollowingQ = new ArrayDeque<ToFollow>();
+		this.getPostsQ = new ArrayDeque<TwitterUser>();
+		this.getUserQ = new ArrayDeque<ToUser>();
 	}
 
 	@Override
@@ -69,8 +64,8 @@ public abstract class TwitterSample extends Sample {
 	/**
 	 * @return a linked list with the indexes of the active (non-empty) queues.
 	 */
-	private LinkedList<Integer> activeQueues(){
-		LinkedList<Integer> active = new LinkedList<Integer>();
+	private ArrayList<Integer> activeQueues(){
+		ArrayList<Integer> active = new ArrayList<Integer>();
 		if (getPostsQ.size() > 0) active.add(0);
 		if (getUserQ.size() > 0) active.add(1);
 		if (getFollowingQ.size() > 0) active.add(2);
@@ -82,7 +77,7 @@ public abstract class TwitterSample extends Sample {
 	 */
 	@Override
 	public void filler(){
-		LinkedList<Integer> active = activeQueues();
+		ArrayList<Integer> active = activeQueues();
 		for (int relevantIndex : active){
 			if (!sleep[relevantIndex]) return; //a resource is open and has waiting queries! 
 		}
@@ -274,118 +269,118 @@ public abstract class TwitterSample extends Sample {
 		w.close();
 	}
 
-	// TODO
-	@Override
-	public void loadFromTSV(String dir) {
-		File p = new File(Paths.get(dir).toString()); // in case the input path
-														// isn't absolute
-		File[] directory = p.listFiles();
-		if (directory.length == 0) {
-			System.err.println("Empty path passed to loadFromCSV: " + dir);
-			System.err.println("Qutting.");
-			System.exit(0);
-		}
-		ArrayList<Fwrap> sorted = new ArrayList<Fwrap>();
-		for (File file : directory) {
-			Fwrap w = new Fwrap(file);
-			if (w.f != null && w.ordering < 5) {
-				sorted.add(w);
-			}
-		}
-		Collections.sort(sorted);
-		for (Fwrap w : sorted) {
-			File file = w.f;
-			System.out.println("found file: " + file.getName());
-			try {
-				Scanner s = new Scanner(file);
-				if (s.hasNextLine()) {
-					switch (s.nextLine()) {
-					case "~follows~":
-						importFols(s);
-						break;
-					case "~posts~":
-						importPosts(s);
-						break;
-					case "~users~":
-						importUsers(s);
-						break;
-					case "~interactions~":
-						importInteractions(s);
-						break;
-					default:
-						System.out.println("File " + file.getName() + " was not incuded.");
-					}
-					System.out.println("Finished with file " + file.getName());
-				} else {
-					System.out.println("File " + file.getName() + " has no content and was not included.");
-				}
-				s.close();
-			} catch (FileNotFoundException e) {
-				System.err.println("File deleted or renamed during operation– " + file.getName());
-				System.err.println("File " + file.getName() + " can not be read. Quitting program.");
-				System.exit(0);
-			}
-		}
-	}
-
-	// TODO
-	private void importFols(Scanner s) {
-		while (s.hasNextLine()) {
-			new Follow(s.nextLine());
-		}
-	}
-
-	// TODO
-	private void importPosts(Scanner s) {
-		while (s.hasNextLine()) {
-			new TwitterStatus(s.nextLine());
-		}
-	}
-
-	// TODO
-	private void importUsers(Scanner s) {
-		while (s.hasNextLine()) {
-			new TwitterUser(s.nextLine());
-		}
-	}
-
-	// TODO
-	private void importInteractions(Scanner s) {
-		if (this.follows != null && this.follows.size() > 0) {
-			while (s.hasNextLine()) {
-				String cur = s.nextLine();
-				String[] split = cur.split("\t");
-				switch (split[2]) {
-				case "follow":
-					break; // don't reimport follow objects!
-				case "like":
-					new Like(cur);
-					break; // TODO add support for this feature!
-				case "repost":
-					new Repost(cur);
-					break;
-				case "comment":
-					new Comment(cur);
-					break; // TODO add support for this feature!
-				}
-			}
-		} else {
-			while (s.hasNextLine()) {
-				String cur = s.nextLine();
-				String[] split = cur.split("\t");
-				switch (split[3]) {
-				case "follow":
-					new Follow(cur);
-					break;
-				// case "like": new Like(cur); break;
-				case "repost":
-					new Repost(cur);
-					break;
-				// case "comment": new Comment(cur); break;
-				}
-			}
-		}
-	}
+//	// TODO
+//	@Override
+//	public void loadFromTSV(String dir) {
+//		File p = new File(Paths.get(dir).toString()); // in case the input path
+//														// isn't absolute
+//		File[] directory = p.listFiles();
+//		if (directory.length == 0) {
+//			System.err.println("Empty path passed to loadFromCSV: " + dir);
+//			System.err.println("Qutting.");
+//			System.exit(0);
+//		}
+//		ArrayList<Fwrap> sorted = new ArrayList<Fwrap>();
+//		for (File file : directory) {
+//			Fwrap w = new Fwrap(file);
+//			if (w.f != null && w.ordering < 5) {
+//				sorted.add(w);
+//			}
+//		}
+//		Collections.sort(sorted);
+//		for (Fwrap w : sorted) {
+//			File file = w.f;
+//			System.out.println("found file: " + file.getName());
+//			try {
+//				Scanner s = new Scanner(file);
+//				if (s.hasNextLine()) {
+//					switch (s.nextLine()) {
+//					case "~follows~":
+//						importFols(s);
+//						break;
+//					case "~posts~":
+//						importPosts(s);
+//						break;
+//					case "~users~":
+//						importUsers(s);
+//						break;
+//					case "~interactions~":
+//						importInteractions(s);
+//						break;
+//					default:
+//						System.out.println("File " + file.getName() + " was not incuded.");
+//					}
+//					System.out.println("Finished with file " + file.getName());
+//				} else {
+//					System.out.println("File " + file.getName() + " has no content and was not included.");
+//				}
+//				s.close();
+//			} catch (FileNotFoundException e) {
+//				System.err.println("File deleted or renamed during operation– " + file.getName());
+//				System.err.println("File " + file.getName() + " can not be read. Quitting program.");
+//				System.exit(0);
+//			}
+//		}
+//	}
+//
+//	// TODO
+//	private void importFols(Scanner s) {
+//		while (s.hasNextLine()) {
+//			new Follow(s.nextLine());
+//		}
+//	}
+//
+//	// TODO
+//	private void importPosts(Scanner s) {
+//		while (s.hasNextLine()) {
+//			new TwitterStatus(s.nextLine());
+//		}
+//	}
+//
+//	// TODO
+//	private void importUsers(Scanner s) {
+//		while (s.hasNextLine()) {
+//			new TwitterUser(s.nextLine());
+//		}
+//	}
+//
+//	// TODO
+//	private void importInteractions(Scanner s) {
+//		if (this.follows != null && this.follows.size() > 0) {
+//			while (s.hasNextLine()) {
+//				String cur = s.nextLine();
+//				String[] split = cur.split("\t");
+//				switch (split[2]) {
+//				case "follow":
+//					break; // don't reimport follow objects!
+//				case "like":
+//					new Like(cur);
+//					break; // TODO add support for this feature!
+//				case "repost":
+//					new Repost(cur);
+//					break;
+//				case "comment":
+//					new Comment(cur);
+//					break; // TODO add support for this feature!
+//				}
+//			}
+//		} else {
+//			while (s.hasNextLine()) {
+//				String cur = s.nextLine();
+//				String[] split = cur.split("\t");
+//				switch (split[3]) {
+//				case "follow":
+//					new Follow(cur);
+//					break;
+//				// case "like": new Like(cur); break;
+//				case "repost":
+//					new Repost(cur);
+//					break;
+//				// case "comment": new Comment(cur); break;
+//				}
+//			}
+//		}
+//	}
 
 	public ToUser getSomeFol(ToFollow f, int some) {
 		try {

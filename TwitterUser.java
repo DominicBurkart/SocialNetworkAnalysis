@@ -1,6 +1,6 @@
 package SocialNetworkAnalysis;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import SocialNetworkAnalysis.Sample.ToUser;
 import twitter4j.TwitterException;
@@ -18,7 +18,7 @@ public class TwitterUser extends User {
 	
 	private void checkToLinks(){
 		if (TwitterSample.toLinkFriends.containsKey(this.id)){
-			LinkedList<User> uL = TwitterSample.toLinkFriends.get(this.id);
+			ArrayList<User> uL = TwitterSample.toLinkFriends.get(this.id);
 			if (verbose) System.out.println("While instantiating user "+this.id+" toLinkFriends detected. number of links: "+uL.size());
 			for (User u : uL){
 				new Follow(u, this);
@@ -26,7 +26,7 @@ public class TwitterUser extends User {
 			TwitterSample.toLinkFriends.remove(this.id); //keeps toLinkFriends small.
 		}
 		if (TwitterSample.toLinkFollowers.containsKey(this.id)){
-			LinkedList<User> uL = TwitterSample.toLinkFollowers.get(this.id);
+			ArrayList<User> uL = TwitterSample.toLinkFollowers.get(this.id);
 			if (verbose) System.out.println("While instantiating user "+this.id+" toLinkFollowers detected. number of links: "+uL.size());
 			for (User u : uL){
 				new Follow(this, u);

@@ -279,49 +279,49 @@ public abstract class Sample extends SNA_Root {
 
 	abstract void postsToTSV();
 
-	public void loadFromTSV() {
-		String dir = System.getProperty("user.dir");
-		System.out.println("load from tsv()'s dir: " + dir);
-		loadFromTSV(dir);
-	}
+//	public void loadFromTSV() {
+//		String dir = System.getProperty("user.dir");
+//		System.out.println("load from tsv()'s dir: " + dir);
+//		loadFromTSV(dir);
+//	}
 
-	public class Fwrap implements Comparable<Fwrap> {
-		String n;
-		File f;
-		int ordering;
+//	public class Fwrap implements Comparable<Fwrap> {
+//		String n;
+//		File f;
+//		int ordering;
+//
+//		public Fwrap(File f) {
+//			if (f.getName().endsWith(".tsv")) {
+//				this.f = f;
+//				this.n = f.getName();
+//				defOrd();
+//			} else {
+//				System.out.println("Discluding file " + f.getName());
+//			}
+//		}
+//
+//		private void defOrd() {
+//			if (n.endsWith("_users.tsv")) {
+//				ordering = 1;
+//			} else if (n.endsWith("_posts.tsv")) { //  dependent on loading users
+//				ordering = 2;
+//			} else if (n.endsWith("_follows.tsv")) { // dep on users
+//				ordering = 3;
+//			} else if (n.endsWith("_interactions.tsv")) { //dep on posts, follows
+//				ordering = 4;
+//			} else {
+//				ordering = 5; // all other files will ordered as 5.
+//				System.out.println("Discluding file " + n);
+//			}
+//		}
+//
+//		@Override
+//		public int compareTo(Fwrap o) {
+//			return this.ordering - o.ordering;
+//		}
+//	}
 
-		public Fwrap(File f) {
-			if (f.getName().endsWith(".tsv")) {
-				this.f = f;
-				this.n = f.getName();
-				defOrd();
-			} else {
-				System.out.println("Discluding file " + f.getName());
-			}
-		}
-
-		private void defOrd() {
-			if (n.endsWith("_users.tsv")) {
-				ordering = 1;
-			} else if (n.endsWith("_posts.tsv")) { //  dependent on loading users
-				ordering = 2;
-			} else if (n.endsWith("_follows.tsv")) { // dep on users
-				ordering = 3;
-			} else if (n.endsWith("_interactions.tsv")) { //dep on posts, follows
-				ordering = 4;
-			} else {
-				ordering = 5; // all other files will ordered as 5.
-				System.out.println("Discluding file " + n);
-			}
-		}
-
-		@Override
-		public int compareTo(Fwrap o) {
-			return this.ordering - o.ordering;
-		}
-	}
-
-	abstract void loadFromTSV(String dir);
+	///abstract void loadFromTSV(String dir);
 
 	public PrintWriter fileHandler(String fname) {
 		outDir = name +"_output";

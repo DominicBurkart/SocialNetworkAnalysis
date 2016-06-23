@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 
 import twitter4j.AccountSettings;
@@ -65,10 +64,10 @@ import twitter4j.util.function.Consumer;
  */
 @SuppressWarnings("serial")
 public class TwitterWrapper implements Twitter {
-	private static LinkedList<int[]> sources = new LinkedList<int[]>();
+	private static ArrayList<int[]> sources = new ArrayList<int[]>();
 	int source;
 	static int famnum = 6; //specific resource endpoint nubers (getUserTimeline, showUser etc.)
-	ArrayList<LinkedList<Long>> qTimes = new ArrayList<LinkedList<Long>>(famnum);
+	ArrayList<ArrayList<Long>> qTimes = new ArrayList<ArrayList<Long>>(famnum);
 	//  ^ holds the query time for each query to each resource.
 	Twitter t;
 	int[] limits;
@@ -87,14 +86,14 @@ public class TwitterWrapper implements Twitter {
 		}
 		// ^ populates sources if it's not already populated
 		for (int i = 0; i < famnum; i++){
-			qTimes.add(new LinkedList<Long>());
+			qTimes.add(new ArrayList<Long>());
 		}
-		// ^ creates a new LinkedList for every function used (eg getUserTimeline)
+		// ^ creates a new ArrayList for every function used (eg getUserTimeline)
 		limits = getSources().get(source);
 	}
 	
 	private void timeManager(int resource){
-		LinkedList<Long> limTimes = qTimes.get(resource);
+		ArrayList<Long> limTimes = qTimes.get(resource);
 		Long cur = java.lang.System.currentTimeMillis();
 		Iterator<Long> times = limTimes.iterator();
 		while (times.hasNext()){
@@ -118,7 +117,7 @@ public class TwitterWrapper implements Twitter {
 	 */
 	private void rCheck(int resource){
 		timeManager(resource);
-		int max = 0;
+		int max = -3; //ratelimit buffer
 		switch (resource){ //ratelimits for each resource
 		case 0: max += 180; break;
 		case 1: max += 180; break;
@@ -1922,11 +1921,11 @@ public class TwitterWrapper implements Twitter {
 		return null;
 	}
 
-	public static LinkedList<int[]> getSources() {
+	public static ArrayList<int[]> getSources() {
 		return sources;
 	}
 
-	public static void setSources(LinkedList<int[]> sources) {
+	public static void setSources(ArrayList<int[]> sources) {
 		TwitterWrapper.sources = sources;
 	}
 

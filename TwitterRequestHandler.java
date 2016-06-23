@@ -1,7 +1,6 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import SocialNetworkAnalysis.Sample.ToFollow;
@@ -55,9 +54,9 @@ public class TwitterRequestHandler extends SNA_Root {
 			User friender = User.sample.users.get(toFriend.id);
 			for (long id : ids){
 				sIds[i] = Long.toString(id);
-				LinkedList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
+				ArrayList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
 				if (uL == null){
-					uL = new LinkedList<User>();
+					uL = new ArrayList<User>();
 					uL.add(friender);
 					TwitterSample.toLinkFriends.put(sIds[i], uL);
 				}
@@ -98,9 +97,9 @@ public class TwitterRequestHandler extends SNA_Root {
 			int i = 0;
 			for (long id : ids){
 				sIds[i] = Long.toString(id);
-				LinkedList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
+				ArrayList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
 				if (uL == null){
-					uL = new LinkedList<User>();
+					uL = new ArrayList<User>();
 					uL.add(friender);
 					TwitterSample.toLinkFriends.put(sIds[i], uL);
 				}
@@ -139,7 +138,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.get(id).add(toFol.u);
 				} else{
 					User target = toFol.u;
-					LinkedList<User> uL = new LinkedList<User>();
+					ArrayList<User> uL = new ArrayList<User>();
 					uL.add(target);
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
@@ -179,7 +178,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.get(id).add(toFol.u);
 				} else{
 					User target = toFol.u;
-					LinkedList<User> uL = new LinkedList<User>();
+					ArrayList<User> uL = new ArrayList<User>();
 					uL.add(target);
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
@@ -217,7 +216,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.get(id).add(f.u);
 				} else{
 					User target = f.u;
-					LinkedList<User> uL = new LinkedList<User>();
+					ArrayList<User> uL = new ArrayList<User>();
 					uL.add(target);
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
@@ -293,8 +292,6 @@ public class TwitterRequestHandler extends SNA_Root {
 
 	static void getPosts(User u) throws TwitterException {
 		if (u == null) return;
-		// TODO fill this out or use twitter4j's user implementation bc there's
-		// a lot more to work with!
 		Paging paging = new Paging(1, 200); //200 is the max page size for this twitter resource as of june 2016
 		try{
 			List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);

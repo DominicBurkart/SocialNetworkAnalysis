@@ -22,12 +22,8 @@ public class TwitterStatus extends Post {
 				retweetee = new TwitterUser(s.getRetweetedStatus().getUser().getScreenName(), Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth + 1);
 				retweetee.fromRepost = true;
 			} catch (RedundantEntryException e) {
-				System.out.println("caught");
 				retweetee = sample.users.get(s.getRetweetedStatus().getUser().getId());
 			} 
-			if (retweetee == null){
-				System.out.print(s.getRetweetedStatus().getUser());
-			}
 			Post retweetedStatus;
 			if (!sample.posts.containsKey(Long.toString(s.getRetweetedStatus().getId()))){
 				retweetedStatus = new TwitterStatus(s.getRetweetedStatus(), retweetee);
@@ -56,7 +52,6 @@ public class TwitterStatus extends Post {
 				} catch (RedundantEntryException e){
 					mentioned = sample.users.get(Long.toString(m.getId()));
 				}
-				System.out.println(m.getScreenName());
 				@SuppressWarnings("unused")
 				Mention mention = new Mention(this, this.getAuthor(), mentioned);
 			}
@@ -76,14 +71,11 @@ public class TwitterStatus extends Post {
 	 */
 	public TwitterStatus(Status s) {
 		super(Long.toString(s.getId()), Long.toString(s.getUser().getId()), s.getText());
-		if (sample != null){ //sample is null when collecting streaming / not REST data.
-			System.err.println("USE ERROR: this function should not be used in a sample-based collection!");
-			User u = sample.users.get(Long.toString(s.getId()));
-			set(s, u); // yields null value for parent user when user hasn't been
-						// collected (acceptable)
-			checkIfRepost(s);
-		}
 		site = "twitter";
+		if (sample != null){ //sample is null when collecting streaming / not REST data.
+			System.err.println("USE ERROR: this function should not be used in a sample-based collection! Quitting.");
+			System.exit(0);
+		}
 	}
 
 	public TwitterStatus(String stringify) {
