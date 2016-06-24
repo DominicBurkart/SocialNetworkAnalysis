@@ -1,7 +1,6 @@
 package SocialNetworkAnalysis;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ArrayDeque;
@@ -24,8 +23,8 @@ public abstract class TwitterSample extends Sample {
 	protected TwitterRequestHandler t = new TwitterRequestHandler();
 	static long[] open = new long[3];
 	static boolean[] sleep = new boolean[3];
-	public static  Hashtable<String, ArrayList<User>> toLinkFriends = new Hashtable<String,ArrayList<User>>();
-	public static Hashtable<String, ArrayList<User>> toLinkFollowers = new Hashtable<String, ArrayList<User>>();
+	public static  Hashtable<String, ArrayDeque<User>> toLinkFriends = new Hashtable<String,ArrayDeque<User>>();
+	public static Hashtable<String, ArrayDeque<User>> toLinkFollowers = new Hashtable<String, ArrayDeque<User>>();
 
 	public TwitterSample() {
 		this.getFollowingQ = new ArrayDeque<ToFollow>();
@@ -64,8 +63,8 @@ public abstract class TwitterSample extends Sample {
 	/**
 	 * @return a linked list with the indexes of the active (non-empty) queues.
 	 */
-	private ArrayList<Integer> activeQueues(){
-		ArrayList<Integer> active = new ArrayList<Integer>();
+	private ArrayDeque<Integer> activeQueues(){
+		ArrayDeque<Integer> active = new ArrayDeque<Integer>();
 		if (getPostsQ.size() > 0) active.add(0);
 		if (getUserQ.size() > 0) active.add(1);
 		if (getFollowingQ.size() > 0) active.add(2);
@@ -77,7 +76,7 @@ public abstract class TwitterSample extends Sample {
 	 */
 	@Override
 	public void filler(){
-		ArrayList<Integer> active = activeQueues();
+		ArrayDeque<Integer> active = activeQueues();
 		for (int relevantIndex : active){
 			if (!sleep[relevantIndex]) return; //a resource is open and has waiting queries! 
 		}

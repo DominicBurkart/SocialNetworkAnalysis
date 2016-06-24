@@ -168,11 +168,7 @@ public class Utilities extends SNA_Root {
 		}
 		else if (code == 500 || code == 502 || code == 503 || code == 504 || code == 131 || code == 130){
 			System.err.println("Internal error "+code+" in Twitter's servers. Sleeping for five minutes before resuming program.");
-			try {
-				Thread.sleep(5 * 60 * 1000);
-			} catch (InterruptedException e1) {
-				System.err.println("System could not sleep because the thread was interrupted. Attempting to continue data collection.");
-			}
+			sleepFor(5 * 60 * 1000);
 			return;
 		}
 		else if (e.getErrorCode() == 50){
@@ -184,13 +180,8 @@ public class Utilities extends SNA_Root {
 			return;
 		}
 		else if (e.exceededRateLimitation() || e.getStatusCode() == 420){
-			System.err.println("Exceeded ratelimit. Sleeping relevant thread.");
-			try {
-				Thread.sleep(15 * 1000 * 60);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-				System.exit(0);
-			}
+			System.err.println("Exceeded ratelimit. Sleeping thread for fifteen minutes.");
+			sleepFor(15 * 60 * 1000);
 		}
 		if (e.getErrorCode() != -1)
 			throw e; //throws everything else that we didn't handle.

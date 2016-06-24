@@ -1,5 +1,6 @@
 package SocialNetworkAnalysis;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,9 +55,9 @@ public class TwitterRequestHandler extends SNA_Root {
 			User friender = User.sample.users.get(toFriend.id);
 			for (long id : ids){
 				sIds[i] = Long.toString(id);
-				ArrayList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
+				ArrayDeque<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
 				if (uL == null){
-					uL = new ArrayList<User>();
+					uL = new ArrayDeque<User>();
 					uL.add(friender);
 					TwitterSample.toLinkFriends.put(sIds[i], uL);
 				}
@@ -97,9 +98,9 @@ public class TwitterRequestHandler extends SNA_Root {
 			int i = 0;
 			for (long id : ids){
 				sIds[i] = Long.toString(id);
-				ArrayList<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
+				ArrayDeque<User> uL = TwitterSample.toLinkFriends.get(sIds[i]);
 				if (uL == null){
-					uL = new ArrayList<User>();
+					uL = new ArrayDeque<User>();
 					uL.add(friender);
 					TwitterSample.toLinkFriends.put(sIds[i], uL);
 				}
@@ -138,7 +139,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.get(id).add(toFol.u);
 				} else{
 					User target = toFol.u;
-					ArrayList<User> uL = new ArrayList<User>();
+					ArrayDeque<User> uL = new ArrayDeque<User>();
 					uL.add(target);
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
@@ -178,7 +179,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.get(id).add(toFol.u);
 				} else{
 					User target = toFol.u;
-					ArrayList<User> uL = new ArrayList<User>();
+					ArrayDeque<User> uL = new ArrayDeque<User>();
 					uL.add(target);
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
@@ -216,7 +217,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.get(id).add(f.u);
 				} else{
 					User target = f.u;
-					ArrayList<User> uL = new ArrayList<User>();
+					ArrayDeque<User> uL = new ArrayDeque<User>();
 					uL.add(target);
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
@@ -296,7 +297,6 @@ public class TwitterRequestHandler extends SNA_Root {
 		try{
 			List<Status> statuses = getTwitter().getUserTimeline(u.username, paging);
 			for (Status s : statuses) {
-				// TODO save raw statuses via a new TwitterSample method
 				if (verbose) System.out.println("status collected in TwitterRequestHandler.getPosts: "+s.toString());
 				Post p = new TwitterStatus(s, u);
 				try {

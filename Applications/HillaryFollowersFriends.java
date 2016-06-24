@@ -45,8 +45,9 @@ public class HillaryFollowersFriends extends TwitterSample {
 	@Override
 	public boolean userConditions(User u) {
 		this.getPostsQ.add((TwitterUser) u);
-		if (u != null && u.firstDepth < DEPTH && u != root && !u.fromRepost){
+		if (u != null && u.firstDepth < DEPTH && collected < GOAL && u != root && !u.fromRepost){
 			if (verbose) System.out.println("User included for userAction: "+u);
+			collected++;
 			return true;
 		}
 		else{

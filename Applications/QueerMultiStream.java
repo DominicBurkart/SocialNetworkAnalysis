@@ -4,12 +4,15 @@ import java.util.ArrayList;
 
 import SocialNetworkAnalysis.TwitterAuth;
 import SocialNetworkAnalysis.TwitterStreamerThread;
+import SocialNetworkAnalysis.Utilities;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Simultaneously collects data from queer, lgbia, trans,
- * and queerphobic slur streams. 
+ * and queerphobic slur streams. It looks like Twitter 
+ * limits us to two logins using the same app/user
+ * credentials.
  * 
  * @author dominicburkart
  */
@@ -17,58 +20,36 @@ public class QueerMultiStream {
 	@SuppressWarnings("unused")
 	private static TwitterAuth auth = new TwitterAuth(); //initializes authorizations
 	static int i = 0;
+	static int last = 0;
 	
 	private static void sleep(){
-		try {
-			int seconds = (i / TwitterAuth.size()) + 5;
-			Thread.sleep(1000 * seconds);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(0);
+		if ( i / TwitterAuth.size() > last / TwitterAuth.size()){
+			Utilities.sleepFor(15 * 1000 * 60);
 		}
+		last++;
 	}
 	
 	public static void main(String[] args){
-		
 		String[] queerArgs = {"queer", "queers"};
 		StreamThreader(queerArgs, "queer");
-		
-		sleep();
 		
 		String[] gayArgs = {"gay", "gays"};
 		StreamThreader(gayArgs, "gay");
 		
-		sleep();
-		
 		String[] lesbArgs = {"lesbian", "lesbians"};
 		StreamThreader(lesbArgs, "lesbian");
-		
-		sleep();
 		
 		String[] biapArgs = {"bisexual", "bisexuals", "pansexual", "pansexuals", "intersex", "asexual", "asexuals"};
 		StreamThreader(biapArgs, "biap");
 		
-		sleep();
-		
 		String[] transArgs = {"trans", "transgender", "transsexual", "transsexuals", "trans*", "transman", "transmen", "transwoman", "transwomen", "nonbinary", "non binary", "non-binary"};
 		StreamThreader(transArgs, "trans");
 		
-		sleep();
-		
-		String[] slurArgs = {"faggot", "faggots", "fag", "fags", "tranny", "trannies", "shemale", "shemales", "dyke", "dykes"};
-		StreamThreader(slurArgs, "slurs");
-		
-		sleep();
+		String[] slurHomArgs = {"faggot", "faggots", "fag", "fags", "tranny", "trannies", "shemale", "shemales", "dyke", "dykes", "homosexual", "homosexuals", "homo", "homos"};
+		StreamThreader(slurHomArgs, "slurs + \"homosexual\"");
 		
 		String[] orlArgs = {"orlando", "pulse", "orlandoshooting", "orlandounited", "orlando survivor", "pulse orlando"};
 		StreamThreader(orlArgs, "orlando");
-		
-		sleep();
-		
-		String[] homargs = {"homosexual", "homosexuals", "homo", "homos"};
-		StreamThreader(homargs, "homosexual");
-		
-		sleep();
 		
 		String[] prideArgs = {"pride", "pride2016"};
 		StreamThreader(prideArgs, "pride");
@@ -76,12 +57,12 @@ public class QueerMultiStream {
 	
 	private static Configuration getFig(){
 		ArrayList<ConfigurationBuilder> figs = TwitterAuth.getConfigurationBuilders();
-		System.out.println(i % figs.size());
 		return figs.get(i++ % figs.size()).build();
 	}
 	
 	private static void StreamThreader(String[] filters, String name){
 		Runnable stream = new TwitterStreamerThread(filters, getFig());
 		new Thread(stream, name).start();
+		sleep();
 	}
 }

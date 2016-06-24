@@ -23,6 +23,7 @@ public abstract class Sample extends SNA_Root {
 	public String name = "collection";
 	String outDir = name+"_output";
 	Date instantiatedAt = new Date();
+	protected static int collected = 0; // refers to the users to whom UserConditions have been applied.
 
 	public Sample() {
 		User.sample = this;
