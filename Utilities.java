@@ -239,6 +239,7 @@ public class Utilities extends SNA_Root {
 	}
 	
 	private static Hashtable<Integer, ArrayDeque<ToUser>> toChunk = new Hashtable<Integer, ArrayDeque<ToUser>>();
+	
 	public static void userCompleter(User u){
 		ToUser out = User.sample.new ToUser(u.id, u.firstDepth);
 		ArrayDeque<ToUser> d;
@@ -253,10 +254,13 @@ public class Utilities extends SNA_Root {
 		if (d.size() >= 100){
 			out = manyToUserToOne(d);
 			User.sample.getUserQ.add(out);
+			toChunk.remove((Integer) out.depth);
 		}
-		if (User.sample.getUserQ.size() == 0 || User.sample.completed()){
+		if (User.sample.completed()){
 			//to collect stragglers / the remaining users when everything else is done
 			User.sample.getUserQ.addAll(manyToUserToOne());
+			//clean up + empty the toChunk keySet.
+			toChunk = new Hashtable<Integer, ArrayDeque<ToUser>>();
 		}
 	}
 	
