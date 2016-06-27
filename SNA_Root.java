@@ -10,5 +10,5 @@ package SocialNetworkAnalysis;
 public class SNA_Root {
 	public static boolean verbose = true; //verbose view of program
 	public static boolean roadmap = false; //more concise view of program's activity (compared to verbose)
-	public static boolean saveProgress = false; //set to true to save incomplete program regularly.
+	public static boolean saveProgress = true; //set to true to save incomplete collections periodically.
 }

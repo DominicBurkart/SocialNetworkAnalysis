@@ -23,7 +23,11 @@ public abstract class User extends SNA_Root {
 	public String id = "";
 	public String username = "";
 	
-	public boolean fromRepost;
+	public boolean incomplete;
+	
+	public boolean fromPost;
+	
+	public boolean postsCollected;
 	
 	private User old; //for building a complete account piecemeal.
 	
@@ -50,6 +54,7 @@ public abstract class User extends SNA_Root {
 			for (Interaction i : interactions) {
 				this.add(i);
 			}
+			posts.trimToSize();
 		}
 
 		public void add(Interaction i) {
@@ -75,19 +80,19 @@ public abstract class User extends SNA_Root {
 		}
 	}
 
-	public User(String id, int depth) throws RedundantEntryException {
+	public User(String id, int depth) {
 		if (id.equals("-1") || id.equals("") || id.equals("0"))
 			throw new IllegalArgumentException();
 		old = sample.users.get(id);
 		sample.users.put(id, this);
-		if (old == null)
+		if (old == null || old.incomplete)
 			firstDepth = depth;
 		else
 			firstDepth = old.firstDepth;
 		this.id = id;
 	}
 
-	public User(String username, String id, int depth) throws RedundantEntryException {
+	public User(String username, String id, int depth) {
 		this(id, depth);
 		this.username = username;
 	}
@@ -103,7 +108,7 @@ public abstract class User extends SNA_Root {
 		posts.add(p);
 	}
 
-	public void addPosts(Collection<Post> p) throws RedundantEntryException {
+	public void addPosts(Collection<Post> p){
 		Iterator<Post> pI = p.iterator();
 		while (pI.hasNext()) {
 			try {
@@ -111,7 +116,6 @@ public abstract class User extends SNA_Root {
 			} catch (RedundantEntryException e) {
 			}
 		}
-		posts.addAll(p);
 	}
 
 	public void findAllPostInteractions() {
@@ -123,26 +127,11 @@ public abstract class User extends SNA_Root {
 
 	@Override
 	public String toString() {
-		return (username.toString() + "\t" + id.toString() + "\t" + Utilities.cleanstring(description.toString()) + "\t"
-				+ firstDepth);
+		return (username.toString() + "\t" + id.toString() + "\t"
+				+ firstDepth + "\t" + description.toString());
 	}
 
 	public User() {
-	}
-
-	/**
-	 * EXCLUSIVELY FOR MAKING A USER OBJECT FROM A STRING MADE BY THE toString()
-	 * METHOD.
-	 */
-	public User(String stringified) {
-		String s = stringified;
-		int tab1 = s.indexOf('\t');
-		username = s.substring(0, tab1);
-		int tab2 = s.indexOf('\t', tab1 + 1);
-		id = s.substring(tab1 + 1, tab2);
-		tab1 = s.indexOf('\t', tab2 + 1);
-		description = s.substring(tab2 + 1, tab1);
-		firstDepth = Integer.parseInt(s.substring(tab1 + 1));
 	}
 
 	public Tensors getTensors() {

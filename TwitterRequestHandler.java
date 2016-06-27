@@ -241,13 +241,8 @@ public class TwitterRequestHandler extends SNA_Root {
 	 */
 	static TwitterUser getUser(long id, int depth) throws BadUserException {
 		try {
-			TwitterUser t = new TwitterUser(Long.toString(id), depth);
-			twitter4j.User tUser = getTwitter().showUser(id);
-			t.description = tUser.getDescription();
-			t.username = tUser.getScreenName();
+			TwitterUser t = new TwitterUser(getTwitter().showUser(id), depth);
 			return t;
-		} catch (RedundantEntryException e) {
-			return (TwitterUser) e.user;
 		} catch (TwitterException e){
 			if (verbose) e.printStackTrace();
 			try{
@@ -268,15 +263,8 @@ public class TwitterRequestHandler extends SNA_Root {
 			TwitterUser[] out = new TwitterUser[accounts.size()];
 			int i = 0;
 			for (twitter4j.User t : accounts) {
-				try {
-					TwitterUser u = new TwitterUser(Long.toString(t.getId()), depth);
-					u.description = t.getDescription();
-					u.username = t.getScreenName();
-					out[i] = u;
-				} catch (RedundantEntryException e) {
-					out[i] = (TwitterUser) e.user;
-				} 
-				i++;
+				TwitterUser u = new TwitterUser(t, depth);
+				out[i++] = u;
 			}
 			return out;
 		} catch (TwitterException e){

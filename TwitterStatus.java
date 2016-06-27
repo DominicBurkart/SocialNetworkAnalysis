@@ -17,13 +17,8 @@ public class TwitterStatus extends Post {
 	private void checkIfRepost(Status s){
 		if (s.isRetweet() && s.getRetweetedStatus().getUser() != null && this.getAuthor() != null){
 			if (verbose) System.out.println("retweet collected. Constructing Repost object.");
-			User retweetee;
-			try {
-				retweetee = new TwitterUser(s.getRetweetedStatus().getUser().getScreenName(), Long.toString(s.getRetweetedStatus().getUser().getId()), this.getAuthor().firstDepth + 1);
-				retweetee.fromRepost = true;
-			} catch (RedundantEntryException e) {
-				retweetee = sample.users.get(s.getRetweetedStatus().getUser().getId());
-			} 
+			User retweetee = new TwitterUser(s.getRetweetedStatus().getUser(), this.getAuthor().firstDepth + 1);
+			retweetee.fromPost = true;
 			Post retweetedStatus;
 			if (!sample.posts.containsKey(Long.toString(s.getRetweetedStatus().getId()))){
 				retweetedStatus = new TwitterStatus(s.getRetweetedStatus(), retweetee);
@@ -47,13 +42,16 @@ public class TwitterStatus extends Post {
 		if (s.getUserMentionEntities() != null && s.getQuotedStatus() == null){
 			for (UserMentionEntity m : s.getUserMentionEntities()){
 				User mentioned;
-				try{
-					mentioned = new TwitterUser(m.getScreenName(), Long.toString(m.getId()), this.getAuthor().firstDepth +1);
-				} catch (RedundantEntryException e){
+				if (sample.users.get(Long.toString(m.getId())) != null){
 					mentioned = sample.users.get(Long.toString(m.getId()));
 				}
-				@SuppressWarnings("unused")
-				Mention mention = new Mention(this, this.getAuthor(), mentioned);
+				else{
+					mentioned = new TwitterUser(m.getScreenName(), Long.toString(m.getId()), this.getAuthor().firstDepth +1);
+					mentioned.incomplete = true;
+					mentioned.fromPost = true;
+					Utilities.userCompleter(mentioned);
+				}
+				new Mention(this, this.getAuthor(), mentioned);
 			}
 		}
 	}

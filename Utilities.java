@@ -1,8 +1,12 @@
 package SocialNetworkAnalysis;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Set;
 
 import SocialNetworkAnalysis.Sample.ToUser;
 import twitter4j.TwitterException;
@@ -84,6 +88,20 @@ public class Utilities extends SNA_Root {
 		long least = vals[0];
 		for (long v : vals){
 			if (v < least) least = v;
+		}
+		return least;
+	}
+	
+	public static long least(Collection<Long> vals) {
+		if (vals.size() == 0) throw new IllegalArgumentException("Value input for least function was null.");
+		long least = 0;
+		boolean first = true;
+		for (long v : vals){
+			if (first){
+				least = v;
+				first = false;
+			}
+			else if (v < least) least = v;
 		}
 		return least;
 	}
@@ -219,4 +237,54 @@ public class Utilities extends SNA_Root {
 			System.err.println("System could not sleep for designated period. Continuing program.");
 		}
 	}
+	
+	private static Hashtable<Integer, ArrayDeque<ToUser>> toChunk = new Hashtable<Integer, ArrayDeque<ToUser>>();
+	public static void userCompleter(User u){
+		ToUser out = User.sample.new ToUser(u.id, u.firstDepth);
+		ArrayDeque<ToUser> d;
+		if (toChunk.containsKey((Integer) u.firstDepth)){
+			d = toChunk.get((Integer) out.depth);
+			d.add(out);
+		} else{
+			d = new ArrayDeque<ToUser>();
+			d.add(out);
+			toChunk.put((Integer) out.depth, d);
+		}
+		if (d.size() >= 100){
+			out = manyToUserToOne(d);
+			User.sample.getUserQ.add(out);
+		}
+		if (User.sample.getUserQ.size() == 0 || User.sample.completed()){
+			//to collect stragglers / the remaining users when everything else is done
+			User.sample.getUserQ.addAll(manyToUserToOne());
+		}
+	}
+	
+	/**
+	 * @param c a collection of ToUser single-id objects of the same
+	 * depth.
+	 * 
+	 * @return
+	 */
+	public static ToUser manyToUserToOne(Collection<ToUser> c){
+		String[] ids = new String[c.size()];
+		int depth = 0;
+		int i = 0;
+		for (ToUser to : c){
+			if (i == 0) depth = to.depth;
+			if (to.depth != depth || to.single == false) throw new IllegalArgumentException();
+			ids[i++] = to.id;
+		}
+		return User.sample.new ToUser(ids, depth);
+	}
+	
+	private static ArrayList<ToUser> manyToUserToOne(){
+		Set<Integer> depths = toChunk.keySet();
+		ArrayList<ToUser> l = new ArrayList<ToUser>(depths.size());
+		for(Integer depth : depths){
+			l.add(manyToUserToOne(toChunk.get(depth)));
+		}
+		return l;
+	}
 }
+

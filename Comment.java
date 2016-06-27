@@ -22,14 +22,6 @@ public class Comment extends Interaction {
 		this.tags = post.tags;
 	}
 
-	public Comment(String stringified) {
-		super(stringified); // imports source, target, and type
-		String[] s = stringified.split("\t");
-		post = sample.posts.get(s[3]);
-		comment = s[4];
-		tags = Utilities.tagsFromString(s[5]);
-	}
-
 	@Override
 	public String toString() {
 		StringBuffer s = new StringBuffer();

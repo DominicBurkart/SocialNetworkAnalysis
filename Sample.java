@@ -105,7 +105,7 @@ public abstract class Sample extends SNA_Root {
 	public abstract User[] getUsers(ToUser ids);
 
 	/**
-	 * Get posts from a user!
+	 * Get posts from a user! should set User u's postsCollected bool to true.
 	 */
 	public abstract void getPosts(User u);
 	
@@ -176,7 +176,11 @@ public abstract class Sample extends SNA_Root {
 			}
 			else if (!getPostsQ.isEmpty() && !postSleeping()) {
 				if (verbose) System.out.println("post request in run()!");
-				getPosts(getPostsQ.poll());
+				User u = getPostsQ.poll();
+				if (!u.postsCollected)
+					getPosts(u);
+				else
+					if (verbose) System.out.println("redundant request to getPosts ignored for user "+u.username+".");
 			}
 			if (verbose || roadmap) {
 				System.out.print("Q lengths (posts, users, followers): ");
@@ -267,7 +271,7 @@ public abstract class Sample extends SNA_Root {
 
 	public void interactionsToTSV() {
 		PrintWriter w = fileHandler(name + "_interactions.tsv");
-		w.println("~interactions~");
+		w.println("source\ttarget\ttype\tassociated post");
 		for (int i = 0; i < allInteractions.size(); i++) {
 			w.println(allInteractions.get(i));
 		}
@@ -279,50 +283,6 @@ public abstract class Sample extends SNA_Root {
 	abstract void followsToTSV();
 
 	abstract void postsToTSV();
-
-//	public void loadFromTSV() {
-//		String dir = System.getProperty("user.dir");
-//		System.out.println("load from tsv()'s dir: " + dir);
-//		loadFromTSV(dir);
-//	}
-
-//	public class Fwrap implements Comparable<Fwrap> {
-//		String n;
-//		File f;
-//		int ordering;
-//
-//		public Fwrap(File f) {
-//			if (f.getName().endsWith(".tsv")) {
-//				this.f = f;
-//				this.n = f.getName();
-//				defOrd();
-//			} else {
-//				System.out.println("Discluding file " + f.getName());
-//			}
-//		}
-//
-//		private void defOrd() {
-//			if (n.endsWith("_users.tsv")) {
-//				ordering = 1;
-//			} else if (n.endsWith("_posts.tsv")) { //  dependent on loading users
-//				ordering = 2;
-//			} else if (n.endsWith("_follows.tsv")) { // dep on users
-//				ordering = 3;
-//			} else if (n.endsWith("_interactions.tsv")) { //dep on posts, follows
-//				ordering = 4;
-//			} else {
-//				ordering = 5; // all other files will ordered as 5.
-//				System.out.println("Discluding file " + n);
-//			}
-//		}
-//
-//		@Override
-//		public int compareTo(Fwrap o) {
-//			return this.ordering - o.ordering;
-//		}
-//	}
-
-	///abstract void loadFromTSV(String dir);
 
 	public PrintWriter fileHandler(String fname) {
 		outDir = name +"_output";

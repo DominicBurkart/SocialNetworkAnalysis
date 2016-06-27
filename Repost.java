@@ -19,12 +19,6 @@ public class Repost extends Interaction {
 		type = "repost";
 	}
 
-	public Repost(String stringified) {
-		super(stringified); // takes care of source and target
-		String[] split = stringified.split("\t");
-		post = sample.posts.get(split[split.length - 1]);
-	}
-
 	@Override
 	public String toString() {
 		return (super.toString() + '\t' + post.getId());

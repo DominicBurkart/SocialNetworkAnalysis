@@ -63,15 +63,14 @@ import twitter4j.util.function.Consumer;
  * @author dominicburkart
  */
 @SuppressWarnings("serial")
-public class TwitterWrapper implements Twitter {
+public class TwitterWrapper extends SNA_Root implements Twitter {
 	private static ArrayList<int[]> sources = new ArrayList<int[]>();
 	int source;
-	static int famnum = 6; //specific resource endpoint nubers (getUserTimeline, showUser etc.)
-	ArrayList<ArrayList<Long>> qTimes = new ArrayList<ArrayList<Long>>(famnum);
+	static int famnum = 6; //specific resource endpoint numbers (getUserTimeline, showUser etc.)
+	static ArrayList<ArrayList<Long>> qTimes = new ArrayList<ArrayList<Long>>(famnum);
 	//  ^ holds the query time for each query to each resource.
 	Twitter t;
 	int[] limits;
-	boolean verbose = false; // turn on to see the limits in each callable value
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 	static final int FIFTEENMINUTES = 15 * 60 * 1000;
 	
@@ -92,6 +91,10 @@ public class TwitterWrapper implements Twitter {
 		limits = getSources().get(source);
 	}
 	
+	public static ArrayList<Long> getLimTimes(int resource){
+		return qTimes.get(resource);
+	}
+	
 	private void timeManager(int resource){
 		ArrayList<Long> limTimes = qTimes.get(resource);
 		Long cur = java.lang.System.currentTimeMillis();
@@ -99,9 +102,9 @@ public class TwitterWrapper implements Twitter {
 		while (times.hasNext()){
 			Long time = times.next();
 			if (cur - time > FIFTEENMINUTES){
-				limTimes.remove(time);
+				times.remove();
 				limits[resource]--;
-				// ^ removes old queries that no longer affect current ratelimit.
+				// ^ removes old queries that no longer relate to current ratelimit.
 			}
 		}
 		limTimes.add(java.lang.System.currentTimeMillis());

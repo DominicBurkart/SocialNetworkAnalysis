@@ -16,13 +16,4 @@ public class Follow extends Interaction {
 		source.tensors.friends.add(this);
 		target.tensors.follows.add(this);
 	}
-
-	/**
-	 * ONLY FOR USE WITH OUTPUT FROM INTERACTION'S toString().
-	 */
-	public Follow(String stringified) {
-		super(stringified);
-		sample.follows.add(this);
-	}
-
 }

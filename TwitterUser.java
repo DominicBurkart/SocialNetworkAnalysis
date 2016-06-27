@@ -1,6 +1,7 @@
 package SocialNetworkAnalysis;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 
 import SocialNetworkAnalysis.Sample.ToUser;
 import twitter4j.TwitterException;
@@ -13,8 +14,33 @@ import twitter4j.TwitterException;
  * @author dominicburkart
  */
 public class TwitterUser extends User {
-
-	Location location;
+	
+	int favouritesCount;
+	
+	int followersCount;
+	
+	int friendsCount;
+	
+	boolean isTranslator;
+	
+	String language; // BCP 47 code, eg "en"
+	
+	int listedCount; //number of lists that a user is featured on 
+	
+	String location;
+	
+	String name;
+	
+	int statusCount; // number of statuses a  user has made
+	
+	String timeZone;
+	
+	String url; //user-defined url associated with their account 
+	
+	boolean verified;
+	
+	String withheldInCountries; //countries where this user's tweets are withheld
+	
 	
 	private void checkToLinks(){
 		if (TwitterSample.toLinkFriends.containsKey(this.id)){
@@ -35,13 +61,33 @@ public class TwitterUser extends User {
 		}
 	}
 
-	public TwitterUser(String username, String id, int depth) throws RedundantEntryException {
+	public TwitterUser(String username, String id, int depth){
 		super(username, id, depth);
 		checkToLinks();
 	}
 
-	public TwitterUser(String id, int depth) throws RedundantEntryException {
+	public TwitterUser(String id, int depth){
 		super(id, depth);
+		checkToLinks();
+	}
+	
+	public TwitterUser(twitter4j.User u, int depth){
+		super(Long.toString(u.getId()), depth);
+		username = u.getScreenName();
+		description = Utilities.cleanstring(u.getDescription());
+		favouritesCount = u.getFavouritesCount();
+		followersCount = u.getFollowersCount();
+		isTranslator = u.isTranslator();
+		language = u.getLang();
+		listedCount = u.getListedCount();
+		location = Utilities.cleanstring(u.getLocation());
+		name = u.getName();
+		statusCount = u.getStatusesCount();
+		timeZone = u.getTimeZone();
+		url = u.getURL();
+		verified = u.isVerified();
+		withheldInCountries = Arrays.toString(u.getWithheldInCountries());
+		incomplete = false;
 		checkToLinks();
 	}
 
@@ -59,20 +105,10 @@ public class TwitterUser extends User {
 	@Override
 	public String toString() {
 		if (location != null) {
-			return super.toString() + "\t" + location.toString();
+			return super.toString() + "\t"+ favouritesCount+ "\t"+ followersCount+"\t"+ friendsCount+"\t"+isTranslator+ "\t"+language+ "\t"+listedCount+ "\t" + location.toString()+ "\t"+name+ "\t"+statusCount+ "\t"+timeZone+ "\t"+url+ "\t" +verified+"\t"+withheldInCountries;
 		} else {
 			return super.toString() + "\t" + "null";
 		}
 	}
 
-	/**
-	 * JUST FOR REMEMBERING A USER WE SAVED TO CSV USING THE toString() METHOD.
-	 * 
-	 * @return
-	 */
-	public TwitterUser(String stringified) {
-		super(stringified);
-		String[] parts = stringified.split("\t");
-		location = new Location(parts[parts.length - 1]);
-	}
 }

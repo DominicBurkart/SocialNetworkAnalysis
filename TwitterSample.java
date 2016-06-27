@@ -170,8 +170,9 @@ public abstract class TwitterSample extends Sample {
 			i++;
 		}
 		if (ids.ids.length > 100) {
+			if (verbose) System.out.println("ToUser object passed to getUsersFromMultiple held too many accounts! Splitting it.");
 			Utilities.toUserChunker(ids); //splits the overly large toUser object and puts the chunks onto the correct queue.
-			return getUsers(getUserQ.poll()); //returns null since it added all of the values it was going to query to its own queue to query later.
+			return getUsers(getUserQ.poll());
 		} else
 			return TwitterRequestHandler.getUsers(idsNum, ids.depth);
 	}
@@ -180,6 +181,7 @@ public abstract class TwitterSample extends Sample {
 	public void getPosts(User u) {
 		try {
 			TwitterRequestHandler.getPosts(u);
+			u.postsCollected = true;
 		} catch (TwitterException e) {
 			e.printStackTrace();
 			System.err.println("continuing data collection.");
@@ -205,7 +207,6 @@ public abstract class TwitterSample extends Sample {
 				System.exit(0);
 			}
 			sleep[i] = true;
-			open[i] = java.lang.System.currentTimeMillis() + (16 * 60 * 1000);
 			if (verbose){
 				System.out.print("Values for sleep after update in TwitterSample.Listener: ");
 				for (boolean s : sleep){
@@ -224,7 +225,9 @@ public abstract class TwitterSample extends Sample {
 	@Override
 	public void usersToTSV() {
 		PrintWriter w = fileHandler(name + "_users.tsv"); //for master user file
-		w.println("~users~");
+		w.println("username\tid\tfirst depth\tdescription\tfavorites count\tfollowers count"
+				+ "\tfriends count\ttranslator\tlanguage\tlisted count\tlocation\tname\tstatus count"
+				+ "\ttimezone\tassociated url\tverified\twithheld in countries");
 		Enumeration<String> keys = users.keys();
 		while (keys.hasMoreElements()) { //adds a line per user to the master user file and also makes baby files for each user
 			User u = users.get(keys.nextElement());
@@ -267,119 +270,6 @@ public abstract class TwitterSample extends Sample {
 		}
 		w.close();
 	}
-
-//	// TODO
-//	@Override
-//	public void loadFromTSV(String dir) {
-//		File p = new File(Paths.get(dir).toString()); // in case the input path
-//														// isn't absolute
-//		File[] directory = p.listFiles();
-//		if (directory.length == 0) {
-//			System.err.println("Empty path passed to loadFromCSV: " + dir);
-//			System.err.println("Qutting.");
-//			System.exit(0);
-//		}
-//		ArrayList<Fwrap> sorted = new ArrayList<Fwrap>();
-//		for (File file : directory) {
-//			Fwrap w = new Fwrap(file);
-//			if (w.f != null && w.ordering < 5) {
-//				sorted.add(w);
-//			}
-//		}
-//		Collections.sort(sorted);
-//		for (Fwrap w : sorted) {
-//			File file = w.f;
-//			System.out.println("found file: " + file.getName());
-//			try {
-//				Scanner s = new Scanner(file);
-//				if (s.hasNextLine()) {
-//					switch (s.nextLine()) {
-//					case "~follows~":
-//						importFols(s);
-//						break;
-//					case "~posts~":
-//						importPosts(s);
-//						break;
-//					case "~users~":
-//						importUsers(s);
-//						break;
-//					case "~interactions~":
-//						importInteractions(s);
-//						break;
-//					default:
-//						System.out.println("File " + file.getName() + " was not incuded.");
-//					}
-//					System.out.println("Finished with file " + file.getName());
-//				} else {
-//					System.out.println("File " + file.getName() + " has no content and was not included.");
-//				}
-//				s.close();
-//			} catch (FileNotFoundException e) {
-//				System.err.println("File deleted or renamed during operation– " + file.getName());
-//				System.err.println("File " + file.getName() + " can not be read. Quitting program.");
-//				System.exit(0);
-//			}
-//		}
-//	}
-//
-//	// TODO
-//	private void importFols(Scanner s) {
-//		while (s.hasNextLine()) {
-//			new Follow(s.nextLine());
-//		}
-//	}
-//
-//	// TODO
-//	private void importPosts(Scanner s) {
-//		while (s.hasNextLine()) {
-//			new TwitterStatus(s.nextLine());
-//		}
-//	}
-//
-//	// TODO
-//	private void importUsers(Scanner s) {
-//		while (s.hasNextLine()) {
-//			new TwitterUser(s.nextLine());
-//		}
-//	}
-//
-//	// TODO
-//	private void importInteractions(Scanner s) {
-//		if (this.follows != null && this.follows.size() > 0) {
-//			while (s.hasNextLine()) {
-//				String cur = s.nextLine();
-//				String[] split = cur.split("\t");
-//				switch (split[2]) {
-//				case "follow":
-//					break; // don't reimport follow objects!
-//				case "like":
-//					new Like(cur);
-//					break; // TODO add support for this feature!
-//				case "repost":
-//					new Repost(cur);
-//					break;
-//				case "comment":
-//					new Comment(cur);
-//					break; // TODO add support for this feature!
-//				}
-//			}
-//		} else {
-//			while (s.hasNextLine()) {
-//				String cur = s.nextLine();
-//				String[] split = cur.split("\t");
-//				switch (split[3]) {
-//				case "follow":
-//					new Follow(cur);
-//					break;
-//				// case "like": new Like(cur); break;
-//				case "repost":
-//					new Repost(cur);
-//					break;
-//				// case "comment": new Comment(cur); break;
-//				}
-//			}
-//		}
-//	}
 
 	public ToUser getSomeFol(ToFollow f, int some) {
 		try {
