@@ -13,6 +13,7 @@ public class Repost extends Interaction {
 		this.post = post;
 		this.source = source;
 		this.target = target;
+		associatedPostID = post.getId();
 		post.associatedInteractions.add(this);
 		this.source.getTensors().reposts.add(this);
 		sample.allInteractions.add(this);
@@ -21,6 +22,6 @@ public class Repost extends Interaction {
 
 	@Override
 	public String toString() {
-		return (super.toString() + '\t' + post.getId());
+		return (super.toString());
 	}
 }

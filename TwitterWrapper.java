@@ -103,7 +103,7 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 			Long time = times.next();
 			if (cur - time > FIFTEENMINUTES){
 				times.remove();
-				limits[resource]--;
+				if (limits[resource] > 0) limits[resource]--;
 				// ^ removes old queries that no longer relate to current ratelimit.
 			}
 		}

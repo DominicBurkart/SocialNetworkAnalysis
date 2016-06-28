@@ -27,6 +27,10 @@ public abstract class User extends SNA_Root {
 	
 	public boolean fromPost;
 	
+	public boolean fromFromPost;
+	//users who were partially collected from tweets by users collected from posts from users who fit
+	// in the primary scope of the collection.
+	
 	public boolean postsCollected;
 	
 	private User old; //for building a complete account piecemeal.

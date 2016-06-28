@@ -18,6 +18,7 @@ public class Comment extends Interaction {
 	public Comment(Post comment, User source, User target) {
 		this.post = comment;
 		this.comment = post.comment;
+		associatedPostID = post.getId();
 		this.post.associatedInteractions.add(this);
 		this.tags = post.tags;
 	}
@@ -25,11 +26,6 @@ public class Comment extends Interaction {
 	@Override
 	public String toString() {
 		StringBuffer s = new StringBuffer();
-		if (post != null) {
-			s.append('\t' + post.getId());
-		} else {
-			s.append("\tnull");
-		}
 		s.append('\t' + comment);
 		s.append('\t' + Utilities.tagString(tags));
 		return super.toString() + s.toString();

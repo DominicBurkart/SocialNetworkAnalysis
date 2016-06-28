@@ -168,9 +168,11 @@ public abstract class Sample extends SNA_Root {
 						userAction(u);
 				} else {
 					User[] us = getUsers(account); 
-					for (User u : us) {
-						if (userConditions(u))
-							userAction(u);
+					if (us != null){
+						for (User u : us) {
+							if (userConditions(u))
+								userAction(u);
+						}
 					}
 				}
 			}

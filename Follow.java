@@ -12,6 +12,7 @@ public class Follow extends Interaction {
 		this.source = source;
 		this.target = target;
 		type = "follow";
+		associatedPostID = "follow tensor";
 		sample.follows.add(this);
 		source.tensors.friends.add(this);
 		target.tensors.follows.add(this);

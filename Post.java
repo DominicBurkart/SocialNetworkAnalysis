@@ -23,7 +23,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 	private int notes = 0;
 	String comment = "null";
 	ArrayList<String> tags;
-	private Location location = new Location();
+	protected Location location = new Location();
 	String site = ""; // eg "twitter" or "tumblr"
 	
 

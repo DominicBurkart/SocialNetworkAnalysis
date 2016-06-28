@@ -264,7 +264,7 @@ public abstract class TwitterSample extends Sample {
 	@Override
 	public void postsToTSV() {
 		PrintWriter w = fileHandler(name + "_posts.tsv");
-		w.println("~posts~");
+		w.println("id\tusername\ttime\tmessage\tauthorID\tis original\toriginal author\tretweeted from\tnotes\tcomment\ttags\tlocation\tlanguage\tpossibly sensitive link\tretweet count\tfavorite count\tsource");
 		for (String k : posts.keySet()) {
 			w.println(posts.get(k));
 		}
