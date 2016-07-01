@@ -10,18 +10,28 @@ import SocialNetworkAnalysis.*;
  * 
  * @author dominicburkart
  */
-public class HillaryFollowersFriends extends TwitterSample {
+public class ClintonFollowersFriends extends TwitterSample {
 	// goal and depth must be > 0.
 	static final int DEPTH = 2;
 	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
 	User root;
 	
+	public static void run(){
+		run("group1");
+	}
+	
+	public static void run(String s){
+		Utilities.manageAuths(s);
+		main(null);
+	}
+	
 	public static void main(String[] args) {
 		System.out.println("HillaryFollowerFriends main is running!");
-		HillaryFollowersFriends h = new HillaryFollowersFriends();
-		h.name = "hillaryFollowersFriends";
-		h.run();
-		Date d =  new Date();
+		ClintonFollowersFriends h = new ClintonFollowersFriends();
+		Date d = new Date();
+		h.name = "ClintonFollowersFriends_"+d.toString();
+		h.go();
+		d =  new Date();
 		System.out.println("Program complete. Current time: "+d.toString());
 	}
 
@@ -90,7 +100,7 @@ public class HillaryFollowersFriends extends TwitterSample {
 	@Override
 	public void followAction(ToUser ids) {
 		if (verbose){
-			System.out.print("HillaryFollowersFriends followAction input: ");
+			System.out.print("ClintonFollowersFriends followAction input: ");
 			if (ids.single){
 				System.out.print("ToUser is single. ");
 				System.out.print("id: "+ids.id);

@@ -63,12 +63,12 @@ public class TwitterUser extends User {
 
 	public TwitterUser(String username, String id, int depth){
 		super(username, id, depth);
-		checkToLinks();
+		if (sample != null) checkToLinks();
 	}
 
 	public TwitterUser(String id, int depth){
 		super(id, depth);
-		checkToLinks();
+		if (sample != null) checkToLinks();
 	}
 	
 	public TwitterUser(twitter4j.User u, int depth){
@@ -88,7 +88,7 @@ public class TwitterUser extends User {
 		verified = u.isVerified();
 		withheldInCountries = Arrays.toString(u.getWithheldInCountries());
 		incomplete = false;
-		checkToLinks();
+		if (sample != null) checkToLinks();
 	}
 
 	public ToUser getFriends() throws APIException {

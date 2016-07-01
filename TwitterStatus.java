@@ -47,6 +47,7 @@ public class TwitterStatus extends Post {
 	public void checkIfAtted(Status s, User u){
 		//if it's just an @!
 		if (s.getUserMentionEntities() != null && s.getQuotedStatus() == null){
+			if (verbose) System.out.println("Mentions collected. Constructing mention object(s).");
 			for (UserMentionEntity m : s.getUserMentionEntities()){
 				User mentioned;
 				if (sample.users.get(Long.toString(m.getId())) != null){
@@ -57,7 +58,6 @@ public class TwitterStatus extends Post {
 					mentioned.incomplete = true;
 					mentioned.fromPost = true;
 					if (u.fromPost) mentioned.fromFromPost = true;
-					else Utilities.userCompleter(mentioned);
 				}
 				new Mention(this, this.getAuthor(), mentioned);
 			}
@@ -139,32 +139,46 @@ public class TwitterStatus extends Post {
 	
 	//TODO flesh this out w/ all variables given by twitter
 	private void set(Status s) {
+		//basic stuff
 		setId(Long.toString(s.getId()));
-		setNotes(s.getFavoriteCount());
+		setNotes(s.getFavoriteCount() + s.getRetweetCount());
 		setMessage(s.getText());
+		if (s.isRetweet()){
+			//TODO figure out an implementation for stitching together the tweet from the truncation.
+			//setMessage(s.getText() + "    " + s.getRetweetedStatus().getText());
+		}
 		setTime(s.getCreatedAt());
 		setAuthor(new TwitterUser(s.getUser(), 0));
 		setOriginal(s.isRetweet());
+		language = s.getLang();
+		favorite_count = s.getFavoriteCount();
+		retweet_count = s.getRetweetCount();
+
 		// deal w/ location
-		if (s.getGeoLocation() != null) {
-			Location l = new Location();
-			l.setLatitude(s.getGeoLocation().getLatitude());
-			l.setLongitude(s.getGeoLocation().getLongitude());
-			this.setLocation(l);
-		}
 		if (s.getPlace() != null){
-			if (this.getLocation() != null){
-				Location l = this.getLocation();
-				l.setName(s.getPlace().getFullName());
-				l.setLocationType(s.getPlace().getPlaceType());
+			if (this.location != null){
+				location.setName(s.getPlace().getFullName());
+				location.setLocationType(s.getPlace().getPlaceType());
 			}
 			else{
-				Location l = new Location();
-				l.setName(s.getPlace().getFullName());
-				l.setLocationType(s.getPlace().getPlaceType());
-				this.setLocation(l);
+				location = new Location();
+				location.setName(s.getPlace().getFullName());
+				location.setLocationType(s.getPlace().getPlaceType());
 			}
 		}
+		if (s.getGeoLocation() != null){
+			if (location != null){
+				location = this.getLocation();
+				location.setLatitude(s.getGeoLocation().getLatitude());
+				location.setLongitude(s.getGeoLocation().getLongitude());
+			}
+			else{
+				location = new Location();
+				location.setLatitude(s.getGeoLocation().getLatitude());
+				location.setLongitude(s.getGeoLocation().getLongitude());
+			}
+		}
+
 		if (verbose)
 			System.out.println("Twitter status collected:\t" + this.toString());
 	}

@@ -120,7 +120,7 @@ public abstract class Sample extends SNA_Root {
 	/**
 	 * Runs the data collection.
 	 */
-	public void run() {
+	public void go() {
 		start();
 		if (roadmap){
 			System.out.println("Collected users after start(): ");
@@ -212,7 +212,7 @@ public abstract class Sample extends SNA_Root {
 		log.println("start time: "+instantiatedAt.toString());
 		Date now = new Date();
 		log.println("end time: "+now.toString());
-		log.println("total number of calls: "+it);
+		log.println("total number of iterations: "+it);
 		log.close();
 	}
 
@@ -273,7 +273,7 @@ public abstract class Sample extends SNA_Root {
 
 	public void interactionsToTSV() {
 		PrintWriter w = fileHandler(name + "_interactions.tsv");
-		w.println("source\ttarget\ttype\tassociated post");
+		w.println("source\ttarget\tkind\tassociated post");
 		for (int i = 0; i < allInteractions.size(); i++) {
 			w.println(allInteractions.get(i));
 		}

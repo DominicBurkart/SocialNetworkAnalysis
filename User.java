@@ -87,12 +87,16 @@ public abstract class User extends SNA_Root {
 	public User(String id, int depth) {
 		if (id.equals("-1") || id.equals("") || id.equals("0"))
 			throw new IllegalArgumentException();
-		old = sample.users.get(id);
-		sample.users.put(id, this);
-		if (old == null || old.incomplete)
+		if (sample != null){
+			old = sample.users.get(id);
+			sample.users.put(id, this);
+			if (old == null || old.incomplete)
+				firstDepth = depth;
+			else
+				firstDepth = old.firstDepth;
+		}else{
 			firstDepth = depth;
-		else
-			firstDepth = old.firstDepth;
+		}
 		this.id = id;
 	}
 

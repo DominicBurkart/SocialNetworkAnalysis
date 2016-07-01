@@ -18,9 +18,18 @@ import twitter4j.TwitterException;
  */
 public class Utilities extends SNA_Root {
 
-	static String cleanstring(String s) {
-		String clean = s.replaceAll("\\s", " ");
-		return clean;
+	/**
+	 * replaces all escape characters/whitespace
+	 * with a single space. returns null when given
+	 * null input.
+	 */
+	public static String cleanstring(String s) {
+		if (s != null){
+			String clean = s.replaceAll("\\s", " ");
+			return clean;
+		} else{
+			return null;
+		}
 	}
 
 	static String tagString(ArrayList<String> tags) {
@@ -289,6 +298,36 @@ public class Utilities extends SNA_Root {
 			l.add(manyToUserToOne(toChunk.get(depth)));
 		}
 		return l;
+	}
+
+	/**
+	 * checks if an unsorted array (param 1) of objects contains
+	 * a pointer to the same object pointed to by the second param.
+	 * 
+	 * @return true when the given object is in the given array.
+	 */
+	public static boolean arrayContains(Object[] ar, Object o0) {
+		for (Object o1 : ar){
+			if (o0.equals(o1)){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	//TODO test this actually performs correctly in a multithreaded environment.
+	public static void manageAuths(String s){
+		if (Utilities.cleanstring(s).equalsIgnoreCase("group1")){
+			TwitterAuth.hideGroup1 = false;
+			TwitterAuth.hideGroup2 = true;
+		}
+		else if (Utilities.cleanstring(s).equalsIgnoreCase("group2")){
+			TwitterAuth.hideGroup1 = true;
+			TwitterAuth.hideGroup2 = false;
+		}
+		else{
+			throw new IllegalArgumentException("Bad string passed to thread "+Thread.currentThread().getName()+": "+s);
+		}
 	}
 }
 
