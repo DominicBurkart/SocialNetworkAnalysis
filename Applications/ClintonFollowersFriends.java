@@ -26,7 +26,7 @@ public class ClintonFollowersFriends extends TwitterSample {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println("HillaryFollowerFriends main is running!");
+		System.out.println("ClintonFollowerFriends main is running!");
 		ClintonFollowersFriends h = new ClintonFollowersFriends();
 		Date d = new Date();
 		h.name = "ClintonFollowersFriends_"+d.toString();

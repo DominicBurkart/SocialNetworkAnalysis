@@ -29,7 +29,7 @@ public abstract class User extends SNA_Root {
 	
 	public boolean fromFromPost;
 	//users who were partially collected from tweets by users collected from posts from users who fit
-	// in the primary scope of the collection.
+	// in the primary scope of the collection. phew!
 	
 	public boolean postsCollected;
 	
