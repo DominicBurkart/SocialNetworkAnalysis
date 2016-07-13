@@ -5,7 +5,7 @@ import java.util.Date;
 import SocialNetworkAnalysis.*;
 
 /**
- * Collects Clinton's account, some of her followers, and the friends of those
+ * Collects Trump's account, some of his followers, and the friends of those
  * followers. 
  * 
  * @author dominicburkart
@@ -16,20 +16,14 @@ public class TrumpFollowersFriends extends TwitterSample {
 	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
 	User root;
 	
-	public static void run(){
-		run("group2");
-	}
-	
-	public static void run(String s){
-		Utilities.manageAuths(s);
-		main(null);
+	public TrumpFollowersFriends(String name) {
+		super(name, "/Volumes/Burkart/files/current_twitter_collection");
 	}
 	
 	public static void main(String[] args) {
 		System.out.println("TrumpFollowerFriends main is running!");
-		TrumpFollowersFriends h = new TrumpFollowersFriends();
 		Date d = new Date();
-		h.name = "trumpFollowersFriends_"+d.toString();
+		TrumpFollowersFriends h = new TrumpFollowersFriends("trumpFollowersFriends_"+d.toString());
 		h.go();
 		d =  new Date();
 		System.out.println("Program complete. Current time: "+d.toString());
@@ -122,7 +116,7 @@ public class TrumpFollowersFriends extends TwitterSample {
 
 	@Override
 	public void start() {
-		if (verbose) System.out.println("Starting data collection in HillaryFollowerFriends start()!\n");
+		if (verbose) System.out.println("Starting data collection in TrumpFollowerFriends start()!\n");
 		ToUser hillary = new ToUser("25073877", 0);
 		root = getUser(hillary);
 		ToFollow f = new ToFollow(root);

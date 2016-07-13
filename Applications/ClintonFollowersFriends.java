@@ -16,20 +16,14 @@ public class ClintonFollowersFriends extends TwitterSample {
 	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
 	User root;
 	
-	public static void run(){
-		run("group1");
-	}
-	
-	public static void run(String s){
-		Utilities.manageAuths(s);
-		main(null);
+	public ClintonFollowersFriends(String name) {
+		super(name, "/Volumes/Burkart/files/current_twitter_collection");
 	}
 	
 	public static void main(String[] args) {
 		System.out.println("ClintonFollowerFriends main is running!");
-		ClintonFollowersFriends h = new ClintonFollowersFriends();
 		Date d = new Date();
-		h.name = "ClintonFollowersFriends_"+d.toString();
+		ClintonFollowersFriends h = new ClintonFollowersFriends("ClintonFollowersFriends_"+d.toString());
 		h.go();
 		d =  new Date();
 		System.out.println("Program complete. Current time: "+d.toString());
@@ -122,7 +116,7 @@ public class ClintonFollowersFriends extends TwitterSample {
 
 	@Override
 	public void start() {
-		if (verbose) System.out.println("Starting data collection in HillaryFollowerFriends start()!\n");
+		if (verbose) System.out.println("Starting data collection in ClintonFollowerFriends start()!\n");
 		ToUser hillary = new ToUser("1339835893", 0);
 		root = getUser(hillary);
 		ToFollow f = new ToFollow(root);

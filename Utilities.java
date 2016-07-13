@@ -1,5 +1,11 @@
 package SocialNetworkAnalysis;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -315,18 +321,88 @@ public class Utilities extends SNA_Root {
 		return false;
 	}
 	
-	//TODO test this actually performs correctly in a multithreaded environment.
-	public static void manageAuths(String s){
-		if (Utilities.cleanstring(s).equalsIgnoreCase("group1")){
-			TwitterAuth.hideGroup1 = false;
-			TwitterAuth.hideGroup2 = true;
+	/**
+	 * Uses outDir datafield in Sample class if a sample was instantiated, otherwise
+	 * outputs files to the working directory.
+	 */
+	public static PrintWriter fileHandler(String fname){
+		try{
+			return fileHandler(fname, Post.sample.outDir, false);
+		} catch (NullPointerException e){
+			return fileHandler(fname, null, false);
 		}
-		else if (Utilities.cleanstring(s).equalsIgnoreCase("group2")){
-			TwitterAuth.hideGroup1 = true;
-			TwitterAuth.hideGroup2 = false;
+	}
+	
+	public static PrintWriter fileHandler(String fname, String outDir, boolean append) {
+		checkTestOut(outDir);
+		File outd = null;
+		
+		if (outDir != null && outDir != "") {
+			outd = new File(outDir);
+			if (!outd.exists()) {
+			    System.out.println("creating directory: " + outDir);
+			    outd.mkdirs();
+			}
+		}
+		
+		if (!append){
+			File f;
+			if (outDir != null && outDir != "") {
+				f = new File(outd, fname);
+			} else {
+				f = new File(fname);
+			}
+			PrintWriter out;
+			try {
+				out = new PrintWriter(f);
+				return out;
+			} catch (FileNotFoundException e) {
+				System.err.println("File could not be instantiated.");
+				return null;
+			}
 		}
 		else{
-			throw new IllegalArgumentException("Bad string passed to thread "+Thread.currentThread().getName()+": "+s);
+			FileWriter fw;
+			try {
+				if (outd != null){
+					File output = new File(outd, fname);
+					fw = new FileWriter(output, true);
+				}
+				else{
+					fw = new FileWriter(fname, true);
+				}
+				BufferedWriter bw = new BufferedWriter(fw);
+				return new PrintWriter(bw);
+			} catch (IOException e) {
+				System.err.println("File could not be substantiated. Error: "+e.getMessage());
+				e.printStackTrace();
+				System.exit(0);
+				return null;
+			}
+		}
+	}
+	
+
+	public static void checkTestOut(String outDir) {
+		if (outDir == null) {
+			outDir = "";
+			System.out.println("Saving files in the project folder.");
+		} else if (outDir != "") {
+			File f;
+			try {
+				File outdir = new File(outDir);
+				if (!outdir.exists()) {
+				    if (verbose) System.out.println("creating directory: " + outDir);
+				    outdir.mkdirs();
+				}
+				f = new File(outdir, "temp");
+				PrintWriter out = new PrintWriter(f);
+				out.close();
+				f.delete();
+			} catch (FileNotFoundException e) {
+				System.err.println("Invalid directory given: " + outDir + "\n Saving files to project folder.");
+				outDir = "";
+			}
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package SocialNetworkAnalysis;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,11 +23,41 @@ public abstract class Sample extends SNA_Root {
 	String outDir = name+"_output";
 	Date instantiatedAt = new Date();
 	protected static int collected = 0; // refers to the users to whom UserConditions have been applied.
-
-	public Sample() {
+	
+//	public Sample(String name) {
+//		User.sample = this;
+//		Interaction.sample = this;
+//		Post.sample = this;
+//		if (name != null && !name.equals("")){
+//			this.name = name;
+//			outDir = name+"_output";
+//		}
+//	}
+//	
+	public Sample(String name, String path) {
 		User.sample = this;
 		Interaction.sample = this;
 		Post.sample = this;
+		if (name != null && !name.equals("")){
+			this.name = name;
+			outDir = name+"_output";
+		}
+		else{
+			System.err.println("Empty or null string passed as collection name. Calling collection \"collection\" and continuing.");
+		}
+		if (path != null && !path.equals("")){
+			File test = new File(path);
+			if (test.exists() && test.isDirectory()){
+				String fs = System.getProperty("file.separator");
+				outDir = path + fs + outDir;
+			}
+			else{
+				System.err.println("Invalid path passed for output directory. Depositing output in the working directory.");
+			}
+		}
+		else{
+			System.err.println("Empty/null path passed for output directory. Depositing output in the working directory.");
+		}
 	}
 
 	/**
@@ -208,7 +237,7 @@ public abstract class Sample extends SNA_Root {
 	}
 	
 	public void log(){
-		PrintWriter log = fileHandler("log.txt");
+		PrintWriter log = Utilities.fileHandler("log.txt");
 		log.println("start time: "+instantiatedAt.toString());
 		Date now = new Date();
 		log.println("end time: "+now.toString());
@@ -272,7 +301,7 @@ public abstract class Sample extends SNA_Root {
 	}
 
 	public void interactionsToTSV() {
-		PrintWriter w = fileHandler(name + "_interactions.tsv");
+		PrintWriter w = Utilities.fileHandler(name + "_interactions.tsv");
 		w.println("source\ttarget\tkind\tassociated post");
 		for (int i = 0; i < allInteractions.size(); i++) {
 			w.println(allInteractions.get(i));
@@ -286,50 +315,4 @@ public abstract class Sample extends SNA_Root {
 
 	abstract void postsToTSV();
 
-	public PrintWriter fileHandler(String fname) {
-		outDir = name +"_output";
-		checkTestOut();
-		File f;
-		if (outDir != null || outDir != "") {
-			File outdir = new File(outDir);
-			if (!outdir.exists()) {
-			    System.out.println("creating directory: " + outDir);
-			    outdir.mkdirs();
-			}
-			f = new File(outdir, fname);
-		} else {
-			f = new File(fname);
-		}
-		PrintWriter out;
-		try {
-			out = new PrintWriter(f);
-			return out;
-		} catch (FileNotFoundException e) {
-			System.err.println("File could not be instantiated.");
-			return null;
-		}
-	}
-
-	public void checkTestOut() {
-		if (outDir == null) {
-			outDir = "";
-			System.out.println("Saving files in the project folder.");
-		} else if (outDir != "") {
-			File f;
-			try {
-				File outdir = new File(outDir);
-				if (!outdir.exists()) {
-				    if (verbose) System.out.println("creating directory: " + outDir);
-				    outdir.mkdirs();
-				}
-				f = new File(outdir, "temp");
-				PrintWriter out = new PrintWriter(f);
-				out.close();
-				f.delete();
-			} catch (FileNotFoundException e) {
-				System.err.println("Invalid directory given: " + outDir + "\n Saving files to project folder.");
-				outDir = "";
-			}
-		}
-	}
 }

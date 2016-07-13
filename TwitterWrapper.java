@@ -99,12 +99,17 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 		ArrayList<Long> limTimes = qTimes.get(resource);
 		Long cur = java.lang.System.currentTimeMillis();
 		Iterator<Long> times = limTimes.iterator();
-		while (times.hasNext()){
+		boolean allYoung = false;
+		while (times.hasNext() && !allYoung){
 			Long time = times.next();
 			if (cur - time > FIFTEENMINUTES){
 				times.remove();
 				if (limits[resource] > 0) limits[resource]--;
 				// ^ removes old queries that no longer relate to current ratelimit.
+			}
+			else{
+				allYoung = true;
+				//since limTimes is naturally sorted by recency.
 			}
 		}
 		limTimes.add(java.lang.System.currentTimeMillis());
@@ -122,7 +127,7 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 		timeManager(resource);
 		int max = -3; //ratelimit buffer
 		switch (resource){ //ratelimits for each resource
-		case 0: max += 178; break;
+		case 0: max += 175; break;
 		case 1: max += 180; break;
 		case 2: max += 15; break;
 		case 3: max += 15; break;

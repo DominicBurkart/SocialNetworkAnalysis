@@ -3,9 +3,6 @@ package SocialNetworkAnalysis;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -23,6 +20,7 @@ import java.util.Arrays;
  */
 public final class TwitterStreamerThread implements Runnable{
 	static TwitterException twit = new TwitterException("");
+	static String outDir = "twitter_streams";
 	String[] args;
 	Configuration fig;
 	
@@ -36,17 +34,7 @@ public final class TwitterStreamerThread implements Runnable{
 			System.err.println("bad / no filename passed to getFile. Quitting from streamer.");
 			System.exit(0);
 		}
-		FileWriter fw;
-		try {
-			fw = new FileWriter(filename, true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			PrintWriter out = new PrintWriter(bw);
-			return out;
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(0);
-			return null;
-		}
+		return Utilities.fileHandler(filename, outDir, true);
 	}
 	
 	private String getFileName(){

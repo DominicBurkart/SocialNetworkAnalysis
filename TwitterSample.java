@@ -26,7 +26,8 @@ public abstract class TwitterSample extends Sample {
 	public static  Hashtable<String, ArrayDeque<User>> toLinkFriends = new Hashtable<String,ArrayDeque<User>>();
 	public static Hashtable<String, ArrayDeque<User>> toLinkFollowers = new Hashtable<String, ArrayDeque<User>>();
 
-	public TwitterSample() {
+	public TwitterSample(String name, String path) {
+		super(name, path);
 		this.getFollowingQ = new ArrayDeque<ToFollow>();
 		this.getPostsQ = new ArrayDeque<TwitterUser>();
 		this.getUserQ = new ArrayDeque<ToUser>();
@@ -224,7 +225,7 @@ public abstract class TwitterSample extends Sample {
 
 	@Override
 	public void usersToTSV() {
-		PrintWriter w = fileHandler(name + "_users.tsv"); //for master user file
+		PrintWriter w = Utilities.fileHandler(name + "_users.tsv"); //for master user file
 		w.println("username\tid\tfirst depth\tdescription\tfavorites count\tfollowers count"
 				+ "\tfriends count\ttranslator\tlanguage\tlisted count\tlocation\tname\tstatus count"
 				+ "\ttimezone\tassociated url\tverified\twithheld in countries");
@@ -234,14 +235,14 @@ public abstract class TwitterSample extends Sample {
 			String n = name+"_user_"+u.id+"_"; //for naming files
 			w.println(u);
 			if (u.getTensors().friends != null && u.getTensors().friends.size() > 0){
-				PrintWriter friends = fileHandler(n+"friends.tsv");
+				PrintWriter friends = Utilities.fileHandler(n+"friends.tsv");
 				for (Follow fol : u.getTensors().friends){
 					friends.println(fol.target);
 				}
 				friends.close();
 			}
 			if (u.posts != null && u.posts.size() > 0){
-				PrintWriter posts = fileHandler(n+"posts.tsv");
+				PrintWriter posts = Utilities.fileHandler(n+"posts.tsv");
 				for (Post p : u.posts){
 					posts.println(p);
 				}
@@ -253,7 +254,7 @@ public abstract class TwitterSample extends Sample {
 
 	@Override
 	public void followsToTSV() {
-		PrintWriter w = fileHandler(name + "_follows.tsv");
+		PrintWriter w = Utilities.fileHandler(name + "_follows.tsv");
 		w.println("~follows~");
 		for (Follow follow : follows) {
 			w.println(follow);
@@ -263,7 +264,7 @@ public abstract class TwitterSample extends Sample {
 
 	@Override
 	public void postsToTSV() {
-		PrintWriter w = fileHandler(name + "_posts.tsv");
+		PrintWriter w = Utilities.fileHandler(name + "_posts.tsv");
 		w.println("id\tusername\ttime\tmessage\tauthorID\tis original\toriginal author\tretweeted from\tnotes\tcomment\ttags\tlocation\tlanguage\tpossibly sensitive link\tretweet count\tfavorite count\tsource");
 		for (String k : posts.keySet()) {
 			w.println(posts.get(k));
