@@ -14,7 +14,7 @@ public class TrumpFollowersFriends extends TwitterSample {
 	// goal and depth must be > 0.
 	static final int DEPTH = 2;
 	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
-	User root;
+	static User root;
 	
 	public TrumpFollowersFriends(String name) {
 		super(name, "/Volumes/Burkart/files/current_twitter_collection");
@@ -117,8 +117,8 @@ public class TrumpFollowersFriends extends TwitterSample {
 	@Override
 	public void start() {
 		if (verbose) System.out.println("Starting data collection in TrumpFollowerFriends start()!\n");
-		ToUser hillary = new ToUser("25073877", 0);
-		root = getUser(hillary);
+		ToUser trump = new ToUser("25073877", 0);
+		root = getUser(trump);
 		ToFollow f = new ToFollow(root);
 		getUserQ.add(super.getSomeFol(f, GOAL)); //actual getSomeFollowers, where the getFollowers in this class actually gets friends.
 		getPostsQ.add((TwitterUser) root);

@@ -14,7 +14,7 @@ public class ClintonFollowersFriends extends TwitterSample {
 	// goal and depth must be > 0.
 	static final int DEPTH = 2;
 	static final int GOAL = 100; // max collectable followers per user with this algorithm is 5k
-	User root;
+	static User root;
 	
 	public ClintonFollowersFriends(String name) {
 		super(name, "/Volumes/Burkart/files/current_twitter_collection");

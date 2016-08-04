@@ -1,3 +1,3 @@
 #Development Branch for the Social Network Analysis package!
 
-Currently empty with the latest update of the main set of programs! nice!
+Currently: building the backend for my analysis of queer populations. Will be integrated into the main package when I'm done testing it!
