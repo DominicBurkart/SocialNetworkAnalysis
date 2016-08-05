@@ -20,6 +20,7 @@ public class Twitter_Ratelimit_Exceeded extends SNA_Root implements RateLimitSta
 			int sleeptime = 15 * 60 * 1000;
 			System.out.println("\nRatelimit surpassed. Sleeping for fifteen minutes.");
 			Utilities.sleepFor(sleeptime);
+			TwitterWrapper.timeManager();
 			System.out.println("Awake! Resuming queries.\n");
 			TwitterAuth.backNext();
 		}

@@ -64,13 +64,12 @@ import twitter4j.util.function.Consumer;
  */
 @SuppressWarnings("serial")
 public class TwitterWrapper extends SNA_Root implements Twitter {
-	private static ArrayList<int[]> sources = new ArrayList<int[]>();
 	int source;
 	static int famnum = 6; //specific resource endpoint numbers (getUserTimeline, showUser etc.)
-	static ArrayList<ArrayList<Long>> qTimes = new ArrayList<ArrayList<Long>>(famnum);
+	static ArrayList<ArrayList<ArrayList<Long>>> qTimes = new ArrayList<ArrayList<ArrayList<Long>>>();
 	//  ^ holds the query time for each query to each resource.
+	// Dimensions: sources x resources x call times
 	Twitter t;
-	int[] limits;
 	Ratelimit_Reached limit = new Ratelimit_Reached();
 	static final int FIFTEENMINUTES = 15 * 60 * 1000;
 	
@@ -80,40 +79,60 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 	public TwitterWrapper(Twitter t, int source) {
 		this.source = source;
 		this.t = t;
-		while (source >= getSources().size()) {
-			getSources().add(new int[famnum]);
+		if (source + 1 > qTimes.size()){
+			for (int i = qTimes.size(); i < source + 1; i++){
+				qTimes.add(new2d());
+			}
 		}
-		// ^ populates sources if it's not already populated
+		// ^ creates a new ArrayList for every function used (eg getUserTimeline) inside of qTimes.
+	}
+	
+	private ArrayList<ArrayList<Long>> new2d(){
+		ArrayList<ArrayList<Long>> emptyResourcesByCallTimes = new ArrayList<ArrayList<Long>>(famnum);
 		for (int i = 0; i < famnum; i++){
-			qTimes.add(new ArrayList<Long>());
+			emptyResourcesByCallTimes.add(new ArrayList<Long>());
 		}
-		// ^ creates a new ArrayList for every function used (eg getUserTimeline)
-		limits = getSources().get(source);
+		return emptyResourcesByCallTimes;
 	}
 	
 	public static ArrayList<Long> getLimTimes(int resource){
-		return qTimes.get(resource);
+		ArrayList<Long> limTimes = new ArrayList<Long>();
+		for (ArrayList<ArrayList<Long>> sAr : qTimes){
+			limTimes.addAll(sAr.get(resource));
+		}
+		return limTimes;
 	}
 	
 	private void timeManager(int resource){
-		ArrayList<Long> limTimes = qTimes.get(resource);
-		Long cur = java.lang.System.currentTimeMillis();
-		Iterator<Long> times = limTimes.iterator();
-		boolean allYoung = false;
-		while (times.hasNext() && !allYoung){
-			Long time = times.next();
-			if (cur - time > FIFTEENMINUTES){
-				times.remove();
-				if (limits[resource] > 0) limits[resource]--;
-				// ^ removes old queries that no longer relate to current ratelimit.
-			}
-			else{
-				allYoung = true;
-				//since limTimes is naturally sorted by recency.
+		Long old = java.lang.System.currentTimeMillis() - FIFTEENMINUTES;
+		ArrayList<Long> sourceTimes = qTimes.get(source).get(resource);
+		Iterator<Long> it = sourceTimes.iterator();
+		while (it.hasNext()){
+			Long time = it.next();
+			if (time < old){
+				it.remove();
 			}
 		}
-		limTimes.add(java.lang.System.currentTimeMillis());
-		// ^ current query
+	}
+	
+	public static void timeManager(){
+		Long old = java.lang.System.currentTimeMillis() - FIFTEENMINUTES;
+		for (ArrayList<ArrayList<Long>> sAr : qTimes){
+			for (ArrayList<Long> sourceTimes : sAr){
+				Iterator<Long> it = sourceTimes.iterator();
+				while (it.hasNext()){
+					Long time = it.next();
+					if (time < old){
+						it.remove();
+					}
+				}
+			}
+		}
+	}
+	
+	private void addTime(int resource){
+		timeManager(resource);
+		qTimes.get(source).get(resource).add(java.lang.System.currentTimeMillis());
 	}
 	
 	/**
@@ -124,29 +143,18 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 	 * @param resource the method being queried. 
 	 */
 	private void rCheck(int resource){
-		timeManager(resource);
+		addTime(resource);
 		int max = -3; //ratelimit buffer
 		switch (resource){ //ratelimits for each resource
-		case 0: max += 175; break;
+		case 0: max += 180; break;
 		case 1: max += 180; break;
 		case 2: max += 15; break;
 		case 3: max += 15; break;
 		case 4: max += 15; break;
 		case 5: max += 180; break;
 		}
-		if (verbose) {
-			System.out.print("limits in "+ TwitterAuth.LimitReached.fams[resource]+": ");
-			for (int limit : limits) {
-				System.out.print(limit + " ");
-			}
-			System.out.println();
-		}
-		if (limits[resource] >= max) {
+		if (qTimes.get(source).get(resource).size() >= max) {
 			limit.reached(resource);
-			limits[resource] = 0;
-		}
-		else{
-			limits[resource]++;
 		}
 	}
 
@@ -914,22 +922,20 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 
 	@Override
 	public ResponseList<User> lookupUsers(long... arg0) throws TwitterException {
-		if (limits[1] >= 59) {
-			limit.reached(1);
-			limits[1] = 0;
-		}
-		limits[1]++;
-		return t.lookupUsers(arg0);
+//		rCheck(3); //TODO what is this???
+//		return t.lookupUsers(arg0);
+		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
+		System.exit(0);
+		return null;
 	}
 
 	@Override
 	public ResponseList<User> lookupUsers(String... arg0) throws TwitterException {
-		if (limits[1] >= 59) {
-			limit.reached(1);
-			limits[1] = 0;
-		}
-		limits[1]++;
-		return t.lookupUsers(arg0);
+//		rCheck(3); //TODO what is this???
+//		return t.lookupUsers(arg0);
+		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
+		System.exit(0);
+		return null;
 	}
 
 	@Override
@@ -1927,14 +1933,6 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
 		System.exit(0);
 		return null;
-	}
-
-	public static ArrayList<int[]> getSources() {
-		return sources;
-	}
-
-	public static void setSources(ArrayList<int[]> sources) {
-		TwitterWrapper.sources = sources;
 	}
 
 }
