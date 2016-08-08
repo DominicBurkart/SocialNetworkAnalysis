@@ -922,20 +922,14 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 
 	@Override
 	public ResponseList<User> lookupUsers(long... arg0) throws TwitterException {
-//		rCheck(3); //TODO what is this???
-//		return t.lookupUsers(arg0);
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		rCheck(1);
+		return t.lookupUsers(arg0);
 	}
 
 	@Override
 	public ResponseList<User> lookupUsers(String... arg0) throws TwitterException {
-//		rCheck(3); //TODO what is this???
-//		return t.lookupUsers(arg0);
-		System.err.println("unimplemented method called in TwitterWrapper. Quitting");
-		System.exit(0);
-		return null;
+		rCheck(1);
+		return t.lookupUsers(arg0);
 	}
 
 	@Override
