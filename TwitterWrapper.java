@@ -146,7 +146,7 @@ public class TwitterWrapper extends SNA_Root implements Twitter {
 		addTime(resource);
 		int max = -3; //ratelimit buffer
 		switch (resource){ //ratelimits for each resource
-		case 0: max += 180; break;
+		case 0: max += 175; break;
 		case 1: max += 180; break;
 		case 2: max += 15; break;
 		case 3: max += 15; break;

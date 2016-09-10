@@ -120,8 +120,8 @@ public class ClintonFollowersFriends extends TwitterSample {
 		ToUser toRoot = new ToUser("1339835893", 0);
 		root = (TwitterUser) getUser(toRoot);
 		ToFollow f = new ToFollow(root);
-		precheckTwitterFollowers(f, GOAL);
 		getPostsQ.add(root);
+		precheckTwitterFollowers(f, GOAL);
 		if (verbose) System.out.println("start() completed.");
 	}
 }

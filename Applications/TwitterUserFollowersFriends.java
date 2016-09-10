@@ -131,8 +131,8 @@ public class TwitterUserFollowersFriends extends TwitterSample {
 		ToUser toRoot = new ToUser(rootID, 0);
 		root = (TwitterUser) getUser(toRoot);
 		ToFollow f = new ToFollow(root);
-		precheckTwitterFollowers(f, goal);
 		getPostsQ.add(root);
+		precheckTwitterFollowers(f, goal);
 		if (verbose) System.out.println("start() completed.");
 	}
 	

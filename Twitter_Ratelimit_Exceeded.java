@@ -17,7 +17,7 @@ public class Twitter_Ratelimit_Exceeded extends SNA_Root implements RateLimitSta
 	@Override
 	public void onRateLimitStatus(RateLimitStatusEvent arg0) {
 		if (arg0.getRateLimitStatus().getRemaining() <= 0) {
-			int sleeptime = 15 * 60 * 1000;
+			long sleeptime = 15 * 60 * 1000;
 			System.out.println("\nRatelimit surpassed. Sleeping for fifteen minutes.");
 			Utilities.sleepFor(sleeptime);
 			TwitterWrapper.timeManager();
