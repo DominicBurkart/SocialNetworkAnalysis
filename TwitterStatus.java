@@ -8,7 +8,6 @@ import twitter4j.UserMentionEntity;
  * @author dominicburkart
  */
 public class TwitterStatus extends Post {
-	String language; //machine-detected language of tweet (given by twitter api)
 	boolean possibly_sensitive;
 	int retweet_count;
 	int favorite_count;

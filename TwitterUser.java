@@ -17,9 +17,9 @@ public class TwitterUser extends User {
 	
 	int favouritesCount;
 	
-	int followersCount;
+	public int followersCount;
 	
-	int friendsCount;
+	public int friendsCount;
 	
 	boolean isTranslator;
 	
@@ -61,22 +61,24 @@ public class TwitterUser extends User {
 		}
 	}
 
+	
 	public TwitterUser(String username, String id, int depth){
-		super(username, id, depth);
+		super(username, id, depth, false);
 		if (sample != null) checkToLinks();
 	}
-
+	
 	public TwitterUser(String id, int depth){
-		super(id, depth);
+		super(id, depth, false);
 		if (sample != null) checkToLinks();
 	}
 	
 	public TwitterUser(twitter4j.User u, int depth){
-		super(Long.toString(u.getId()), depth);
+		super(Long.toString(u.getId()), depth, false);
 		username = u.getScreenName();
 		description = Utilities.cleanstring(u.getDescription());
 		favouritesCount = u.getFavouritesCount();
 		followersCount = u.getFollowersCount();
+		friendsCount = u.getFriendsCount();
 		isTranslator = u.isTranslator();
 		language = u.getLang();
 		listedCount = u.getListedCount();

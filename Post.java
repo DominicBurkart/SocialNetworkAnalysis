@@ -25,6 +25,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 	ArrayList<String> tags;
 	protected Location location = new Location();
 	String site = ""; // eg "twitter" or "tumblr"
+	public String language = "";
 	
 
 	public Post(String id, User author, String message) {

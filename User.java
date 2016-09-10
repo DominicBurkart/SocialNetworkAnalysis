@@ -15,7 +15,7 @@ public abstract class User extends SNA_Root {
 
 	Tensors tensors = new Tensors();
 	
-	ArrayList<Post> posts = new ArrayList<Post>();
+	public ArrayList<Post> posts = new ArrayList<Post>();
 	public String description = "";
 
 	public int firstDepth = 0;
@@ -84,7 +84,7 @@ public abstract class User extends SNA_Root {
 		}
 	}
 
-	public User(String id, int depth) {
+	public User(String id, int depth, boolean ignore) {
 		if (id.equals("-1") || id.equals("") || id.equals("0"))
 			throw new IllegalArgumentException();
 		if (sample != null){
@@ -100,8 +100,8 @@ public abstract class User extends SNA_Root {
 		this.id = id;
 	}
 
-	public User(String username, String id, int depth) {
-		this(id, depth);
+	public User(String username, String id, int depth, boolean ignore) {
+		this(id, depth, ignore);
 		this.username = username;
 	}
 

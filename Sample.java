@@ -22,7 +22,7 @@ public abstract class Sample extends SNA_Root {
 	public String name = "collection";
 	String outDir = name+"_output";
 	Date instantiatedAt = new Date();
-	protected static int collected = 0; // refers to the users to whom UserConditions have been applied.
+	protected static int collected = 0; // refers to the users for whom UserConditions have been applied.
 	
 //	public Sample(String name) {
 //		User.sample = this;
@@ -151,7 +151,7 @@ public abstract class Sample extends SNA_Root {
 	 */
 	public void go() {
 		start();
-		if (roadmap){
+		if (verbose){
 			System.out.println("Collected users after start(): ");
 			for (String id : users.keySet()){
 				System.out.println(users.get(id));
@@ -236,14 +236,7 @@ public abstract class Sample extends SNA_Root {
 		toTSV();
 	}
 	
-	public void log(){
-		PrintWriter log = Utilities.fileHandler("log.txt");
-		log.println("start time: "+instantiatedAt.toString());
-		Date now = new Date();
-		log.println("end time: "+now.toString());
-		log.println("total number of iterations: "+it);
-		log.close();
-	}
+	public abstract void log();
 
 	public int[] QueueLengths() {
 		int[] sizes = { getPostsQ.size(), getUserQ.size(), getFollowingQ.size()  };

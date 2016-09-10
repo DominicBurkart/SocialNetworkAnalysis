@@ -4,8 +4,10 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.ArrayDeque;
+import java.util.Date;
 
 import SocialNetworkAnalysis.Ratelimit_Reached_Listener;
+import twitter4j.IDs;
 import twitter4j.TwitterException;
 
 /**
@@ -25,6 +27,7 @@ public abstract class TwitterSample extends Sample {
 	static boolean[] sleep = new boolean[3];
 	public static  Hashtable<String, ArrayDeque<User>> toLinkFriends = new Hashtable<String,ArrayDeque<User>>();
 	public static Hashtable<String, ArrayDeque<User>> toLinkFollowers = new Hashtable<String, ArrayDeque<User>>();
+	static int[] precheckInfo = {0,0,0,0,0};
 
 	public TwitterSample(String name, String path) {
 		super(name, path);
@@ -91,6 +94,42 @@ public abstract class TwitterSample extends Sample {
 			long sleep = Utilities.least(relevantOpens) - java.lang.System.currentTimeMillis();
 			System.out.println("All relevant resources are asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the next resource to wake up.");
 			Utilities.sleepFor(sleep);
+		} catch (IllegalArgumentException e){ //thrown by Utilities.least method
+			if (verbose) System.out.println("All queues are empty. Exiting filler method.");
+			return;
+		}
+	}
+	
+	/**
+	 * sleeps the program when no resources with non-empty queues are awake until one wakes up.
+	 */
+	public void userFiller(){
+		if (!sleep[1]) return;
+		// if we make it here then the user resource is asleep. let's figure out how long to wait.
+		try{
+			long sleep = open[1] - java.lang.System.currentTimeMillis();
+			if (sleep > 0){
+				System.out.println("User resource is asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the posts to wake up.");
+				Utilities.sleepFor(sleep);
+			}
+		} catch (IllegalArgumentException e){ //thrown by Utilities.least method
+			if (verbose) System.out.println("All queues are empty. Exiting filler method.");
+			return;
+		}
+	}
+	
+	/**
+	 * sleeps the program when the posts resource is asleep.
+	 */
+	public void postsFiller(){
+		if (!sleep[0]) return;
+		// if we make it here then the post resource is asleep. let's figure out how long to wait.
+		try{
+			long sleep = open[0] - java.lang.System.currentTimeMillis();
+			if (sleep > 0){
+				System.out.println("Post resource is asleep. Sleeping program for "+sleep/1000+" seconds while waiting for the posts to wake up.");
+				Utilities.sleepFor(sleep);
+			}
 		} catch (IllegalArgumentException e){ //thrown by Utilities.least method
 			if (verbose) System.out.println("All queues are empty. Exiting filler method.");
 			return;
@@ -283,4 +322,149 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 
+	
+	int checkRun = 1;
+	/**
+	 * collects the correct number of users (as constrained by the site architecture and the parameter "goal") that follow the user passed as the first parameter and meet these conditions:
+	 * - the user is followed by and follows at least ten people.
+	 * - the user has at least 30 total posts.
+	 * - the user has posted within the last month.
+	 * - the user's self-identified language is english.
+	 * - the user follows less than 1000 other users (for computational ease).
+	 */
+	public void precheckTwitterFollowers(ToFollow f, int goal){
+		long nextCursor = 0;
+		if (roadmap || verbose) System.out.println("precheck started!");
+		try {
+			IDs page = TwitterRequestHandler.getTwitter4jFollowPage(f);
+			getUserQ.add(TwitterRequestHandler.followPageToToUser(f, page));
+			nextCursor = page.getNextCursor();
+		} catch (TwitterException e) {
+			System.out.println("Followers for root could not be collected. Retrying in fifteen minutes.");
+			e.printStackTrace();
+			System.exit(1);
+		}
+		while (!getUserQ.isEmpty()){
+			if (!userSleeping()) {
+				ToUser account = getUserQ.poll();
+				if (verbose) System.out.println("collecting data in precheck.");
+				if (account == null) continue;
+				if (account.single) {
+					User u = getUser(account);
+					if (u == null) continue;
+					profileCheckRecord(userCheck((TwitterUser) u));
+				} else {
+					User[] us = getUsers(account); 
+					if (us != null){
+						for (User u : us) {
+							profileCheckRecord(userCheck((TwitterUser) u));
+						}
+					}
+				}
+			}
+			else{
+				userFiller();
+			}
+		}
+		while (!getPostsQ.isEmpty()){
+			if (!postSleeping()) {
+				if (verbose) System.out.println("post request in precheck()!");
+				TwitterUser u = getPostsQ.poll();
+				if (!u.postsCollected)
+					getPosts(u);
+				else
+					if (verbose) System.out.println("redundant request to getPosts ignored for user "+u.username+".");
+				if (precheckInfo[0] < goal) postCheckRecord(postCheck(u));
+			} else{
+				postsFiller();
+			}
+		}
+		if (precheckInfo[0] < goal){
+			if (nextCursor != 0){
+				if (roadmap || verbose) System.out.println("Only "+precheckInfo[0]+" viable users were collected from the previous page of the inputted user's followers. Repeating process with the next page. Number of times this prechecker has been run: "+checkRun);
+				checkRun++;
+				f.cursor = nextCursor;
+				Utilities.sleepFor((1000 * 60 * 15) / TwitterAuth.size());
+				precheckTwitterFollowers(f, goal);
+			}
+			else{
+				if (roadmap || verbose) System.out.println("The given user did not have another page of followers, so precheck finished without collecting the goal number of users. Viable users collected: "+precheckInfo[0]);
+				if (roadmap || verbose) System.out.println("Continuing collection.");
+			}
+		}
+		if (roadmap || verbose) System.out.println("precheck complete. Waiting fifteen minutes before continuing with main collection. Collected: "+collected+" precheckInfo[0]: "+precheckInfo[0]);
+		Utilities.sleepFor((1000 * 60 * 15));
+	}
+	
+	/**
+	 * Verifies profile is acceptable for this collection. Can be called before posts are collected.
+	 * @param the user whose profile is to be checked (discluding checking of posts).
+	 * @see precheckTwitterFollowers(User root, int goal)
+	 * @return 0 when the user meets post constraints, 1 when the user has not set their language to English,
+	 * and 4 when their following and/or friends numbers are out of range.
+	 */
+	public int userCheck(TwitterUser u){
+		if (!u.language.equalsIgnoreCase("en")){
+			if (verbose) System.out.println("Defined language for the user is not English. Language: "+u.language);
+			return 1;
+		}
+		if (u.followersCount >= 10 && u.friendsCount >= 10 && 1000 >= u.friendsCount){
+			getPostsQ.add(u);
+			return 0;
+		}
+		if (verbose) System.out.println("User "+u.name+" excluded because their following or friend numbers did not fall into the defined ranges. Following number: "+u.followersCount+" Friend number: "+u.friendsCount);
+		return 4;
+	}
+	
+	/**
+	 * Must be called after the posts of a user have been collected to work properly!
+	 * @param the user whose posts are to be checked.
+	 * @see precheckTwitterFollowers(User root, int goal)
+	 * @return 0 when the user meets post constraints,
+	 * 2 when they haven't posted in the last month, 
+	 * and 3 when they don't have enough posts.
+	 */
+	public int postCheck(TwitterUser u){
+		if (u.posts != null && u.posts.size() > 30){
+			boolean lastMonth = false; //whether the user posted in the last month
+			for (int i = 0; i < u.posts.size() && !lastMonth; i++){
+				if ((java.lang.System.currentTimeMillis() - u.posts.get(i).getTime().getTime()) / 1000 < Utilities.MONTHSECS) lastMonth = true;
+			}
+			if (lastMonth){
+				userAction(u);
+				if (verbose || roadmap) System.out.println("User "+u.name+ " added to valid user list in Utilities.precheckTwitterFollowers().");
+				return 0;
+			} else{
+				if (verbose && u.posts.size() > 0) System.out.println((java.lang.System.currentTimeMillis() - u.posts.get(0).getTime().getTime() / 1000) +" is less than "+ Utilities.MONTHSECS);
+				if (verbose) System.out.println("User "+u.name+ "excluded because they have not posted in the last month.");
+				if (verbose && u.posts.size() > 0) System.out.println("first tweet's language: "+u.posts.get(0).language);
+				return 2; 
+			}
+		} else{
+			if (verbose) System.out.println("User "+u.name+" excluded because they did not have sufficient posts. Post number: "+u.posts.size());
+			return 3;
+		}
+	}
+	
+	void profileCheckRecord(int i){
+		if (i != 0) precheckInfo[i]++;
+	}
+	
+	void postCheckRecord(int i){
+		precheckInfo[i]++;
+	}
+	
+	public void log(){
+		PrintWriter log = Utilities.fileHandler("log.txt");
+		log.println("start time: "+instantiatedAt.toString());
+		log.println("end time: "+new Date().toString());
+		log.println("total number of iterations: "+it);
+		log.println("total number of users checked in precheck: "+Utilities.sum(precheckInfo));
+		log.println("prechecked users who met all constraints: "+precheckInfo[0]);
+		log.println("prechecked users who were discluded because their language was not set to English: "+precheckInfo[1]);
+		log.println("prechecked users who were discluded because they had not posted in the last month: "+precheckInfo[2]);
+		log.println("prechecked users who were discluded because they did not have enough posts: "+precheckInfo[3]);
+		log.println("prechecked users who were discluded because they did not have follower and friend numbers in the correct range: "+precheckInfo[4]);
+		log.close();
+	}
 }

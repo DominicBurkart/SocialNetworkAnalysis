@@ -27,7 +27,6 @@ public class TwitterRequestHandler extends SNA_Root {
 		return authorized.getTwitter();
 	}
 	
-	
 	static TwitterStatus[] search(String terms) throws TwitterException {
 		Query q = new Query(terms);
 		try{
@@ -167,7 +166,16 @@ public class TwitterRequestHandler extends SNA_Root {
 	}
 
 	static ToUser getSomeFollowers(ToFollow toFol) throws BadIDException, TwitterException {
-		ToUser out = null;
+		try {
+			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor);
+			return followPageToToUser(toFol, IDvals);
+		} catch (TwitterException e){
+			Utilities.handleTwitterException(e);
+			return null;
+		}
+	}
+	
+	static IDs getTwitter4jFollowPage(ToFollow toFol) throws TwitterException{
 		try {
 			IDs IDvals = getTwitter().getFollowersIDs(Long.valueOf(toFol.id), toFol.cursor);
 			long[] ids = IDvals.getIDs();
@@ -184,8 +192,7 @@ public class TwitterRequestHandler extends SNA_Root {
 					TwitterSample.toLinkFollowers.put(id, uL);
 				}
 			}
-			out = User.sample.new ToUser(sIds, toFol.depth + 1);
-			return out;
+			return IDvals;
 		} catch (TwitterException e){
 			Utilities.handleTwitterException(e);
 			return null;
@@ -229,20 +236,33 @@ public class TwitterRequestHandler extends SNA_Root {
 			return null;
 		}
 	}
+	
+	public static ToUser followPageToToUser(ToFollow toFol, IDs IDvals) {
+		ToUser out = null;
+		long[] ids = IDvals.getIDs();
+		String[] sIds = new String[ids.length];
+		int i = 0;
+		for (long vId : ids){
+			String id = sIds[i++] = Long.toString(vId);
+			if (TwitterSample.toLinkFollowers.containsKey(id)){
+				TwitterSample.toLinkFollowers.get(id).add(toFol.u);
+			} else{
+				User target = toFol.u;
+				ArrayDeque<User> uL = new ArrayDeque<User>();
+				uL.add(target);
+				TwitterSample.toLinkFollowers.put(id, uL);
+			}
+		}
+		out = User.sample.new ToUser(sIds, toFol.depth + 1);
+		return out;
+	}
 
 	/**
 	 * @see getUsers
-	 * 
-	 * @param id
-	 * @param depth
-	 * @return
-	 * @throws BadUserException
-	 * @throws TwitterException
 	 */
-	static TwitterUser getUser(long id, int depth) throws BadUserException {
+	public static TwitterUser getUser(long id, int depth) throws BadUserException {
 		try {
-			TwitterUser t = new TwitterUser(getTwitter().showUser(id), depth);
-			return t;
+			return new TwitterUser(getTwitter().showUser(id), depth);
 		} catch (TwitterException e){
 			if (verbose) e.printStackTrace();
 			try{
@@ -256,7 +276,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		}
 	}
 
-	static TwitterUser[] getUsers(long[] ids, int depth) {
+	public static TwitterUser[] getUsers(long[] ids, int depth) {
 		ResponseList<twitter4j.User> accounts;
 		try {
 			accounts = getTwitter().lookupUsers(ids);
@@ -279,7 +299,7 @@ public class TwitterRequestHandler extends SNA_Root {
 		}
 	}
 
-	static void getPosts(User u) throws TwitterException {
+	public static void getPosts(User u) throws TwitterException {
 		if (u == null) return;
 		Paging paging = new Paging(1, 200); //200 is the max page size for this twitter resource as of june 2016
 		try{

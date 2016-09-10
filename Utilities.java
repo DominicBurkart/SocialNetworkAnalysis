@@ -23,6 +23,8 @@ import twitter4j.TwitterException;
  * @author dominicburkart
  */
 public class Utilities extends SNA_Root {
+	public static final int TWITFOLCALLSIZE = 5000;
+	public static final long MONTHSECS = 2592000;
 
 	/**
 	 * replaces all escape characters/whitespace
@@ -404,6 +406,22 @@ public class Utilities extends SNA_Root {
 				outDir = "";
 			}
 		}
+	}
+
+	public static long sum(long[] vals) {
+		long out = 0;
+		for (long val : vals){
+			out += val;
+		}
+		return out;
+	}
+	
+	public static long sum(int[] vals) {
+		long out = 0;
+		for (long val : vals){
+			out += val;
+		}
+		return out;
 	}
 }
 
