@@ -51,7 +51,6 @@ public class ClintonFollowersFriends extends TwitterSample {
 		if (!u.fromFromPost) this.getPostsQ.add((TwitterUser) u);
 		if (u != null && u.firstDepth < DEPTH && collected < GOAL && u != root && !u.fromPost){
 			if (verbose) System.out.println("User included for userAction: "+u);
-			collected++;
 			return true;
 		}
 		else{
@@ -72,6 +71,7 @@ public class ClintonFollowersFriends extends TwitterSample {
 	 */
 	@Override
 	public void userAction(User user) {
+		collected++;
 		ToFollow toFol = new ToFollow(user);
 		this.getFollowingQ.add(toFol);
 	}
