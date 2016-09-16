@@ -136,4 +136,9 @@ public class TwitterUserFollowersFriends extends TwitterSample {
 		if (verbose) System.out.println("start() completed.");
 	}
 	
+	@Override
+	public boolean ignoreUser(User u) {
+		if (u.id.equals(root.id)) return true;
+		else return false;
+	}
 }

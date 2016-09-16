@@ -352,7 +352,9 @@ public abstract class TwitterSample extends Sample {
 				if (account.single) {
 					User u = getUser(account);
 					if (u == null) continue;
-					profileCheckRecord(userCheck((TwitterUser) u));
+					if (!ignoreUser(u)){
+//						profileCheckRecord(userCheck((TwitterUser) u));
+					}
 				} else {
 					User[] us = getUsers(account); 
 					if (us != null){
@@ -396,6 +398,8 @@ public abstract class TwitterSample extends Sample {
 		Utilities.sleepFor((1000 * 60 * 15));
 	}
 	
+	public abstract boolean ignoreUser(User u);
+
 	/**
 	 * Verifies profile is acceptable for this collection. Can be called before posts are collected.
 	 * @param the user whose profile is to be checked (discluding checking of posts).

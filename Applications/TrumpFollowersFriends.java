@@ -20,9 +20,9 @@ public class TrumpFollowersFriends extends TwitterSample {
 		}
 		
 		public static void main(String[] args) {
-			System.out.println("ClintonFollowerFriends main is running!");
+			System.out.println("TrumpFollowerFriends main is running!");
 			Date d = new Date();
-			ClintonFollowersFriends h = new ClintonFollowersFriends("ClintonFollowersFriends_"+d.toString());
+			TrumpFollowersFriends h = new TrumpFollowersFriends("TrumpFollowersFriends_"+d.toString());
 			h.go();
 			d =  new Date();
 			System.out.println("Program complete. Current time: "+d.toString());
@@ -93,7 +93,7 @@ public class TrumpFollowersFriends extends TwitterSample {
 		@Override
 		public void followAction(ToUser ids) {
 			if (verbose){
-				System.out.print("ClintonFollowersFriends followAction input: ");
+				System.out.print("TrumpFollowersFriends followAction input: ");
 				if (ids.single){
 					System.out.print("ToUser is single. ");
 					System.out.print("id: "+ids.id);
@@ -122,5 +122,11 @@ public class TrumpFollowersFriends extends TwitterSample {
 		getPostsQ.add(root);
 		precheckTwitterFollowers(f, GOAL);
 		if (verbose) System.out.println("start() completed.");
+	}
+
+	@Override
+	public boolean ignoreUser(User u) {
+		if (u.id.equals(root.id)) return true;
+		else return false;
 	}
 }

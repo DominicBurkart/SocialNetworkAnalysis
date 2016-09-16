@@ -124,4 +124,10 @@ public class ClintonFollowersFriends extends TwitterSample {
 		precheckTwitterFollowers(f, GOAL);
 		if (verbose) System.out.println("start() completed.");
 	}
+	
+	@Override
+	public boolean ignoreUser(User u) {
+		if (u.id.equals(root.id)) return true;
+		else return false;
+	}
 }
