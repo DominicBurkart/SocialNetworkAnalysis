@@ -34,7 +34,12 @@ public class TwitterUserFollowersFriends extends TwitterSample {
 			goal = Integer.valueOf(args[1]);
 		}
 		Date d = new Date();
-		TwitterUserFollowersFriends h = new TwitterUserFollowersFriends("TwitterUserFollowersFriends_"+d.toString());
+		TwitterUserFollowersFriends h;
+		if (args.length > 2){
+			h = new TwitterUserFollowersFriends(args[2]+"_"+args[0]+"_"+d.toString());
+		} else{
+			h = new TwitterUserFollowersFriends("FollowersFriends"+args[0]+"_"+d.toString());
+		}
 		h.go();
 		d =  new Date();
 		System.out.println("Program complete. Current time: "+d.toString());
@@ -130,9 +135,11 @@ public class TwitterUserFollowersFriends extends TwitterSample {
 		if (verbose) System.out.println("Starting data collection in TwitterUserFollowersFriends start()!\n");
 		ToUser toRoot = new ToUser(rootID, 0);
 		root = (TwitterUser) getUser(toRoot);
-		ToFollow f = new ToFollow(root);
+		ToFollow f0 = new ToFollow(root);
+		ToFollow f1 = new ToFollow(root);
 		getPostsQ.add(root);
-		precheckTwitterFollowers(f, goal);
+		getFollowingQ.add(f0);
+		precheckTwitterFollowers(f1, goal);
 		if (verbose) System.out.println("start() completed.");
 	}
 	

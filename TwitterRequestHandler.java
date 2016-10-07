@@ -299,6 +299,12 @@ public class TwitterRequestHandler extends SNA_Root {
 		}
 	}
 
+	/**
+	 * returns up to 200 tweets from a user.
+	 * 
+	 * @param u
+	 * @throws TwitterException
+	 */
 	public static void getPosts(User u) throws TwitterException {
 		if (u == null) return;
 		Paging paging = new Paging(1, 200); //200 is the max page size for this twitter resource as of june 2016
@@ -316,6 +322,9 @@ public class TwitterRequestHandler extends SNA_Root {
 			return;
 		}
 	}
+	
+	
+	
 
 	static void getReposted(Post p) throws NumberFormatException, TwitterException, BadUserException {
 		long cursor = -1;

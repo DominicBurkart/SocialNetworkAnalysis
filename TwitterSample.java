@@ -340,7 +340,7 @@ public abstract class TwitterSample extends Sample {
 			getUserQ.add(TwitterRequestHandler.followPageToToUser(f, page));
 			nextCursor = page.getNextCursor();
 		} catch (TwitterException e) {
-			System.out.println("Followers for root could not be collected. Retrying in fifteen minutes.");
+			System.out.println("Followers for root could not be collected. Quitting.");
 			e.printStackTrace();
 			System.exit(1);
 		}

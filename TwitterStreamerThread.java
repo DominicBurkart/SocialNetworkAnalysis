@@ -3,6 +3,7 @@ package SocialNetworkAnalysis;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -20,13 +21,16 @@ import java.util.Arrays;
  */
 public final class TwitterStreamerThread implements Runnable{
 	static TwitterException twit = new TwitterException("");
-	static String outDir = "twitter_streams";
+	static String outDir = "/Volumes/Burkart/files/twitter_streams";
 	String[] args;
 	Configuration fig;
 	
 	public TwitterStreamerThread(String[] args, Configuration fig){
 		this.args = args;
 		this.fig = fig;
+		if (!new File("/Volumes/Burkart/files/twitter_streams").isDirectory()){
+			outDir = "twitter_streams";
+		}
 	}
 	
 	private static PrintWriter getFile(String filename){
