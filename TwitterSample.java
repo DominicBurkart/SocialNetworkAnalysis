@@ -332,7 +332,7 @@ public abstract class TwitterSample extends Sample {
 	 * - the user's self-identified language is english.
 	 * - the user follows less than 1000 other users (for computational ease).
 	 */
-	public void precheckTwitterFollowers(ToFollow f, int goal){
+	public void precheckTwitterFollowers(ToFollow f, int goal, boolean small){
 		long nextCursor = 0;
 		if (roadmap || verbose) System.out.println("precheck started!");
 		try {
@@ -353,13 +353,13 @@ public abstract class TwitterSample extends Sample {
 					User u = getUser(account);
 					if (u == null) continue;
 					if (!ignoreUser(u)){
-//						profileCheckRecord(userCheck((TwitterUser) u));
+						profileCheckRecord(userCheck((TwitterUser) u, small));
 					}
 				} else {
 					User[] us = getUsers(account); 
 					if (us != null){
 						for (User u : us) {
-							profileCheckRecord(userCheck((TwitterUser) u));
+							profileCheckRecord(userCheck((TwitterUser) u, small));
 						}
 					}
 				}
@@ -387,34 +387,53 @@ public abstract class TwitterSample extends Sample {
 				checkRun++;
 				f.cursor = nextCursor;
 				Utilities.sleepFor((1000 * 60 * 15) / TwitterAuth.size());
-				precheckTwitterFollowers(f, goal);
+				precheckTwitterFollowers(f, goal, small);
 			}
 			else{
 				if (roadmap || verbose) System.out.println("The given user did not have another page of followers, so precheck finished without collecting the goal number of users. Viable users collected: "+precheckInfo[0]);
 				if (roadmap || verbose) System.out.println("Continuing collection.");
 			}
 		}
-		if (roadmap || verbose) System.out.println("precheck complete. Waiting fifteen minutes before continuing with main collection. Collected: "+collected+" precheckInfo[0]: "+precheckInfo[0]);
+		if (roadmap || verbose) System.out.println("precheck complete. Waiting fifteen minutes before continuing with main collection. Collected users: "+precheckInfo[0]);
 		Utilities.sleepFor((1000 * 60 * 15));
+	}
+	
+	/**
+	 * Checks that a collected user's follower count is less than or equal to three thousand, but above ten.
+	 * @param r
+	 */
+	public boolean checkFolIsSmall(TwitterUser r){
+		if (r.followersCount >= 10 && r.followersCount <= 3000 && r.friendsCount > 10 && r.friendsCount < 3000){
+			return true;
+		}
+		return false;
 	}
 	
 	public abstract boolean ignoreUser(User u);
 
 	/**
 	 * Verifies profile is acceptable for this collection. Can be called before posts are collected.
+	 * @param small 
 	 * @param the user whose profile is to be checked (discluding checking of posts).
 	 * @see precheckTwitterFollowers(User root, int goal)
 	 * @return 0 when the user meets post constraints, 1 when the user has not set their language to English,
 	 * and 4 when their following and/or friends numbers are out of range.
 	 */
-	public int userCheck(TwitterUser u){
+	public int userCheck(TwitterUser u, boolean small){
 		if (!u.language.equalsIgnoreCase("en")){
 			if (verbose) System.out.println("Defined language for the user is not English. Language: "+u.language);
 			return 1;
 		}
-		if (u.followersCount >= 10 && u.friendsCount >= 10 && 1000 >= u.friendsCount){
-			getPostsQ.add(u);
-			return 0;
+		if (small){
+			if (u.followersCount >= 10 && u.friendsCount >= 10 && checkFolIsSmall(u)){
+				getPostsQ.add(u);
+				return 0;
+			}
+		} else{
+			if (u.followersCount >= 10 && u.friendsCount >= 10 ){
+				getPostsQ.add(u);
+				return 0;
+			}
 		}
 		if (verbose) System.out.println("User "+u.name+" excluded because their following or friend numbers did not fall into the defined ranges. Following number: "+u.followersCount+" Friend number: "+u.friendsCount);
 		return 4;

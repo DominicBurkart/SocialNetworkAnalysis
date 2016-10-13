@@ -139,10 +139,11 @@ public class TwitterUserFollowersFriends extends TwitterSample {
 		ToFollow f1 = new ToFollow(root);
 		getPostsQ.add(root);
 		getFollowingQ.add(f0);
-		precheckTwitterFollowers(f1, goal);
+		precheckTwitterFollowers(f1, goal, false);
 		if (verbose) System.out.println("start() completed.");
 	}
 	
+
 	@Override
 	public boolean ignoreUser(User u) {
 		if (u.id.equals(root.id)) return true;
