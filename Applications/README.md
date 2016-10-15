@@ -6,3 +6,9 @@ Collects a given number of Twitter users (goal) who follow a given root user (ro
 
 ###QueerMultiStream
 Opens multiple authenticated Twitter streams to collect tweets on a variety of filters simultaneously.
+
+###TwitterFollowersFriends
+Does the same thing as HillaryFollowersFriends and TrumpFollowersFriends with whatever user you want.
+
+###TwitterFriendsFriends
+Traverses up the Twitter network of a user instead of traversing both down (through a sample of followers) and up.
