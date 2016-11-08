@@ -132,15 +132,14 @@ public class TwitterUserFriendsFriends extends TwitterSample {
 		if (verbose) System.out.println("Starting data collection in TwitterUserFriendsFriends start()!\n");
 		ToUser toRoot = new ToUser(rootID, 0);
 		root = (TwitterUser) getUser(toRoot);
-//		if (!checkFolIsSmall(root)){
-//			System.out.println("Prospective root user "+root.username+" excluded for having a follower count out of range. Follower count: "+root.followersCount+" Friend count: "+root.friendsCount);
-//			Utilities.sleepFor(1000 * 30); //sleep for 30 seconds before quitting.
-//			System.exit(10);
-//		}
+		if (!checkFolIsSmall(root)){
+			System.out.println("Prospective root user "+root.username+" excluded for having a follower count out of range. Follower count: "+root.followersCount+" Friend count: "+root.friendsCount);
+			Utilities.sleepFor(1000 * 30); //sleep for 30 seconds before quitting.
+			System.exit(10);
+		}
 		ToFollow f1 = new ToFollow(root);
 		getPostsQ.add(root);
-		getFollowingQ.add(f1);
-//		precheckTwitterFollowers(f1, goal, false); //change third param to true if you want to use the checkFolIsSmall check on prospective prechecks
+		precheckTwitterFollowers(f1, goal, true);
 		if (verbose) System.out.println("start() completed.");
 	}
 	
