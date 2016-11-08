@@ -87,17 +87,7 @@ public abstract class User extends SNA_Root {
 	public User(String id, int depth, boolean ignore) {
 		if (id.equals("-1") || id.equals("") || id.equals("0"))
 			throw new IllegalArgumentException();
-		if (sample != null){
-			old = sample.users.get(id);
-			sample.users.put(id, this);
-			if (old == null || old.incomplete)
-				firstDepth = depth;
-			else
-				firstDepth = old.firstDepth;
-		}else{
-			firstDepth = depth;
-		}
-		this.id = id;
+		
 	}
 
 	public User(String username, String id, int depth, boolean ignore) {
@@ -148,5 +138,9 @@ public abstract class User extends SNA_Root {
 
 	public void setTensors(Tensors tensors) {
 		this.tensors = tensors;
+	}
+
+	public static User userFromLine(String line) {
+		
 	}
 }

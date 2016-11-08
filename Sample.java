@@ -15,8 +15,8 @@ import java.util.Queue;
  * @author dominicburkart
  */
 public abstract class Sample extends SNA_Root {
-	Hashtable<String, Post> posts = new Hashtable<String, Post>();
-	public Hashtable<String, User> users = new Hashtable<String, User>();
+	PostKeeper posts;
+	ProfileKeeper profiles;
 	LinkedList<Follow> follows = new LinkedList<Follow>();
 	ArrayList<Interaction> allInteractions = new ArrayList<Interaction>();
 	public String name = "collection";
@@ -58,6 +58,7 @@ public abstract class Sample extends SNA_Root {
 		else{
 			System.err.println("Empty/null path passed for output directory. Depositing output in the working directory.");
 		}
+		posts = PostKeeper.setPOSTKEEPER(this);
 	}
 
 	/**
@@ -153,8 +154,8 @@ public abstract class Sample extends SNA_Root {
 		start();
 		if (verbose){
 			System.out.println("Collected users after start(): ");
-			for (String id : users.keySet()){
-				System.out.println(users.get(id));
+			for (Long id : posts.users()){
+				System.out.println(profiles.getProfile(id));
 			}
 		}
 		if (verbose) System.out.println("Beginning run() while loop.");

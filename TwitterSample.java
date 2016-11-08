@@ -3,6 +3,8 @@ package SocialNetworkAnalysis;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.ArrayDeque;
 import java.util.Date;
 
@@ -262,56 +264,8 @@ public abstract class TwitterSample extends Sample {
 		}
 	}
 
-	@Override
-	public void usersToTSV() {
-		PrintWriter w = Utilities.fileHandler(name + "_users.tsv"); //for master user file
-		w.println("username\tid\tfirst depth\tdescription\tfavorites count\tfollowers count"
-				+ "\tfriends count\ttranslator\tlanguage\tlisted count\tlocation\tname\tstatus count"
-				+ "\ttimezone\tassociated url\tverified\twithheld in countries");
-		Enumeration<String> keys = users.keys();
-		while (keys.hasMoreElements()) { //adds a line per user to the master user file and also makes baby files for each user
-			User u = users.get(keys.nextElement());
-			String n = name+"_user_"+u.id+"_"; //for naming files
-			w.println(u);
-			if (u.getTensors().friends != null && u.getTensors().friends.size() > 0){
-				PrintWriter friends = Utilities.fileHandler(n+"friends.tsv");
-				for (Follow fol : u.getTensors().friends){
-					friends.println(fol.target);
-				}
-				friends.close();
-			}
-			if (u.posts != null && u.posts.size() > 0){
-				PrintWriter posts = Utilities.fileHandler(n+"posts.tsv");
-				for (Post p : u.posts){
-					posts.println(p);
-				}
-				posts.close();
-			}
-		}
-		w.close();
-	}
 
-	@Override
-	public void followsToTSV() {
-		PrintWriter w = Utilities.fileHandler(name + "_follows.tsv");
-		w.println("~follows~");
-		for (Follow follow : follows) {
-			w.println(follow);
-		}
-		w.close();
-	}
-
-	@Override
-	public void postsToTSV() {
-		PrintWriter w = Utilities.fileHandler(name + "_posts.tsv");
-		w.println("id\tusername\ttime\tmessage\tauthorID\tis original\toriginal author\tretweeted from\tnotes\tcomment\ttags\tlocation\tlanguage\tpossibly sensitive link\tretweet count\tfavorite count\tsource");
-		for (String k : posts.keySet()) {
-			w.println(posts.get(k));
-		}
-		w.close();
-	}
-
-	public ToUser getSomeFol(ToFollow f, int some) {
+	public ToUser getSomeFol(ToFollow f, int some) {2
 		try {
 			return TwitterRequestHandler.getxFollowers(f, some);
 		} catch (TwitterException e) {
