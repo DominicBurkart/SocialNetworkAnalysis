@@ -265,7 +265,7 @@ public abstract class TwitterSample extends Sample {
 	}
 
 
-	public ToUser getSomeFol(ToFollow f, int some) {2
+	public ToUser getSomeFol(ToFollow f, int some) {
 		try {
 			return TwitterRequestHandler.getxFollowers(f, some);
 		} catch (TwitterException e) {
