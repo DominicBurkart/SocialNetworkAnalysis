@@ -13,7 +13,7 @@ import twitter4j.conf.ConfigurationBuilder;
  * 
  * @author dominicburkart
  */
-public class ElectionStreams {
+public class Inaug_Streams {
 	@SuppressWarnings("unused")
 	private static TwitterAuth auth = new TwitterAuth(); //initializes authorizations
 	static int i = 0;
@@ -33,21 +33,15 @@ public class ElectionStreams {
 				{"Hillary", "Clinton", "HillaryClinton", "Hillary2016", "HillaryClinton2016", "Clinton2016"},
 				{"Donald","Trump", "DonaldTrump", "Trump2016", "Donald2016", "DonaldTrump2016"},
 				{"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"},
-				{"Centipedes","Centipede"},
-				{"Trumpers"},
 				{"NastyWoman", "NastyWomen"},
 				{"ImWithHer"},
 				{"president","presidential","POTUS"},
 				{"vote", "voter", "voted", "voting"},
-				{"Hillbots"},
-				{"JillStein", "Jill", "Stein"},
-				{"GaryJohnson", "Gary", "Johnson"},
-				{"Killary"},
-				{"MAGA", "Make America Great Again"},
-				{"rigged"},
-				{"GOP", "Republican", "Republicans"},
-				{"Dems", "Dem", "Democrat", "Democrats", "Democratic Party", "Democratic Nominee"},
-				{"Evan McMullin", "LP", "Libertarian Party", "third party"}
+				{"womensmarch", "march", "WomensMarchonWashington", "millionwomenmarch"},
+				{"protest"},
+				{"inauguration", "trumpinauguration"},
+				{"United States","USA", "America", "Americans"},
+				{"Resistance"}
 		};
 		String[] names = new String[streamargs.length];
 		for (String[] tags : streamargs){

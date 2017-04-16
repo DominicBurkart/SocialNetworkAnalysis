@@ -1,32 +1,29 @@
-package SocialNetworkAnalysis;
-
-import twitter4j.*;
-import twitter4j.conf.Configuration;
+package SocialNetworkAnalysis.Applications;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Arrays;
 
-/**
- * modified version of Yusuke Yamamoto's PrintFilterStream
- * that allows a program collect a stream of tweets in a
- * distinct thread.
- * 
- * original program: https://github.com/yusuke/twitter4j/blob/master/twitter4j-examples/src/main/java/twitter4j/examples/stream/PrintFilterStream.java
- * 
- * @author Yusuke Yamamoto,
- * 		   Dominic Burkart
- */
-public final class TwitterStreamerThread implements Runnable{
+import SocialNetworkAnalysis.TwitterStatus;
+import SocialNetworkAnalysis.Utilities;
+import twitter4j.FilterQuery;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusListener;
+import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.conf.Configuration;
+
+public class GeoStream implements Runnable{
 	static TwitterException twit = new TwitterException("");
 	static String outDir = "/Volumes/Burkart/files/twitter_streams";
-	String[] args;
+	double[][] pars;
 	Configuration fig;
 	
-	public TwitterStreamerThread(String[] args, Configuration fig){
-		this.args = args;
+	public GeoStream(double[][] pars, Configuration fig){
+		this.pars = pars;
 		this.fig = fig;
 		if (!new File("/Volumes/Burkart/files/twitter_streams").isDirectory()){
 			outDir = "twitter_streams";
@@ -44,7 +41,7 @@ public final class TwitterStreamerThread implements Runnable{
 	private String getFileName(){
 		Date now = new Date(java.lang.System.currentTimeMillis());
 		String d = now.toString();
-		String filters = Utilities.strFromAr(args);
+		String filters = Utilities.strFromAr(pars);
 		if (filters.length() > 30){
 			filters = filters.substring(0, 20) + "_truncated";
 		}
@@ -52,18 +49,13 @@ public final class TwitterStreamerThread implements Runnable{
 		return d + "_" +filters + tsv;
 	}
 	
-    /**
+	/**
      * Main entry of this application.
      *
      * @param args follow(comma separated user ids) track(comma separated filter terms)
      */
     public void run() {
     	final String name = Thread.currentThread().getName();
-    	
-        if (args.length < 1) {
-            System.out.println("Usage: java twitter4j.examples.PrintFilterStream [follow(comma separated numerical user ids)] [track(comma separated filter terms)]");
-            System.exit(-1);
-        }
 
         StatusListener listener = new StatusListener() {
             @Override
@@ -117,38 +109,11 @@ public final class TwitterStreamerThread implements Runnable{
         twitterStream = new TwitterStreamFactory(fig).getInstance();
         
         twitterStream.addListener(listener);
-        ArrayList<Long> follow = new ArrayList<Long>();
-        ArrayList<String> track = new ArrayList<String>();
-        for (String arg : args) {
-            if (isNumericalArgument(arg)) {
-                for (String id : arg.split(",")) {
-                    follow.add(Long.parseLong(id));
-                }
-            } else {
-                track.addAll(Arrays.asList(arg.split(",")));
-            }
-        }
-        long[] followArray = new long[follow.size()];
-        for (int i = 0; i < follow.size(); i++) {
-            followArray[i] = follow.get(i);
-        }
-        String[] trackArray = track.toArray(new String[track.size()]);
-
-        // filter() method internally creates a thread which manipulates TwitterStream and calls these adequate listener methods continuously.
-        twitterStream.filter(new FilterQuery(0, followArray, trackArray));
-    }
-
-    private static boolean isNumericalArgument(String argument) {
-        String args[] = argument.split(",");
-        boolean isNumericalArgument = true;
-        for (String arg : args) {
-            try {
-                Integer.parseInt(arg);
-            } catch (NumberFormatException nfe) {
-                isNumericalArgument = false;
-                break;
-            }
-        }
-        return isNumericalArgument;
+        
+        FilterQuery filt = new FilterQuery();
+        
+        filt.locations(pars);
+        
+        twitterStream.filter(filt);
     }
 }

@@ -87,7 +87,7 @@ public class TwitterStatus extends Post {
 	//TODO change this when we fill out the remaining tweet fields
 	@Override
 	public String toString() {
-		return super.toString()+"\t"+language+"\t"+possibly_sensitive+"\t"+retweet_count+"\t"+favorite_count+"\t"+source;
+		return super.toString()+"\t"+language+"\t"+possibly_sensitive+"\t"+retweet_count+"\t"+favorite_count+"\t"+source+"\t"+location;
 	}
 	
 	
@@ -119,7 +119,7 @@ public class TwitterStatus extends Post {
 				location.setLocationType(s.getPlace().getPlaceType());
 			}
 		}
-		if (s.getGeoLocation() != null){
+		if (s.getPlace().getGeometryCoordinates() != null){
 			if (location != null){
 				location = this.getLocation();
 				location.setLatitude(s.getGeoLocation().getLatitude());

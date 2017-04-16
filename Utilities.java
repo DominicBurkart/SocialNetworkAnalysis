@@ -423,5 +423,23 @@ public class Utilities extends SNA_Root {
 		}
 		return out;
 	}
+
+	public static String strFromAr(double[][] pars) {
+		StringBuffer s = new StringBuffer();
+		for (double[] p : pars){
+			for (double d : p){
+				s.append(Double.toString(d)+"_");
+			}
+		}
+		return s.toString();
+	}
+
+	public static String strFromAr(double[] tags) {
+		StringBuffer s = new StringBuffer();
+		for (double d : tags){
+			s.append(Double.toString(d)+"_");
+		}
+		return s.toString();
+	}
 }
 
