@@ -29,7 +29,7 @@ public final class TwitterStreamerThread implements Runnable{
 		this.args = args;
 		this.fig = fig;
 		if (!new File("/Volumes/Burkart/files/twitter_streams").isDirectory()){
-			outDir = "twitter_streams";
+			outDir = "/Users/dominicburkart/Documents/data/twitter_streams";
 		}
 	}
 	
