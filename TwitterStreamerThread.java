@@ -24,15 +24,25 @@ public final class TwitterStreamerThread implements Runnable{
 	static String outDir = "/Volumes/Burkart/files/twitter_streams";
 	String[] args;
 	Configuration fig;
+	String passedName;
 	
 	public TwitterStreamerThread(String[] args, Configuration fig){
 		this.args = args;
 		this.fig = fig;
-		if (!new File("/Volumes/Burkart/files/twitter_streams").isDirectory()){
-			outDir = "/Users/dominicburkart/Documents/data/twitter_streams";
+		if (!new File(outDir).isDirectory()){
+			outDir = "twitter_streams";
 		}
 	}
 	
+	public TwitterStreamerThread(String[] args, Configuration fig, String name) {
+		this.args = args;
+		this.fig = fig;
+		if (!new File(outDir).isDirectory()){
+			outDir = "twitter_streams";
+		}
+		passedName = name;
+	}
+
 	private static PrintWriter getFile(String filename){
 		if (filename == null || filename == ""){
 			System.err.println("bad / no filename passed to getFile. Quitting from streamer.");
@@ -44,11 +54,14 @@ public final class TwitterStreamerThread implements Runnable{
 	private String getFileName(){
 		Date now = new Date(java.lang.System.currentTimeMillis());
 		String d = now.toString();
+		String tsv = ".tsv";
+		if (passedName != null && passedName !="" && !passedName.contains(".")){
+			return passedName + d +tsv;
+		}
 		String filters = Utilities.strFromAr(args);
 		if (filters.length() > 30){
 			filters = filters.substring(0, 20) + "_truncated";
 		}
-		String tsv = ".tsv";
 		return d + "_" +filters + tsv;
 	}
 	

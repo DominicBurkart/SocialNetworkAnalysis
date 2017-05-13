@@ -3,20 +3,26 @@ package SocialNetworkAnalysis.Applications;
 import java.util.ArrayList;
 
 import SocialNetworkAnalysis.TwitterAuth;
+import SocialNetworkAnalysis.TwitterStreamerThread;
 import SocialNetworkAnalysis.Utilities;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * 
- * Collects geotagged twitter data from the US and France.
- * 
+ * Collects:
+ * 	geotagged twitter data from the US and France
+ * 	LGBTQ+ keywords
+ * 	homophobic language
+ * 	islam keywords
+ * 	islamophobic language
+ * 	
  * @author Dominic Burkart
  * 
  * @since 13 May 2017
  *
  */
-public class FrUSgeo{
+public class Hyperstream1{
 	static int i = 0;
 	static int last = 0;
 	static int l;
@@ -33,6 +39,12 @@ public class FrUSgeo{
 		sleep();
 	}
 	
+	private static void streamThreader(String[] filters, String name){
+		Runnable stream = new TwitterStreamerThread(filters, getFig(), name);
+		new Thread(stream, name).start();
+		sleep();
+	}
+	
 	private static void sleep(){
 		if ( last >= l ){
 			last = 0;
@@ -43,10 +55,10 @@ public class FrUSgeo{
 	
 	public static void main(String[] args){
 		
-		//the streamargs array holds the geodata queries. Multiple locations can be grouped together into a single twitter stream.
+		//the locargs array holds the geodata queries. Multiple locations can be grouped together into a single twitter stream.
 		//when adding arguments, note that lat and longitude are flipped for twitter.
 		//these bounding boxes include a lot of populated areas outside of the target state. Parse them in some way while analyzing collected data.
-		double[][][] streamargs = { 
+		double[][][] locargs = { 
 				new double[][]{ //france (including outer departments)
 	                new double[]{-5.121045, 42.120278},  //metro
 	                new double[]{8.850687, 51.492968},
@@ -83,14 +95,38 @@ public class FrUSgeo{
 				}
 		};
 		
-		//The names array holds the names of the geodata queries.
-		String[] names = new String[streamargs.length];
-		//names[x] = "Whatever name of whatever group corresponds with the 2d list at index x of streamargs";
+		String[][] topics = new String[][]{
+			new String[] {"faggot", "faggots", "fag", "fags", "tranny", "trannies", "shemale", "shemales", "dyke", "dykes", "homosexual", "homosexuals", "homo", "homos"},
+			new String[] {"queer","lesbian","gay","bisexual","pansexual","transgender","trans","asexual","intersex", "intersexual","queers","lesbians","gays", "bisexuals", "pansexuals","asexuals"},
+			new String[] {"raghead", "towelhead","terrorist"},
+			new String[] {"islam","muslim", "islamic"},
+			new String[] {"trump", "POTUS", "donald trump"},
+			new String[] {"resist","nobannowall", "no ban no wall", "muslimban", "muslim ban","blm","black lives matter","blacklivesmatter"},
+			new String[] {"healthcare","health care", "health"}
+		};
+		
+		//The names array holds the names of the location and keyword queries.
+		String[] names = new String[locargs.length + topics.length];
 		names[0] = "France";
 		names[1] = "USA";
+		names[2] = "homo_slurs";
+		names[3] = "lgbtq";
+		names[4] = "islamophobic";
+		names[5] = "islam";
+		names[6] = "presidency";
+		names[7] = "social-movements";
+		names[8] = "healthcare";
 		
-		for (int i = 0 ; i < streamargs.length; i++){
-			geoStream(streamargs[i], names[i]);
+		try{
+			for (int i = 0 ; i < locargs.length; i++){
+				geoStream(locargs[i], names[i]);
+			}
+			for (int i = 0 ; i < topics.length; i++){
+				streamThreader(topics[i], names[locargs.length+i]);
+			}
+		} catch (IndexOutOfBoundsException e){
+			System.err.print("Index error in Hyperstream. Are you sure that you named every thread?");
 		}
+		
 	}
 }

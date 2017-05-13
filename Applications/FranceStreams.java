@@ -19,7 +19,7 @@ public class FranceStreams{
 	}
 	
 	private static void geoStream(double[][] filters, String name){
-		Runnable stream = new GeoStream(filters, getFig(), name, true);
+		Runnable stream = new GeoStream(filters, getFig(), name);
 		new Thread(stream, name).start();
 		sleep();
 	}
