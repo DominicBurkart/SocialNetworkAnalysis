@@ -441,5 +441,21 @@ public class Utilities extends SNA_Root {
 		}
 		return s.toString();
 	}
+
+	public static double[] flatten(double[][] mat) {
+		double [] out;
+		int i = 0;
+		for (double[] col : mat){
+			i += col.length;
+		}
+		out = new double[i];
+		i = 0;
+		for (double[] col : mat){
+			for (double d : col){
+				out[i++] = d;
+			}
+		}
+		return out;
+	}
 }
 

@@ -19,7 +19,7 @@ public class FranceStreams{
 	}
 	
 	private static void geoStream(double[][] filters, String name){
-		Runnable stream = new GeoStream(filters, getFig());
+		Runnable stream = new GeoStream(filters, getFig(), name, true);
 		new Thread(stream, name).start();
 		sleep();
 	}
@@ -59,8 +59,8 @@ public class FranceStreams{
 	                new double[]{43.107318, 9.722735}
 				},
 				new double[][]{
-	                new double[]{42.120278, -5.121045},
-	                new double[]{51.492968, 8.850687}
+	                new double[]{-5.121045, 42.120278},
+	                new double[]{8.850687, 51.492968}
 				}
 		};
 		String[] names = new String[streamargs.length];
