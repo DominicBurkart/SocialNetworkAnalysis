@@ -119,7 +119,7 @@ public class TwitterStatus extends Post {
 				location.setLocationType(s.getPlace().getPlaceType());
 			}
 		}
-		if (s.getPlace().getGeometryCoordinates() != null){
+		if (s.getPlace() != null && s.getPlace().getGeometryCoordinates() != null){
 			if (location != null){
 				location = this.getLocation();
 				location.setLatitude(s.getGeoLocation().getLatitude());

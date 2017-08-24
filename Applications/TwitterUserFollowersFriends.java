@@ -10,7 +10,7 @@ import SocialNetworkAnalysis.*;
  * 
  * Collects a sample of a given user's followers.
  * For each of these followers, the people who they follow are collected.
- * Samples of tweets from each of these users are collected.
+ * Samples of tweets from users whose following networks have been collected have been collected.
  * 
  * @params first param is the root's twitter ID. The optional second input is the goal collection size.
  * 
@@ -58,13 +58,13 @@ public class TwitterUserFollowersFriends extends TwitterSample {
 	 * 
 	 * Returns true when conditions have been met.
 	 * 
-	 * This userConditions additionally adds every user to
+	 * This userConditions additionally adds every user width degree <=1 to
 	 * the getPostsQ, so we have a sample of tweets from each
 	 * user.
 	 */
 	@Override
 	public boolean userConditions(User u) {
-		if (!u.fromFromPost) this.getPostsQ.add((TwitterUser) u);
+		if (!u.fromFromPost && u.firstDepth < DEPTH - 1) this.getPostsQ.add((TwitterUser) u);
 		if (u != null && u.firstDepth < DEPTH && collected < goal && u != root && !u.fromPost){
 			if (verbose) System.out.println("User included for userAction: "+u);
 			collected++;

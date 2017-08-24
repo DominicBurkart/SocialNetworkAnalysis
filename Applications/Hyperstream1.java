@@ -15,7 +15,9 @@ import twitter4j.conf.ConfigurationBuilder;
  * 	LGBTQ+ keywords
  * 	homophobic language
  * 	islam keywords
- * 	islamophobic language
+ *  terrorism keywords
+ *  2017-relevant social movement terms (blm, nobannowall)
+ *  healthcare
  * 	
  * @author Dominic Burkart
  * 
@@ -25,11 +27,10 @@ import twitter4j.conf.ConfigurationBuilder;
 public class Hyperstream1{
 	static int i = 0;
 	static int last = 0;
-	static int l;
+	static ArrayList<ConfigurationBuilder> figs = TwitterAuth.getConfigurationBuilders();
+	static int l = figs.size();
 	
 	private static Configuration getFig(){
-		ArrayList<ConfigurationBuilder> figs = TwitterAuth.getConfigurationBuilders();
-		l = figs.size();
 		return figs.get(i++ % l).build();
 	}
 	
@@ -54,6 +55,8 @@ public class Hyperstream1{
 	}
 	
 	public static void main(String[] args){
+		
+		System.out.println("figs length: "+figs.size());
 		
 		//the locargs array holds the geodata queries. Multiple locations can be grouped together into a single twitter stream.
 		//when adding arguments, note that lat and longitude are flipped for twitter.
@@ -97,9 +100,9 @@ public class Hyperstream1{
 		
 		String[][] topics = new String[][]{
 			new String[] {"faggot", "faggots", "fag", "fags", "tranny", "trannies", "shemale", "shemales", "dyke", "dykes", "homosexual", "homosexuals", "homo", "homos"},
-			new String[] {"queer","lesbian","gay","bisexual","pansexual","transgender","trans","asexual","intersex", "intersexual","queers","lesbians","gays", "bisexuals", "pansexuals","asexuals"},
-			new String[] {"raghead", "towelhead","terrorist"},
-			new String[] {"islam","muslim", "islamic"},
+			new String[] {"queer", "lgbt","lgbt+","lgbtq","lgbtq+","lgbtqiap+","lesbian","gay","bisexual","pansexual","transgender","trans","asexual","intersex", "intersexual","queers","lesbians","gays", "bisexuals", "pansexuals","asexuals"},
+			new String[] {"terrorist","terrorism"},
+			new String[] {"islam","muslim", "islamic", "muslims"},
 			new String[] {"trump", "POTUS", "donald trump"},
 			new String[] {"resist","nobannowall", "no ban no wall", "muslimban", "muslim ban","blm","black lives matter","blacklivesmatter"},
 			new String[] {"healthcare","health care", "health"}
@@ -111,11 +114,16 @@ public class Hyperstream1{
 		names[1] = "USA";
 		names[2] = "homo_slurs";
 		names[3] = "lgbtq";
-		names[4] = "islamophobic";
+		names[4] = "terrorist_terrorism";
 		names[5] = "islam";
 		names[6] = "presidency";
-		names[7] = "social-movements";
+		names[7] = "social_movements";
 		names[8] = "healthcare";
+		
+		if (l < names.length){
+			System.out.println("As of early 2017 Twitter only supports one stream per account. You have too many streams / too few accounts.");
+			System.exit(420); //420 is the ratelimiting code for twitter.
+		}
 		
 		try{
 			for (int i = 0 ; i < locargs.length; i++){

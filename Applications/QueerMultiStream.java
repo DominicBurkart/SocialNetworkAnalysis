@@ -10,10 +10,7 @@ import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Simultaneously collects data from queer, lgbia, trans,
- * and queerphobic slur streams. It looks like Twitter 
- * limits us to two logins using the same app/user
- * credentials, which is the limiting factor for total 
- * number of streams on my system.
+ * and queerphobic slur streams.
  * 
  * @author dominicburkart
  */

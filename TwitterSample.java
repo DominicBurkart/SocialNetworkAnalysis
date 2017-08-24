@@ -394,7 +394,7 @@ public abstract class TwitterSample extends Sample {
 				if (roadmap || verbose) System.out.println("Continuing collection.");
 			}
 		}
-		if (roadmap || verbose) System.out.println("precheck complete. Waiting fifteen minutes before continuing with main collection. Collected: "+collected+" precheckInfo[0]: "+precheckInfo[0]);
+		if (roadmap || verbose) System.out.println("precheck complete. Waiting fifteen minutes before continuing with main collection. Collected: "+precheckInfo[0]);
 		Utilities.sleepFor((1000 * 60 * 15));
 	}
 	
