@@ -20,7 +20,7 @@ public abstract class Post extends SNA_Root implements Comparable<Post> {
 	private boolean original; // reposts have original as false.
 	User originalAuthor;
 	User repostedFrom;
-	private int notes = 0;
+	private int notes = -999;
 	String comment = "null";
 	ArrayList<String> tags;
 	protected Location location = new Location();
