@@ -25,6 +25,9 @@ public final class TwitterStreamerThread implements Runnable{
 	String[] args;
 	Configuration fig;
 	String passedName;
+	private PrintWriter p;
+	private String filename;
+	
 	
 	public TwitterStreamerThread(String[] args, Configuration fig){
 		this.args = args;
@@ -43,12 +46,20 @@ public final class TwitterStreamerThread implements Runnable{
 		passedName = name;
 	}
 
-	private static PrintWriter getFile(String filename){
+	private PrintWriter getFile(String filename){
 		if (filename == null || filename == ""){
 			System.err.println("bad / no filename passed to getFile. Quitting from streamer.");
 			System.exit(0);
 		}
-		return Utilities.fileHandler(filename, outDir, true);
+		if (p != null && filename != null && filename.equalsIgnoreCase(this.filename)){
+			return this.p;
+		}
+		else if (p != null){
+			this.p.close();
+		}
+		this.p = Utilities.fileHandler(filename, outDir, true);
+		this.filename = filename;
+		return this.p;
 	}
 	
 	private String getFileName(){
@@ -82,9 +93,7 @@ public final class TwitterStreamerThread implements Runnable{
             @Override
             public void onStatus(Status status) {
             	PrintWriter p = getFile(getFileName());
-                TwitterStatus s = new TwitterStatus(status);
-                p.println(s);
-                p.close();
+                p.println(new TwitterStatus(status));
             }
 
             @Override

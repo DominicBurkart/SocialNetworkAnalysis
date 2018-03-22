@@ -22,6 +22,8 @@ public class GeoStream implements Runnable{
 	double[][] pars;
 	Configuration fig;
 	String passedName;
+	private PrintWriter p;
+	private String filename;
 	
 	public GeoStream(double[][] pars, Configuration fig){
 		this.pars = pars;
@@ -40,12 +42,20 @@ public class GeoStream implements Runnable{
 		passedName = name;
 	}
 	
-	private static PrintWriter getFile(String filename){
+	private PrintWriter getFile(String filename){
 		if (filename == null || filename == ""){
 			System.err.println("bad / no filename passed to getFile. Quitting from streamer.");
 			System.exit(0);
 		}
-		return Utilities.fileHandler(filename, outDir, true);
+		if (p != null && filename != null && filename.equalsIgnoreCase(this.filename)){
+			return this.p;
+		}
+		else if (p != null){ // here we know that filename != this.filename. Close the current PrintWriter before opening a new one.
+			this.p.close();
+		}
+		this.p = Utilities.fileHandler(filename, outDir, true);
+		this.filename = filename;
+		return this.p;
 	}
 	
 	private String getFileName(){
@@ -77,9 +87,7 @@ public class GeoStream implements Runnable{
             @Override
             public void onStatus(Status status) {
             	PrintWriter p = getFile(getFileName());
-                TwitterStatus s = new TwitterStatus(status);
-                p.println(s);
-                p.close();
+                p.println(new TwitterStatus(status));
             }
 
             @Override
